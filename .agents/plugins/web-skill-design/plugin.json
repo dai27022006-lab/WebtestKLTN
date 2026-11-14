@@ -1,0 +1,8 @@
+{
+  "name": "web-skill-design",
+  "description": "Nhánh AI Skill Design Web: chuyên trách Backend, Database, Auth/RBAC, API Contract, cơ chế web bên trong (Node.js / Next.js Fullstack + Prisma/Postgres/Supabase), điều phối Swarm đội quân AI Agent và kiểm định QA/Security cho Đồ án Tốt nghiệp.",
+  "version": "1.0.0",
+  "author": {
+    "name": "Phat Dai - Graduation Web Team"
+  }
+}

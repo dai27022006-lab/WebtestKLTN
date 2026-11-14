@@ -1,0 +1,183 @@
+/* ==========================================================================
+   Theme Polarity Definitions — Light & Dark Modes
+   Supports:
+   - Explicit [data-theme="light"] / [data-theme="dark"]
+   - Scoped surface inversion (e.g. dark showcase bands inside light pages)
+   - OS preference fallback when [data-theme="system"] or unset
+   ========================================================================== */
+
+:root,
+[data-theme="light"] {
+  color-scheme: light;
+
+  /* 6 Core Roles */
+  --bg-canvas: #faf7f2;
+  --bg-surface: #ffffff;
+  --bg-surface-subtle: #f2ece3;
+  --ink: #1c1917;
+  --ink-soft: #57534e;
+  --border-hairline: rgba(28, 25, 23, 0.12);
+  --border-strong: rgba(28, 25, 23, 0.24);
+
+  /* Single Accent Hue (Terracotta ~18deg, >= 4.5:1 contrast with white & canvas) */
+  --accent: #b93815;
+  --accent-hover: #9a2d10;
+  --accent-soft: rgba(185, 56, 21, 0.1);
+  --accent-ink: #ffffff;
+
+  /* Ergonomic Aliases */
+  --surface: var(--bg-canvas);
+  --surface-elevated: var(--bg-surface);
+  --ink-primary: var(--ink);
+  --ink-muted: var(--ink-soft);
+
+  /* Brand Mark */
+  --brand-mark-ink: #1c1917;
+  --brand-mark-accent: #b93815;
+
+  /* Semantic States */
+  --status-success: #166534;
+  --status-success-bg: #eef7f1;
+  --status-success-border: rgba(22, 101, 52, 0.24);
+
+  --status-warning: #9a5b00;
+  --status-warning-bg: #fdf5e6;
+  --status-warning-border: rgba(154, 91, 0, 0.26);
+
+  --status-danger: #b91c1c;
+  --status-danger-bg: #fef0f0;
+  --status-danger-border: rgba(185, 28, 28, 0.24);
+
+  --status-info: #1e5b70;
+  --status-info-bg: #edf5f8;
+  --status-info-border: rgba(30, 91, 112, 0.24);
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px rgba(28, 25, 23, 0.05);
+  --shadow-md: 0 6px 20px -4px rgba(28, 25, 23, 0.08), 0 2px 6px -1px rgba(28, 25, 23, 0.04);
+  --shadow-lg: 0 18px 40px -8px rgba(28, 25, 23, 0.14), 0 4px 12px -2px rgba(28, 25, 23, 0.06);
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+
+  /* 6 Core Roles (Warm Obsidian + Soft Chalk — no #000000 or harsh #FFFFFF) */
+  --bg-canvas: #141210;
+  --bg-surface: #1e1b18;
+  --bg-surface-subtle: #282420;
+  --ink: #f5f1eb;
+  --ink-soft: #b5ada3;
+  --border-hairline: rgba(245, 241, 235, 0.12);
+  --border-strong: rgba(245, 241, 235, 0.24);
+
+  /* Same Hue (~16-18deg), elevated lightness for >= 4.5:1 on dark surfaces */
+  --accent: #f06a3e;
+  --accent-hover: #f4835e;
+  --accent-soft: rgba(240, 106, 62, 0.16);
+  --accent-ink: #141210;
+
+  /* Ergonomic Aliases */
+  --surface: var(--bg-canvas);
+  --surface-elevated: var(--bg-surface);
+  --ink-primary: var(--ink);
+  --ink-muted: var(--ink-soft);
+
+  /* Brand Mark */
+  --brand-mark-ink: #f5f1eb;
+  --brand-mark-accent: #f06a3e;
+
+  /* Semantic States */
+  --status-success: #4ade80;
+  --status-success-bg: rgba(74, 222, 128, 0.12);
+  --status-success-border: rgba(74, 222, 128, 0.28);
+
+  --status-warning: #fbbf24;
+  --status-warning-bg: rgba(251, 191, 36, 0.12);
+  --status-warning-border: rgba(251, 191, 36, 0.28);
+
+  --status-danger: #f87171;
+  --status-danger-bg: rgba(248, 113, 113, 0.12);
+  --status-danger-border: rgba(248, 113, 113, 0.28);
+
+  --status-info: #67b7d1;
+  --status-info-bg: rgba(103, 183, 209, 0.12);
+  --status-info-border: rgba(103, 183, 209, 0.28);
+
+  /* Shadows on Dark */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.35);
+  --shadow-md: 0 8px 24px -4px rgba(0, 0, 0, 0.45), 0 2px 6px -1px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 20px 44px -8px rgba(0, 0, 0, 0.6), 0 6px 14px -2px rgba(0, 0, 0, 0.4);
+}
+
+/* OS Preference fallback when theme is not explicitly forced */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]):not([data-theme="dark"]),
+  [data-theme="system"] {
+    color-scheme: dark;
+
+    --bg-canvas: #141210;
+    --bg-surface: #1e1b18;
+    --bg-surface-subtle: #282420;
+    --ink: #f5f1eb;
+    --ink-soft: #b5ada3;
+    --border-hairline: rgba(245, 241, 235, 0.12);
+    --border-strong: rgba(245, 241, 235, 0.24);
+
+    --accent: #f06a3e;
+    --accent-hover: #f4835e;
+    --accent-soft: rgba(240, 106, 62, 0.16);
+    --accent-ink: #141210;
+
+    --surface: var(--bg-canvas);
+    --surface-elevated: var(--bg-surface);
+    --ink-primary: var(--ink);
+    --ink-muted: var(--ink-soft);
+
+    --brand-mark-ink: #f5f1eb;
+    --brand-mark-accent: #f06a3e;
+
+    --status-success: #4ade80;
+    --status-success-bg: rgba(74, 222, 128, 0.12);
+    --status-success-border: rgba(74, 222, 128, 0.28);
+
+    --status-warning: #fbbf24;
+    --status-warning-bg: rgba(251, 191, 36, 0.12);
+    --status-warning-border: rgba(251, 191, 36, 0.28);
+
+    --status-danger: #f87171;
+    --status-danger-bg: rgba(248, 113, 113, 0.12);
+    --status-danger-border: rgba(248, 113, 113, 0.28);
+
+    --status-info: #67b7d1;
+    --status-info-bg: rgba(103, 183, 209, 0.12);
+    --status-info-border: rgba(103, 183, 209, 0.28);
+
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.35);
+    --shadow-md: 0 8px 24px -4px rgba(0, 0, 0, 0.45), 0 2px 6px -1px rgba(0, 0, 0, 0.3);
+    --shadow-lg: 0 20px 44px -8px rgba(0, 0, 0, 0.6), 0 6px 14px -2px rgba(0, 0, 0, 0.4);
+  }
+}
+
+/* Base Canvas Binding */
+html {
+  background-color: var(--bg-canvas);
+  color: var(--ink);
+}
+
+body {
+  background-color: var(--bg-canvas);
+  color: var(--ink);
+  transition: background-color var(--duration-base) var(--ease-standard),
+    color var(--duration-base) var(--ease-standard);
+}
+
+/* Scoped Polarity Surface Helper (prevents hardcoded light CSS leaks) */
+.surface-invert-band {
+  background-color: var(--bg-canvas);
+  color: var(--ink);
+}
+
+:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}

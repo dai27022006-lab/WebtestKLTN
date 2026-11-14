@@ -1,0 +1,167 @@
+/* ==========================================================================
+   Design Tokens — Digital Store Advisor
+   Style: Warm Editorial Craft / Thuc dung hien dai (Chu shop nho VN 1-3 nguoi)
+   Base unit: 4px | Color roles: 6 core tokens + 1 primary accent hue + semantics
+   ========================================================================== */
+
+:root {
+  /* ------------------------------------------------------------------------
+     1. Spacing Scale (4px base grid)
+     ------------------------------------------------------------------------ */
+  --space-0: 0px;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --space-20: 80px;
+  --space-24: 96px;
+
+  /* Fluid Section & Container Spacing (never hardcode desktop 8rem on 375px) */
+  --container-max: 1280px;
+  --container-narrow: 880px;
+  --container-px: clamp(16px, 4vw, 48px);
+  --section-py: clamp(48px, 6vw, 96px);
+  --section-py-compact: clamp(32px, 4vw, 64px);
+  --section-gap: clamp(24px, 3vw, 48px);
+
+  /* Heading Vertical Rhythm: space ABOVE heading always > space BELOW heading */
+  --heading-mt: clamp(32px, 4vw, 56px);
+  --heading-mb: clamp(12px, 1.5vw, 20px);
+
+  /* Header & Sticky Offsets */
+  --header-height: 64px;
+  --scenario-bar-height: 52px;
+
+  /* ------------------------------------------------------------------------
+     2. Border Radius
+     ------------------------------------------------------------------------ */
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-pill: 9999px;
+
+  /* ------------------------------------------------------------------------
+     3. Typography Tokens (Fallback values; overridden by next/font variables)
+     ------------------------------------------------------------------------ */
+  --font-sans: var(--font-be-vietnam-pro), "Be Vietnam Pro", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-mono: var(--font-jetbrains-mono), "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --text-display: clamp(2.125rem, 4.2vw + 0.75rem, 3.75rem);
+  --text-h1: clamp(1.75rem, 2.5vw + 0.75rem, 2.75rem);
+  --text-h2: clamp(1.375rem, 1.5vw + 0.75rem, 2rem);
+  --text-h3: clamp(1.125rem, 0.8vw + 0.85rem, 1.375rem);
+  --text-body-lg: 1.125rem;
+  --text-body: 1rem;
+  --text-body-sm: 0.875rem;
+  --text-caption: 0.75rem;
+
+  --leading-display: 1.12;
+  --leading-heading: 1.24;
+  --leading-body: 1.62;
+  --leading-tight: 1.35;
+
+  --tracking-display: -0.03em;
+  --tracking-heading: -0.02em;
+  --tracking-body: 0em;
+  --tracking-label: 0.04em;
+
+  --measure-prose: 62ch;
+  --measure-wide: 72ch;
+
+  /* ------------------------------------------------------------------------
+     4. Elevation & Motion Tokens
+     ------------------------------------------------------------------------ */
+  --ease-out-expo: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+  --duration-fast: 150ms;
+  --duration-base: 240ms;
+  --duration-slow: 380ms;
+
+  /* Z-Index Scale */
+  --z-base: 1;
+  --z-sticky: 20;
+  --z-header: 40;
+  --z-drawer-backdrop: 50;
+  --z-drawer: 60;
+  --z-modal: 70;
+  --z-toast: 80;
+
+  /* ------------------------------------------------------------------------
+     5. Default Light Theme Role Values (Fallback before themes.css applies)
+     6 Core Roles + 1 Accent Hue (Warm Terracotta ~18deg) + Semantic States
+     ------------------------------------------------------------------------ */
+  --bg-canvas: #faf7f2;
+  --bg-surface: #ffffff;
+  --bg-surface-subtle: #f2ece3;
+  --ink: #1c1917;
+  --ink-soft: #57534e;
+  --border-hairline: rgba(28, 25, 23, 0.12);
+  --border-strong: rgba(28, 25, 23, 0.24);
+
+  /* Single Primary Accent Hue */
+  --accent: #b93815;
+  --accent-hover: #9a2d10;
+  --accent-soft: rgba(185, 56, 21, 0.1);
+  --accent-ink: #ffffff;
+
+  /* Semantic Aliases (for ergonomics across UI components) */
+  --surface: var(--bg-canvas);
+  --surface-elevated: var(--bg-surface);
+  --ink-primary: var(--ink);
+  --ink-muted: var(--ink-soft);
+
+  /* Brand SVG Mark Tokens (switched automatically across Light/Dark) */
+  --brand-mark-ink: #1c1917;
+  --brand-mark-accent: #b93815;
+
+  /* Semantic State Tokens (Muted Editorial, Zero Neon) */
+  --status-success: #166534;
+  --status-success-bg: #eef7f1;
+  --status-success-border: rgba(22, 101, 52, 0.24);
+
+  --status-warning: #9a5b00;
+  --status-warning-bg: #fdf5e6;
+  --status-warning-border: rgba(154, 91, 0, 0.26);
+
+  --status-danger: #b91c1c;
+  --status-danger-bg: #fef0f0;
+  --status-danger-border: rgba(185, 28, 28, 0.24);
+
+  --status-info: #1e5b70;
+  --status-info-bg: #edf5f8;
+  --status-info-border: rgba(30, 91, 112, 0.24);
+
+  /* Shadows (Warm Charcoal Tint) */
+  --shadow-sm: 0 1px 2px rgba(28, 25, 23, 0.05);
+  --shadow-md: 0 6px 20px -4px rgba(28, 25, 23, 0.08), 0 2px 6px -1px rgba(28, 25, 23, 0.04);
+  --shadow-lg: 0 18px 40px -8px rgba(28, 25, 23, 0.14), 0 4px 12px -2px rgba(28, 25, 23, 0.06);
+
+  /* Focus Ring */
+  --focus-ring: 0 0 0 2px var(--bg-canvas), 0 0 0 4px var(--accent);
+}
+
+/* Mobile Art Direction (<= 700px): drop display scale by 1 step */
+@media (max-width: 700px) {
+  :root {
+    --text-display: clamp(1.875rem, 6vw + 0.5rem, 2.375rem);
+    --text-h1: clamp(1.5rem, 4vw + 0.5rem, 1.875rem);
+    --header-height: 56px;
+  }
+}
+
+/* Respect Reduced Motion globally */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --duration-fast: 0ms;
+    --duration-base: 0ms;
+    --duration-slow: 0ms;
+  }
+}

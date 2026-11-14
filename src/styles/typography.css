@@ -1,0 +1,166 @@
+/* ==========================================================================
+   Typography System — Digital Store Advisor
+   Max 2 font families: Be Vietnam Pro (Display + Body) & JetBrains Mono (Data/Timer)
+   Vietnamese diacritic safe & Dark Mode compensation built-in
+   ========================================================================== */
+
+body {
+  font-family: var(--font-sans);
+  font-size: var(--text-body);
+  line-height: var(--leading-body);
+  letter-spacing: var(--tracking-body);
+  color: var(--ink);
+  font-kerning: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Dark mode optical compensation: slightly more breathing room so light ink doesn't halo */
+[data-theme="dark"] body {
+  letter-spacing: 0.005em;
+  line-height: 1.66;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]):not([data-theme="dark"]) body,
+  [data-theme="system"] body {
+    letter-spacing: 0.005em;
+    line-height: 1.66;
+  }
+}
+
+/* Display & Headings */
+.type-display,
+h1.type-display {
+  font-family: var(--font-sans);
+  font-size: var(--text-display);
+  line-height: var(--leading-display);
+  letter-spacing: var(--tracking-display);
+  font-weight: 700;
+  text-wrap: balance;
+  color: var(--ink);
+}
+
+.type-h1,
+h1 {
+  font-family: var(--font-sans);
+  font-size: var(--text-h1);
+  line-height: var(--leading-heading);
+  letter-spacing: var(--tracking-heading);
+  font-weight: 700;
+  text-wrap: balance;
+  color: var(--ink);
+}
+
+.type-h2,
+h2 {
+  font-family: var(--font-sans);
+  font-size: var(--text-h2);
+  line-height: var(--leading-heading);
+  letter-spacing: var(--tracking-heading);
+  font-weight: 600;
+  text-wrap: balance;
+  color: var(--ink);
+}
+
+.type-h3,
+h3 {
+  font-family: var(--font-sans);
+  font-size: var(--text-h3);
+  line-height: var(--leading-tight);
+  letter-spacing: -0.01em;
+  font-weight: 600;
+  text-wrap: balance;
+  color: var(--ink);
+}
+
+/* Body & Prose Measure (45-75ch) */
+.type-lead {
+  font-size: var(--text-body-lg);
+  line-height: 1.55;
+  color: var(--ink-soft);
+  max-width: var(--measure-prose);
+  text-wrap: pretty;
+}
+
+.type-body {
+  font-size: var(--text-body);
+  line-height: var(--leading-body);
+  color: var(--ink);
+  max-width: var(--measure-prose);
+  text-wrap: pretty;
+}
+
+.type-body-sm {
+  font-size: var(--text-body-sm);
+  line-height: 1.55;
+  color: var(--ink-soft);
+  text-wrap: pretty;
+}
+
+.type-caption {
+  font-size: var(--text-caption);
+  line-height: 1.4;
+  color: var(--ink-soft);
+}
+
+.type-eyebrow {
+  font-family: var(--font-mono);
+  font-size: var(--text-caption);
+  line-height: 1.2;
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+/* Tabular Numbers & Mono Data (Prices in VND, Timers, Participant Codes, Metrics) */
+.type-mono,
+.type-price,
+.type-timer,
+.type-code {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+.type-price {
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+
+.type-timer {
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+/* Heading Vertical Spacing Helper: space above > space below */
+.section-heading-group {
+  margin-top: var(--heading-mt);
+  margin-bottom: var(--heading-mb);
+}
+
+.section-heading-group:first-child {
+  margin-top: 0;
+}
+
+/* Vietnamese Diacritic Protection for clipped/masked text lines (Misiom/Archinex rule) */
+.text-line-clip {
+  overflow: hidden;
+  padding-bottom: 0.16em;
+  margin-bottom: -0.16em;
+}
+
+/* Zero-pin Ink-Fill Gradient Text using CSS tokens (no hardcoded #000/#fff) */
+.type-ink-fill {
+  background-image: linear-gradient(
+    to right,
+    var(--ink) 50%,
+    var(--ink-soft) 50%
+  );
+  background-size: 200% 100%;
+  background-position: 100% 0;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
