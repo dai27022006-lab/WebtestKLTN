@@ -1,0 +1,30 @@
+name: Supabase Keep-Alive
+
+on:
+  schedule:
+    # Chạy 3 ngày/lần lúc 02:00 UTC (09:00 giờ VN) để tránh Supabase Free Tier ngủ đông sau 7 ngày
+    - cron: "0 2 */3 * *"
+  workflow_dispatch:
+
+jobs:
+  ping:
+    name: Ping Supabase & App Health
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Ping Supabase REST API
+        if: ${{ secrets.SUPABASE_URL != '' && secrets.SUPABASE_ANON_KEY != '' }}
+        run: |
+          status=$(curl -s -o /dev/null -w "%{http_code}" \
+            -H "apikey: ${{ secrets.SUPABASE_ANON_KEY }}" \
+            -H "Authorization: Bearer ${{ secrets.SUPABASE_ANON_KEY }}" \
+            "${{ secrets.SUPABASE_URL }}/rest/v1/products?select=id&limit=1")
+          echo "Supabase ping HTTP status: $status"
+          test "$status" -ge 200 -a "$status" -lt 300
+
+      - name: Ping Deployed App Health Endpoint
+        if: ${{ vars.APP_HEALTH_URL != '' }}
+        run: |
+          status=$(curl -s -o /dev/null -w "%{http_code}" "${{ vars.APP_HEALTH_URL }}")
+          echo "App health HTTP status: $status"
+          test "$status" -ge 200 -a "$status" -lt 300
