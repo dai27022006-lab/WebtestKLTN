@@ -5,6 +5,12 @@ import { useParams } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
 
 import {
+  CheckCircle2,
+  Download,
+  Lock,
+  ShoppingBag,
+} from '@/components/icons/DreamIcons';
+import {
   formatDateTimeVi,
   formatVnd,
   ORDER_STATUS_META,
@@ -102,7 +108,6 @@ export default function OrderDetailPage() {
       },
     });
 
-    // Fetch deliverable payload preview & trigger browser download cleanly
     let previewText: string | null = null;
     try {
       const payloadRes = await fetch(res.data.download_url);
@@ -131,7 +136,6 @@ export default function OrderDetailPage() {
       },
     }));
 
-    // Refresh order counts from server
     void loadOrder();
   };
 
@@ -173,21 +177,27 @@ export default function OrderDetailPage() {
       <div className="container container--narrow" style={{ display: 'grid', gap: '24px' }}>
         <div className="stepper" aria-label="Tiến trình giao dịch Sandbox">
           <div className="stepper__item stepper__item--done">
-            <span className="badge badge--success">1</span>
+            <span className="badge badge--success">
+              <ShoppingBag size={12} /> 1
+            </span>
             <span>Giỏ hàng</span>
           </div>
           <div className="stepper__item stepper__item--done">
-            <span className="badge badge--success">2</span>
+            <span className="badge badge--success">
+              <Lock size={12} /> 2
+            </span>
             <span>Thanh toán Sandbox</span>
           </div>
           <div className="stepper__item stepper__item--active">
-            <span className="badge badge--accent">3</span>
+            <span className="badge badge--accent">
+              <Download size={12} /> 3
+            </span>
             <span>Nhận file qua token</span>
           </div>
         </div>
 
         {/* Order Header */}
-        <div className="surface-card" style={{ display: 'grid', gap: '16px' }}>
+        <div className="surface-card dg-panel" style={{ display: 'grid', gap: '16px' }}>
           <div
             style={{
               display: 'flex',
@@ -204,7 +214,8 @@ export default function OrderDetailPage() {
               </h1>
             </div>
             <span className={`badge badge--${statusMeta.tone}`}>
-              {statusMeta.label}
+              <CheckCircle2 size={13} />
+              <span>{statusMeta.label}</span>
             </span>
           </div>
 
@@ -219,7 +230,10 @@ export default function OrderDetailPage() {
           >
             <div>
               <div className="type-caption">Tổng giá trị Sandbox</div>
-              <strong className="type-price" style={{ fontSize: '1.25rem' }}>
+              <strong
+                className="type-price"
+                style={{ fontSize: '1.25rem', color: 'var(--accent)' }}
+              >
                 {formatVnd(order.total_vnd)}
               </strong>
             </div>
@@ -245,7 +259,7 @@ export default function OrderDetailPage() {
                 <code className="type-mono">paid</code>.
               </span>
               <div>
-                <Link href="/checkout" className="btn btn--primary btn--sm">
+                <Link href="/checkout" className="dg-btn-purchase dg-btn-sm">
                   Quay lại Thanh toán Sandbox
                 </Link>
               </div>
@@ -255,7 +269,7 @@ export default function OrderDetailPage() {
 
         {/* Download Grants */}
         {order.status === 'paid' && (
-          <div className="surface-card" style={{ display: 'grid', gap: '16px' }}>
+          <div className="surface-card dg-panel" style={{ display: 'grid', gap: '16px' }}>
             <h2 className="type-h3" style={{ margin: 0 }}>
               Kho tải gói sản phẩm đã cấp quyền
             </h2>
@@ -283,6 +297,7 @@ export default function OrderDetailPage() {
                         padding: '16px',
                         borderRadius: 'var(--radius-md)',
                         border: '1px solid var(--border-strong)',
+                        backgroundColor: 'var(--bg-surface-subtle)',
                         display: 'grid',
                         gap: '12px',
                       }}
@@ -309,19 +324,22 @@ export default function OrderDetailPage() {
 
                         <button
                           type="button"
-                          className="btn btn--primary btn--sm"
+                          className="dg-btn-purchase dg-btn-sm"
                           disabled={disabled}
                           onClick={() =>
                             void handleDownload(grant.token, grant.product_id)
                           }
                         >
-                          {state?.isLoading
-                            ? 'Đang cấp link...'
-                            : isExpired
-                              ? 'Link đã hết hạn'
-                              : isExhausted
-                                ? 'Hết lượt tải'
-                                : 'Tải gói sản phẩm'}
+                          <Download size={14} />
+                          <span>
+                            {state?.isLoading
+                              ? 'Đang cấp link...'
+                              : isExpired
+                                ? 'Link đã hết hạn'
+                                : isExhausted
+                                  ? 'Hết lượt tải'
+                                  : 'Tải gói sản phẩm'}
+                          </span>
                         </button>
                       </div>
 
@@ -359,7 +377,8 @@ export default function OrderDetailPage() {
                               marginTop: '8px',
                               padding: '12px',
                               borderRadius: 'var(--radius-sm)',
-                              backgroundColor: 'var(--bg-surface-subtle)',
+                              backgroundColor: 'var(--bg-surface)',
+                              border: '1px solid var(--border-hairline)',
                               fontSize: '0.75rem',
                               overflowX: 'auto',
                               maxHeight: '260px',

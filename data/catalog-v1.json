@@ -1,0 +1,451 @@
+{
+  "version": "1.0.0",
+  "updated_at": "2026-11-16T08:00:00.000Z",
+  "notes": "Danh mục 12 sản phẩm số gốc Tháng 1 theo RULES.md Mục 18: 6 Template Website + 4 Prompt Pack + 2 Workflow mẫu, phủ đều 4 ngành (Mỹ phẩm, Thời trang, F&B, Đa ngành) và đủ 3 loại bản quyền (original, adapted, licensed).",
+  "products": [
+    {
+      "id": "2c5a98b1-90c4-4f88-a2b3-1c4f9b012a10",
+      "file_id": "f0000000-90c4-4f88-a2b3-1c4f9b012a10",
+      "slug": "landing-page-my-pham-tiktok-shop",
+      "name": "Template Landing Page Mỹ Phẩm Chuẩn TikTok Shop",
+      "short_description": "Mẫu landing page bán mỹ phẩm dưỡng da tối ưu mobile 375px, gắn giỏ hàng TikTok Shop & Shopee.",
+      "description": "Gói template Next.js + HTML/CSS do nhóm tự thiết kế dành riêng cho shop mỹ phẩm 1–3 nhân sự. Tập trung trình bày bảng thành phần dịu nhẹ, chứng nhận công bố sản phẩm, CTA chốt đơn nhanh qua TikTok Shop/Shopee và tuân thủ chính sách quảng cáo không cam kết trị liệu.",
+      "product_type": "template",
+      "industry": "Mỹ phẩm",
+      "price_vnd": 490000,
+      "demo_url": "/products/landing-page-my-pham-tiktok-shop",
+      "thumbnail_url": null,
+      "source_type": "original",
+      "license_note": "Sản phẩm gốc do nhóm nghiên cứu tự thiết kế 100%, cấp quyền sử dụng thương mại cho 1 shop.",
+      "specs": {
+        "target_shop_size": "1-3 người",
+        "platforms": ["TikTok Shop", "Shopee", "Facebook"],
+        "deliverables": [
+          "Source code template responsive 375px - 1440px",
+          "Bảng nội dung chuẩn chính sách mỹ phẩm không trị liệu",
+          "Khối hiển thị giấy công bố & hướng dẫn triển khai trong 30 phút"
+        ],
+        "tech_stack": ["HTML5", "CSS3", "Next.js"],
+        "setup_time_minutes": 30,
+        "guide_summary": "Thay logo, bảng thành phần, giá bán và link sản phẩm TikTok Shop để chạy ngay."
+      },
+      "deliverable_file": {
+        "file_name": "landing-page-my-pham-tiktok-shop-v1.0.0.json",
+        "storage_bucket": "product-deliverables",
+        "storage_path": "deliverables/landing-page-my-pham-tiktok-shop/bundle-v1.0.0.json",
+        "file_size_bytes": 48200,
+        "mime_type": "application/json",
+        "version": "1.0.0"
+      },
+      "is_active": true,
+      "is_simulated": false
+    },
+    {
+      "id": "7a9c11d2-54e3-4c99-8b10-0f2d3e4a5b6c",
+      "file_id": "f0000000-54e3-4c99-8b10-0f2d3e4a5b6c",
+      "slug": "prompt-pack-mo-ta-my-pham",
+      "name": "Prompt Pack Mô Tả & Kịch Bản Video Mỹ Phẩm",
+      "short_description": "60 prompt AI viết mô tả sản phẩm dưỡng da, kịch bản TikTok 30s không vi phạm từ cấm.",
+      "description": "Bộ 60 prompt tối ưu cho chủ shop mỹ phẩm viết mô tả chuẩn SEO Shopee/TikTok Shop, trả lời bình luận khách hỏi về loại da và dựng kịch bản video ngắn tránh các từ ngữ cam kết điều trị y khoa.",
+      "product_type": "prompt_pack",
+      "industry": "Mỹ phẩm",
+      "price_vnd": 290000,
+      "demo_url": null,
+      "thumbnail_url": null,
+      "source_type": "original",
+      "license_note": "Bộ prompt biên soạn gốc bởi nhóm nội dung, dùng không giới hạn cho các kênh của 1 shop.",
+      "specs": {
+        "target_shop_size": "1-3 người",
+        "platforms": ["TikTok Shop", "Shopee", "Facebook"],
+        "deliverables": [
+          "60 prompt phân loại theo tình huống bán hàng mỹ phẩm",
+          "Checklist từ khóa bị hạn chế trên sàn TMĐT",
+          "Bộ khung kịch bản video ngắn 30 giây quay bằng điện thoại"
+        ],
+        "tech_stack": ["Notion", "Markdown", "PDF"],
+        "setup_time_minutes": 15,
+        "guide_summary": "Điền tên sản phẩm, thành phần chính và tệp da khách hàng vào khung mẫu để tạo mô tả chuẩn."
+      },
+      "deliverable_file": {
+        "file_name": "prompt-pack-mo-ta-my-pham-v1.0.0.json",
+        "storage_bucket": "product-deliverables",
+        "storage_path": "deliverables/prompt-pack-mo-ta-my-pham/bundle-v1.0.0.json",
+        "file_size_bytes": 32400,
+        "mime_type": "application/json",
+        "version": "1.0.0"
+      },
+      "is_active": true,
+      "is_simulated": false
+    },
+    {
+      "id": "f6a7b8c9-1012-4112-8112-6c7d8e9f0a12",
+      "file_id": "f0000000-1012-4112-8112-6c7d8e9f0a12",
+      "slug": "workflow-nhac-mua-lai-my-pham-zalo",
+      "name": "Workflow Nhắc Lịch Mua Lại & CSKH Mỹ Phẩm Tự Động",
+      "short_description": "Luồng n8n/Make nhắc chu kỳ hết sản phẩm sau 30–45 ngày qua Google Sheets, Telegram & mẫu Zalo.",
+      "description": "Giải pháp tự động hóa giữ chân khách hàng dành riêng cho shop mỹ phẩm nhỏ không dùng CRM đắt tiền. Khi ghi nhận đơn dưỡng da vào Google Sheets, hệ thống tự tính ngày dự kiến dùng hết (30–45 ngày) và gửi thông báo nhắc nhân viên chăm sóc khách quay lại mua tiếp.",
+      "product_type": "workflow",
+      "industry": "Mỹ phẩm",
+      "price_vnd": 640000,
+      "demo_url": null,
+      "thumbnail_url": null,
+      "source_type": "adapted",
+      "license_note": "Chuyển thể từ cấu trúc luồng nhắc lịch mở trên n8n, Việt hóa và thiết kế lại bảng theo dõi chu kỳ dùng hết sản phẩm mỹ phẩm cho shop nhỏ.",
+      "specs": {
+        "target_shop_size": "1-3 người",
+        "platforms": ["Zalo", "Google Sheets", "Telegram"],
+        "deliverables": [
+          "File JSON workflow n8n/Make nhập 1 chạm",
+          "Google Sheets mẫu quản lý chu kỳ mua lại 30–45 ngày",
+          "10 mẫu tin nhắn hỏi thăm dịu nhẹ đúng chính sách Zalo"
+        ],
+        "tech_stack": ["n8n / Make", "Google Sheets", "Telegram Bot"],
+        "setup_time_minutes": 40,
+        "guide_summary": "Kết nối Google Sheets đơn hàng với bot Telegram để nhận danh sách khách cần nhắc chăm sóc mỗi sáng."
+      },
+      "deliverable_file": {
+        "file_name": "workflow-nhac-mua-lai-my-pham-zalo-v1.0.0.json",
+        "storage_bucket": "product-deliverables",
+        "storage_path": "deliverables/workflow-nhac-mua-lai-my-pham-zalo/bundle-v1.0.0.json",
+        "file_size_bytes": 38900,
+        "mime_type": "application/json",
+        "version": "1.0.0"
+      },
+      "is_active": true,
+      "is_simulated": false
+    },
+    {
+      "id": "3d6b22e3-11a4-4d88-9c21-2e3f4a5b6c7d",
+      "file_id": "f0000000-11a4-4d88-9c21-2e3f4a5b6c7d",
+      "slug": "template-lookbook-thoi-trang-local",
+      "name": "Template Lookbook Thời Trang Shop Nhỏ",
+      "short_description": "Giao diện trưng bày bộ sưu tập quần áo kèm bảng size trực quan và nút đặt hàng nhanh.",
+      "description": "Thiết kế dành cho shop thời trang nữ/unisex bán trên Instagram, Facebook và Shopee. Hỗ trợ hiển thị ảnh lookbook theo mùa, bảng quy đổi size rõ ràng trên điện thoại và form giữ đơn nhanh cho khách xem live.",
+      "product_type": "template",
+      "industry": "Thời trang",
+      "price_vnd": 590000,
+      "demo_url": "/products/template-lookbook-thoi-trang-local",
+      "thumbnail_url": null,
+      "source_type": "original",
+      "license_note": "Mã nguồn thiết kế gốc bởi nhóm tác giả, hỗ trợ tùy biến màu sắc theo nhận diện shop.",
+      "specs": {
+        "target_shop_size": "1-5 người",
+        "platforms": ["Instagram", "Facebook", "Shopee"],
+        "deliverables": [
+          "Template Lookbook + Bảng size responsive theo chiều cao cân nặng",
+          "Form giữ đơn nhanh gắn link Shopee/Instagram",
+          "Bộ banner kích thước chuẩn mạng xã hội"
+        ],
+        "tech_stack": ["HTML5", "CSS3", "TypeScript"],
+        "setup_time_minutes": 40,
+        "guide_summary": "Cập nhật bộ ảnh lookbook theo mùa và thông số size S/M/L để khách tự đối chiếu trước khi đặt."
+      },
+      "deliverable_file": {
+        "file_name": "template-lookbook-thoi-trang-local-v1.0.0.json",
+        "storage_bucket": "product-deliverables",
+        "storage_path": "deliverables/template-lookbook-thoi-trang-local/bundle-v1.0.0.json",
+        "file_size_bytes": 52100,
+        "mime_type": "application/json",
+        "version": "1.0.0"
+      },
+      "is_active": true,
+      "is_simulated": false
+    },
+    {
+      "id": "a1b2c3d4-1007-4107-8107-1c4f9b012a07",
+      "file_id": "f0000000-1007-4107-8107-1c4f9b012a07",
+      "slug": "template-landing-livestream-thoi-trang",
+      "name": "Template Landing Page Flash Sale & Livestream Thời Trang",
+      "short_description": "Trang gom đơn nhanh theo mã sản phẩm khi livestream TikTok/Facebook, tối ưu chọn màu & size trên di động.",
+      "description": "Mẫu landing page chuyên dụng cho các shop thời trang bán qua phiên livestream hoặc xả kho cuối tuần. Hiển thị mã số sản phẩm theo thứ tự live, bộ đếm giữ giá ưu đãi, chọn nhanh biến thể màu/size và chuyển tiếp về giỏ hàng sàn hoặc inbox.",
+      "product_type": "template",
+      "industry": "Thời trang",
+      "price_vnd": 550000,
+      "demo_url": "/products/template-landing-livestream-thoi-trang",
+      "thumbnail_url": null,
+      "source_type": "adapted",
+      "license_note": "Chuyển thể từ khung layout bán hàng mở nội bộ, tối ưu lại luồng gom đơn theo mã live cho shop thời trang Việt Nam.",
+      "specs": {
+        "target_shop_size": "1-3 người",
+        "platforms": ["TikTok Shop", "Facebook", "Shopee"],
+        "deliverables": [
+          "Trang danh sách mã live tìm kiếm tức thì theo mã #A01, #A02",
+          "Khối bộ đếm khung giờ Flash Sale & bảng chọn size/màu",
+          "Tài liệu hướng dẫn gắn link giỏ hàng trước giờ lên live"
+        ],
+        "tech_stack": ["HTML5", "CSS3", "Next.js"],
+        "setup_time_minutes": 30,
+        "guide_summary": "Nhập danh sách mã hàng live vào file cấu hình JSON để ghim link trang gom đơn lên bình luận."
+      },
+      "deliverable_file": {
+        "file_name": "template-landing-livestream-thoi-trang-v1.0.0.json",
+        "storage_bucket": "product-deliverables",
+        "storage_path": "deliverables/template-landing-livestream-thoi-trang/bundle-v1.0.0.json",
+        "file_size_bytes": 46800,
+        "mime_type": "application/json",
+        "version": "1.0.0"
+      },
+      "is_active": true,
+      "is_simulated": false
+    },
+    {
+      "id": "d4e5f6a7-1010-4110-8110-4a5b6c7d8e10",
+      "file_id": "f0000000-1010-4110-8110-4a5b6c7d8e10",
+      "slug": "prompt-pack-phoi-do-livestream-thoi-trang",
+      "name": "Prompt Pack Phối Đồ, Tư Vấn Size & Kịch Bản Live Thời Trang",
+      "short_description": "55 prompt gợi ý mix-match theo dáng người, tư vấn size giảm hoàn hàng và kịch bản dẫn livestream 60s.",
+      "description": "Bộ prompt dành cho chủ shop quần áo bận rộn bán trên Instagram, Facebook, TikTok Shop và Shopee. Hỗ trợ viết caption lookbook tự nhiên, trả lời nhanh câu hỏi chọn size theo số đo để hạn chế đổi trả, gợi ý phối thêm phụ kiện tăng giá trị đơn và soạn sườn nói chuyện khi live.",
+      "product_type": "prompt_pack",
+      "industry": "Thời trang",
+      "price_vnd": 320000,
+      "demo_url": null,
+      "thumbnail_url": null,
+      "source_type": "original",
+      "license_note": "Biên soạn gốc bởi nhóm nội dung, cấp quyền sử dụng lâu dài cho mọi kênh bán hàng của 1 thương hiệu thời trang.",
+      "specs": {
+        "target_shop_size": "1-3 người",
+        "platforms": ["TikTok Shop", "Instagram", "Facebook", "Shopee"],
+        "deliverables": [
+          "55 prompt chia 4 nhóm: Caption Lookbook, Tư vấn size, Mix-match, Kịch bản Live",
+          "Bảng mẫu phản hồi khách hỏi chất vải và chính sách đổi size",
+          "Checklist chuẩn bị nội dung trước phiên livestream 30 phút"
+        ],
+        "tech_stack": ["Notion", "Markdown", "PDF"],
+        "setup_time_minutes": 15,
+        "guide_summary": "Chọn nhóm prompt tương ứng (đăng bài mới hoặc rep inbox chọn size) rồi điền thông số chất liệu, form dáng."
+      },
+      "deliverable_file": {
+        "file_name": "prompt-pack-phoi-do-livestream-thoi-trang-v1.0.0.json",
+        "storage_bucket": "product-deliverables",
+        "storage_path": "deliverables/prompt-pack-phoi-do-livestream-thoi-trang/bundle-v1.0.0.json",
+        "file_size_bytes": 31500,
+        "mime_type": "application/json",
+        "version": "1.0.0"
+      },
+      "is_active": true,
+      "is_simulated": false
+    },
+    {
+      "id": "4e7c33f4-22b5-4e99-ad32-3f4a5b6c7d8e",
+      "file_id": "f0000000-22b5-4e99-ad32-3f4a5b6c7d8e",
+      "slug": "template-menu-dat-mon-fnb-mini",
+      "name": "Template Menu & Đặt Món Nhanh Quán F&B Nhỏ",
+      "short_description": "Trang menu điện tử quét QR, chọn topping và gửi đơn chốt nhanh qua Zalo/Messenger.",
+      "description": "Giải pháp gọn nhẹ cho quán đồ uống, tiệm bánh online hoặc bếp nhà làm quy mô 1–3 người. Khách hàng chọn món, ghi chú độ ngọt/đá trên điện thoại và gửi tóm tắt đơn thẳng về kênh chat của chủ quán.",
+      "product_type": "template",
+      "industry": "F&B",
+      "price_vnd": 450000,
+      "demo_url": "/products/template-menu-dat-mon-fnb-mini",
+      "thumbnail_url": null,
+      "source_type": "adapted",
+      "license_note": "Chuyển thể và tối ưu lại từ cấu trúc giao diện mở nội bộ, cấp phép sử dụng cho 1 chi nhánh.",
+      "specs": {
+        "target_shop_size": "1-3 người",
+        "platforms": ["Zalo", "Facebook", "QR tại quán"],
+        "deliverables": [
+          "Trang Menu tương tác + giỏ hàng mini chọn topping, độ ngọt/đá",
+          "Nút xuất tóm tắt đơn 1 chạm gửi qua Zalo/Messenger",
+          "File QR code mẫu đặt tại quầy & bàn uống nước"
+        ],
+        "tech_stack": ["HTML5", "CSS3", "JavaScript"],
+        "setup_time_minutes": 25,
+        "guide_summary": "Điền danh sách món, giá topping và link Zalo OA/số Zalo quán rồi in mã QR đặt tại bàn."
+      },
+      "deliverable_file": {
+        "file_name": "template-menu-dat-mon-fnb-mini-v1.0.0.json",
+        "storage_bucket": "product-deliverables",
+        "storage_path": "deliverables/template-menu-dat-mon-fnb-mini/bundle-v1.0.0.json",
+        "file_size_bytes": 39400,
+        "mime_type": "application/json",
+        "version": "1.0.0"
+      },
+      "is_active": true,
+      "is_simulated": false
+    },
+    {
+      "id": "b2c3d4e5-1008-4108-8108-2e3f4a5b6c08",
+      "file_id": "f0000000-1008-4108-8108-2e3f4a5b6c08",
+      "slug": "template-dat-combo-tiem-banh-fnb",
+      "name": "Template Website Đặt Combo Tiệm Bánh & Quà Tặng F&B",
+      "short_description": "Mẫu web đặt hộp bánh, set trà chiều có chọn khung giờ giao hẹn trước và nhập lời chúc trên thiệp.",
+      "description": "Thiết kế tối ưu cho tiệm bánh thủ công, bếp đồ ăn vặt và cửa hàng set quà F&B bán theo đơn đặt trước (pre-order). Cho phép khách chọn combo vị bánh, khung giờ nhận trong ngày, nhập nội dung thiệp tặng và gửi xác nhận về Zalo/Messenger của tiệm.",
+      "product_type": "template",
+      "industry": "F&B",
+      "price_vnd": 520000,
+      "demo_url": "/products/template-dat-combo-tiem-banh-fnb",
+      "thumbnail_url": null,
+      "source_type": "licensed",
+      "license_note": "Sử dụng bộ UI kit và biểu tượng ẩm thực theo giấy phép thương mại mở rộng hợp lệ, luồng đặt combo và nội dung tiếng Việt do nhóm biên tập độc lập.",
+      "specs": {
+        "target_shop_size": "1-4 người",
+        "platforms": ["Zalo", "Facebook", "Instagram"],
+        "deliverables": [
+          "Template trang đặt combo theo khung giờ giao nhận",
+          "Form ghi chú thiệp chúc & dị ứng nguyên liệu",
+          "Bộ ảnh khung trình bày hộp quà chuẩn tỷ lệ 4:3"
+        ],
+        "tech_stack": ["HTML5", "CSS3", "TypeScript"],
+        "setup_time_minutes": 35,
+        "guide_summary": "Cài đặt khung giờ bếp giao hàng trong ngày và danh sách combo để khách đặt trước không bị trùng lịch."
+      },
+      "deliverable_file": {
+        "file_name": "template-dat-combo-tiem-banh-fnb-v1.0.0.json",
+        "storage_bucket": "product-deliverables",
+        "storage_path": "deliverables/template-dat-combo-tiem-banh-fnb/bundle-v1.0.0.json",
+        "file_size_bytes": 44700,
+        "mime_type": "application/json",
+        "version": "1.0.0"
+      },
+      "is_active": true,
+      "is_simulated": false
+    },
+    {
+      "id": "e5f6a7b8-1011-4111-8111-5b6c7d8e9f11",
+      "file_id": "f0000000-1011-4111-8111-5b6c7d8e9f11",
+      "slug": "prompt-pack-mo-ta-mon-fnb-review",
+      "name": "Prompt Pack Mô Tả Món Ăn & Kịch Bản Video Review F&B",
+      "short_description": "50 prompt viết thực đơn hấp dẫn cho ShopeeFood/Zalo, kịch bản clip pha chế 20s và mẫu trả lời đánh giá.",
+      "description": "Giúp chủ quán ăn, tiệm trà sữa, tiệm bánh online tự viết mô tả món ăn gợi vị giác chuẩn app giao đồ ăn, dựng video ngắn quay cảnh làm món tại quầy và phản hồi đánh giá 1–5 sao tinh tế để giữ điểm uy tín quán.",
+      "product_type": "prompt_pack",
+      "industry": "F&B",
+      "price_vnd": 260000,
+      "demo_url": null,
+      "thumbnail_url": null,
+      "source_type": "original",
+      "license_note": "Bộ prompt biên soạn gốc bởi nhóm nội dung, dùng không giới hạn cho các kênh bán hàng của 1 quán F&B.",
+      "specs": {
+        "target_shop_size": "1-3 người",
+        "platforms": ["ShopeeFood", "TikTok", "Zalo", "Facebook"],
+        "deliverables": [
+          "50 prompt viết mô tả món & combo tăng giá trị giỏ hàng",
+          "15 kịch bản video quay món/pha chế 20–30 giây",
+          "20 mẫu phản hồi đánh giá khách hàng (khen và góp ý)"
+        ],
+        "tech_stack": ["Notion", "Markdown", "PDF"],
+        "setup_time_minutes": 10,
+        "guide_summary": "Nhập tên món, nguyên liệu đặc trưng và mức giá combo để tạo ngay mô tả chuẩn app giao đồ ăn."
+      },
+      "deliverable_file": {
+        "file_name": "prompt-pack-mo-ta-mon-fnb-review-v1.0.0.json",
+        "storage_bucket": "product-deliverables",
+        "storage_path": "deliverables/prompt-pack-mo-ta-mon-fnb-review/bundle-v1.0.0.json",
+        "file_size_bytes": 28600,
+        "mime_type": "application/json",
+        "version": "1.0.0"
+      },
+      "is_active": true,
+      "is_simulated": false
+    },
+    {
+      "id": "c3d4e5f6-1009-4109-8109-3f4a5b6c7d09",
+      "file_id": "f0000000-1009-4109-8109-3f4a5b6c7d09",
+      "slug": "template-bio-link-cua-hang-mini-da-kenh",
+      "name": "Template Trang Bio Link & Cửa Hàng Mini Đa Kênh",
+      "short_description": "Trang tổng hợp link Shopee, TikTok Shop, Zalo OA và 8–12 sản phẩm chủ lực gắn trên bio mạng xã hội.",
+      "description": "Phù hợp cho mọi chủ shop nhỏ bán cùng lúc nhiều kênh và cần một trang đích duy nhất gắn trên tiểu sử TikTok, Instagram, Facebook. Tải trang siêu nhẹ trên 4G, hiển thị mã giảm giá theo sàn và dẫn khách sang đúng kênh đặt mua quen thuộc.",
+      "product_type": "template",
+      "industry": "Đa ngành",
+      "price_vnd": 390000,
+      "demo_url": "/products/template-bio-link-cua-hang-mini-da-kenh",
+      "thumbnail_url": null,
+      "source_type": "licensed",
+      "license_note": "Sử dụng bộ icon và font cấp phép thương mại hợp lệ; cấu trúc trang Bio Link & cửa hàng mini được nhóm đóng gói chuẩn hóa cho shop Việt Nam.",
+      "specs": {
+        "target_shop_size": "1-3 người",
+        "platforms": ["TikTok Shop", "Shopee", "Zalo", "Instagram"],
+        "deliverables": [
+          "Trang Bio Link + Danh mục 12 sản phẩm chủ lực tối ưu di động",
+          "Nút điều hướng đa sàn kèm sao chép nhanh voucher",
+          "Hướng dẫn xuất bản miễn phí lên Vercel/Netlify trong 20 phút"
+        ],
+        "tech_stack": ["HTML5", "CSS3", "JavaScript"],
+        "setup_time_minutes": 20,
+        "guide_summary": "Gắn URL gian hàng Shopee, TikTok Shop và Zalo OA vào file cấu hình rồi gắn link trang lên bio."
+      },
+      "deliverable_file": {
+        "file_name": "template-bio-link-cua-hang-mini-da-kenh-v1.0.0.json",
+        "storage_bucket": "product-deliverables",
+        "storage_path": "deliverables/template-bio-link-cua-hang-mini-da-kenh/bundle-v1.0.0.json",
+        "file_size_bytes": 35200,
+        "mime_type": "application/json",
+        "version": "1.0.0"
+      },
+      "is_active": true,
+      "is_simulated": false
+    },
+    {
+      "id": "5f8d44a5-33c6-4fa0-be43-4a5b6c7d8e9f",
+      "file_id": "f0000000-33c6-4fa0-be43-4a5b6c7d8e9f",
+      "slug": "prompt-pack-chot-don-da-kenh",
+      "name": "Prompt Pack Chăm Sóc Khách & Chốt Đơn Đa Kênh",
+      "short_description": "50 kịch bản phản hồi inbox, xử lý từ chối giá và nhắc đơn hoàn thành cho chủ shop bận rộn.",
+      "description": "Phù hợp cho mọi ngành hàng bán lẻ trên Shopee, TikTok Shop và Facebook. Giúp chủ shop soạn nhanh mẫu trả lời đồng nhất về phí ship, đổi trả, giữ chân khách cũ mà vẫn giữ giọng văn thân thiện tự nhiên.",
+      "product_type": "prompt_pack",
+      "industry": "Đa ngành",
+      "price_vnd": 250000,
+      "demo_url": null,
+      "thumbnail_url": null,
+      "source_type": "original",
+      "license_note": "Tài liệu biên soạn gốc bởi nhóm đề tài, kèm file Notion và PDF tải về.",
+      "specs": {
+        "target_shop_size": "1-3 người",
+        "platforms": ["Shopee", "TikTok Shop", "Facebook", "Zalo"],
+        "deliverables": [
+          "50 mẫu prompt trả lời khách theo ngữ cảnh (hỏi giá, phí ship, đổi trả)",
+          "Bảng mẫu tin nhắn nhanh (Quick Reply) cho giờ cao điểm",
+          "Kịch bản nhắn tin xin đánh giá tự nhiên sau giao hàng"
+        ],
+        "tech_stack": ["Notion", "Markdown", "PDF"],
+        "setup_time_minutes": 10,
+        "guide_summary": "Sao chép các mẫu Quick Reply vào bộ trả lời nhanh của Shopee/Facebook/Zalo để dùng ngay."
+      },
+      "deliverable_file": {
+        "file_name": "prompt-pack-chot-don-da-kenh-v1.0.0.json",
+        "storage_bucket": "product-deliverables",
+        "storage_path": "deliverables/prompt-pack-chot-don-da-kenh/bundle-v1.0.0.json",
+        "file_size_bytes": 26900,
+        "mime_type": "application/json",
+        "version": "1.0.0"
+      },
+      "is_active": true,
+      "is_simulated": false
+    },
+    {
+      "id": "6a9e55b6-44d7-40b1-cf54-5b6c7d8e9f01",
+      "file_id": "f0000000-44d7-40b1-cf54-5b6c7d8e9f01",
+      "slug": "workflow-dong-bo-don-hang-google-sheet",
+      "name": "Workflow Tự Động Ghi Đơn & Cảnh Báo Tồn Kho",
+      "short_description": "Luồng tự động hóa đồng bộ đơn mới về Google Sheets và gửi thông báo Telegram/Zalo trong 1 phút.",
+      "description": "Mẫu workflow n8n/Make đơn giản cho shop nhỏ không cần phần mềm ERP cồng kềnh. Tự động ghi nhận đơn hàng mới vào Google Sheets, tính doanh thu ngày và nhắn tin cảnh báo khi sản phẩm sắp hết hàng.",
+      "product_type": "workflow",
+      "industry": "Đa ngành",
+      "price_vnd": 690000,
+      "demo_url": null,
+      "thumbnail_url": null,
+      "source_type": "original",
+      "license_note": "Template workflow JSON do nhóm tự xây dựng, kèm hướng dẫn thiết lập từng bước.",
+      "specs": {
+        "target_shop_size": "1-5 người",
+        "platforms": ["Google Sheets", "Telegram", "Webhook"],
+        "deliverables": [
+          "File JSON workflow nhập 1 chạm vào n8n/Make",
+          "Mẫu Google Sheets quản lý đơn hàng, doanh thu ngày & tồn kho",
+          "Tài liệu nối Webhook và cài đặt cảnh báo hết hàng qua Telegram"
+        ],
+        "tech_stack": ["n8n / Make", "Google Sheets", "Telegram Bot"],
+        "setup_time_minutes": 45,
+        "guide_summary": "Import file JSON vào n8n/Make, chọn Google Sheets mẫu và dán Bot Token Telegram để chạy tự động."
+      },
+      "deliverable_file": {
+        "file_name": "workflow-dong-bo-don-hang-google-sheet-v1.0.0.json",
+        "storage_bucket": "product-deliverables",
+        "storage_path": "deliverables/workflow-dong-bo-don-hang-google-sheet/bundle-v1.0.0.json",
+        "file_size_bytes": 41200,
+        "mime_type": "application/json",
+        "version": "1.0.0"
+      },
+      "is_active": true,
+      "is_simulated": false
+    }
+  ]
+}

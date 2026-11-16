@@ -4,6 +4,13 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
+import {
+  ArrowRight,
+  CheckCircle2,
+  Download,
+  Lock,
+  ShoppingBag,
+} from '@/components/icons/DreamIcons';
 import { useAuth } from '@/components/providers/AuthProvider';
 import {
   formatVnd,
@@ -120,15 +127,21 @@ export default function CheckoutPage() {
       <div className="container">
         <div className="stepper" aria-label="Tiến trình giao dịch Sandbox">
           <div className="stepper__item stepper__item--done">
-            <span className="badge badge--success">1</span>
+            <span className="badge badge--success">
+              <ShoppingBag size={12} /> 1
+            </span>
             <span>Giỏ hàng</span>
           </div>
           <div className="stepper__item stepper__item--active">
-            <span className="badge badge--accent">2</span>
+            <span className="badge badge--accent">
+              <Lock size={12} /> 2
+            </span>
             <span>Thanh toán Sandbox</span>
           </div>
           <div className="stepper__item">
-            <span className="badge">3</span>
+            <span className="badge">
+              <Download size={12} /> 3
+            </span>
             <span>Nhận file qua token</span>
           </div>
         </div>
@@ -136,14 +149,14 @@ export default function CheckoutPage() {
         <div className="section-header" style={{ marginBottom: '24px' }}>
           <div className="section-header__copy">
             <span className="type-eyebrow">Cổng thanh toán thử nghiệm (F5)</span>
-            <h1 className="type-h1">Tạo đơn & Mô phỏng Mock Sandbox Webhook</h1>
+            <h1 className="type-h1">Tạo đơn &amp; Mô phỏng Mock Sandbox Webhook</h1>
             <p className="type-body-sm">
               Thanh toán Sandbox phục vụ đo ý định mua trong đồ án nghiên cứu,
               tuyệt đối không thu tiền thật.
             </p>
           </div>
           {!user && (
-            <Link href="/auth" className="btn btn--ghost btn--sm">
+            <Link href="/auth" className="btn btn--secondary btn--sm">
               Đăng nhập để gắn đơn vào tài khoản
             </Link>
           )}
@@ -169,7 +182,7 @@ export default function CheckoutPage() {
 
         {!orderCreated && cart.items.length === 0 ? (
           <div
-            className="surface-card"
+            className="surface-card dg-panel"
             style={{
               textAlign: 'center',
               paddingBlock: '48px',
@@ -182,14 +195,15 @@ export default function CheckoutPage() {
             <h2 className="type-h3" style={{ margin: 0 }}>
               Chưa có sản phẩm trong giỏ để tạo đơn Sandbox
             </h2>
-            <Link href="/products" className="btn btn--primary">
-              Quay lại chọn gói giải pháp
+            <Link href="/products" className="dg-btn-purchase">
+              <span>Quay lại chọn gói giải pháp</span>
+              <ArrowRight size={15} />
             </Link>
           </div>
         ) : (
           <div className="two-col-ops">
             {/* Left: Order Summary from Server */}
-            <div className="surface-card" style={{ display: 'grid', gap: '16px' }}>
+            <div className="surface-card dg-panel" style={{ display: 'grid', gap: '16px' }}>
               <div
                 style={{
                   display: 'flex',
@@ -255,7 +269,10 @@ export default function CheckoutPage() {
                 }}
               >
                 <strong>Tổng thanh toán (Server chốt)</strong>
-                <strong className="type-price" style={{ fontSize: '1.5rem' }}>
+                <strong
+                  className="type-price"
+                  style={{ fontSize: '1.5rem', color: 'var(--accent)' }}
+                >
                   {formatVnd(
                     orderCreated
                       ? orderCreated.order.total_vnd
@@ -267,19 +284,23 @@ export default function CheckoutPage() {
               {!orderCreated && (
                 <button
                   type="button"
-                  className="btn btn--primary btn--lg btn--block"
+                  className="dg-btn-purchase btn--block"
+                  style={{ justifyContent: 'center' }}
                   disabled={isCreating}
                   onClick={() => void handleCreateOrder()}
                 >
-                  {isCreating
-                    ? 'Đang tạo đơn hàng...'
-                    : 'Tạo đơn Sandbox & Mở cổng giả lập'}
+                  <span>
+                    {isCreating
+                      ? 'Đang tạo đơn hàng...'
+                      : 'Tạo đơn Sandbox & Mở cổng giả lập'}
+                  </span>
+                  <ArrowRight size={15} />
                 </button>
               )}
             </div>
 
             {/* Right: Mock Sandbox Webhook Panel */}
-            <aside className="surface-card" style={{ display: 'grid', gap: '16px' }}>
+            <aside className="surface-card dg-panel" style={{ display: 'grid', gap: '16px' }}>
               <span className="type-eyebrow">Mock Sandbox Webhook Panel</span>
               <h2 className="type-h3" style={{ margin: 0 }}>
                 Mô phỏng kết quả thanh toán
@@ -302,6 +323,7 @@ export default function CheckoutPage() {
                       padding: '14px',
                       borderRadius: 'var(--radius-md)',
                       backgroundColor: 'var(--bg-surface-subtle)',
+                      border: '1px solid var(--border-hairline)',
                     }}
                   >
                     <div
@@ -322,7 +344,7 @@ export default function CheckoutPage() {
                       }}
                     >
                       <span className="type-caption">Số tiền</span>
-                      <strong className="type-price">
+                      <strong className="type-price" style={{ color: 'var(--accent)' }}>
                         {formatVnd(orderCreated.payment_intent.amount_vnd)}
                       </strong>
                     </div>
@@ -348,13 +370,17 @@ export default function CheckoutPage() {
                   <div style={{ display: 'grid', gap: '10px' }}>
                     <button
                       type="button"
-                      className="btn btn--primary btn--lg btn--block"
+                      className="dg-btn-purchase btn--block"
+                      style={{ justifyContent: 'center' }}
                       disabled={isPaying}
                       onClick={() => void handleMockSandboxWebhook('paid')}
                     >
-                      {isPaying
-                        ? 'Đang gửi webhook...'
-                        : 'Giả lập Thanh toán Thành công (Paid)'}
+                      <CheckCircle2 size={16} />
+                      <span>
+                        {isPaying
+                          ? 'Đang gửi webhook...'
+                          : 'Giả lập Thanh toán Thành công (Paid)'}
+                      </span>
                     </button>
 
                     <button

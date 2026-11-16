@@ -38,12 +38,8 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
           applyThemeToDocument(stored);
           return;
         }
-        const prefersDark = window.matchMedia(
-          '(prefers-color-scheme: dark)'
-        ).matches;
-        const resolved: ThemeMode = prefersDark ? 'dark' : 'light';
-        setThemeState(resolved);
-        applyThemeToDocument(resolved);
+        setThemeState('light');
+        applyThemeToDocument('light');
       } catch {
         applyThemeToDocument('light');
       }

@@ -900,4 +900,83 @@ export class SupabaseDataStore implements DataStore {
       events: (eventsRes.data ?? []) as EventRecord[],
     };
   }
+
+  async getExportRawData(includeSimulated: boolean) {
+    let assignQ = this.client.from('experiment_assignments').select('*');
+    const scenariosQ = this.client
+      .from('scenarios')
+      .select('*')
+      .order('sort_order', { ascending: true });
+    let runsQ = this.client
+      .from('scenario_runs')
+      .select('*')
+      .order('created_at', { ascending: true });
+    let sessionsQ = this.client
+      .from('chat_sessions')
+      .select('*')
+      .is('deleted_at', null);
+    let msgsQ = this.client
+      .from('chat_messages')
+      .select('*')
+      .eq('role', 'assistant')
+      .is('deleted_at', null)
+      .order('created_at', { ascending: true });
+    let eventsQ = this.client
+      .from('events')
+      .select('*')
+      .order('created_at', { ascending: true });
+
+    if (!includeSimulated) {
+      assignQ = assignQ.eq('is_simulated', false);
+      runsQ = runsQ.eq('is_simulated', false);
+      sessionsQ = sessionsQ.eq('is_simulated', false);
+      msgsQ = msgsQ.eq('is_simulated', false);
+      eventsQ = eventsQ.eq('is_simulated', false);
+    }
+
+    const [
+      assignRes,
+      scenariosRes,
+      runsRes,
+      sessionsRes,
+      msgsRes,
+      eventsRes,
+    ] = await Promise.all([
+      assignQ,
+      scenariosQ,
+      runsQ,
+      sessionsQ,
+      msgsQ,
+      eventsQ,
+    ]);
+
+    const firstError =
+      assignRes.error ??
+      scenariosRes.error ??
+      runsRes.error ??
+      sessionsRes.error ??
+      msgsRes.error ??
+      eventsRes.error;
+    if (firstError) {
+      throw new AppError(
+        'INTERNAL_ERROR',
+        'Không thể trích xuất dữ liệu phân tích từ cơ sở dữ liệu.',
+        500
+      );
+    }
+
+    return {
+      assignments: (assignRes.data ?? []) as ExperimentAssignmentRecord[],
+      scenarios: (scenariosRes.data ?? []) as ScenarioRecord[],
+      scenarioRuns: (runsRes.data ?? []) as ScenarioRunRecord[],
+      chatSessions: (sessionsRes.data ?? []) as ChatSessionRecord[],
+      assistantMessages: ((msgsRes.data ?? []) as ChatMessageRecord[]).map(
+        (m) => ({
+          ...m,
+          cost_usd: m.cost_usd !== null ? Number(m.cost_usd) : null,
+        })
+      ),
+      events: (eventsRes.data ?? []) as EventRecord[],
+    };
+  }
 }

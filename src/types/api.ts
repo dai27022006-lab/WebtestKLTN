@@ -503,3 +503,82 @@ export interface AdminDashboardSummaryDto {
     total_sandbox_value_vnd: number;
   };
 }
+
+export type AdminExportDataset = 'scenario_runs' | 'events' | 'rag_logs';
+
+export type AdminExportFormat = 'csv' | 'json';
+
+export interface AdminExportQuery {
+  dataset: AdminExportDataset;
+  format?: AdminExportFormat;
+  include_simulated?: boolean;
+}
+
+export interface AdminExportScenarioRunRow {
+  scenario_run_id: string;
+  assignment_id: string;
+  participant_code: string;
+  visitor_id: string;
+  assignment_variant: ExperimentVariant;
+  scenario_id: string;
+  scenario_code: string;
+  step_order: number;
+  active_variant: EventVariant;
+  selected_product_id: string | null;
+  is_correct: boolean | null;
+  confidence_score: 1 | 2 | 3 | 4 | 5 | null;
+  duration_seconds: number | null;
+  started_at: string;
+  completed_at: string | null;
+  role_in_study: string;
+  shop_industry: string;
+  is_simulated: boolean;
+}
+
+export interface AdminExportEventRow {
+  event_id: string;
+  assignment_id: string;
+  participant_code: string;
+  visitor_id: string;
+  variant: EventVariant;
+  event_name: EventName;
+  scenario_run_id: string | null;
+  session_id: string | null;
+  product_id: string | null;
+  properties_json: string;
+  is_simulated: boolean;
+  created_at: string;
+}
+
+export interface AdminExportRagLogRow {
+  message_id: string;
+  session_id: string;
+  assignment_id: string;
+  participant_code: string;
+  visitor_id: string;
+  scenario_run_id: string | null;
+  prompt_version: string;
+  model_name: string;
+  retrieved_count: number;
+  suggested_count: number;
+  retrieved_product_ids: string;
+  suggested_product_ids: string;
+  latency_ms: number | null;
+  tokens_used: number | null;
+  cost_usd: number | null;
+  is_simulated: boolean;
+  created_at: string;
+}
+
+export type AdminExportRow =
+  | AdminExportScenarioRunRow
+  | AdminExportEventRow
+  | AdminExportRagLogRow;
+
+export interface AdminExportJsonResponse {
+  dataset: AdminExportDataset;
+  include_simulated: boolean;
+  exported_at: string;
+  total_rows: number;
+  rows: AdminExportRow[];
+}

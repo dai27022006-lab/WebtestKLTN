@@ -1,8 +1,23 @@
 'use client';
 
 import Link from 'next/link';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
+import {
+  AlertTriangle,
+  BarChart3,
+  CheckCircle2,
+  Cpu,
+  Database,
+  Download,
+  FileCode2,
+  RefreshCw,
+  ShieldCheck,
+  ShoppingBag,
+  Sparkles,
+  Timer,
+  User,
+} from '@/components/icons/DreamIcons';
 import { useAuth } from '@/components/providers/AuthProvider';
 import {
   formatDateTimeVi,
@@ -10,8 +25,46 @@ import {
   ORDER_STATUS_META,
 } from '@/components/shared/formatters';
 import { EVENT_CATALOG, EVENT_NAMES } from '@/lib/tracking/events';
-import { adminGetDashboard, adminListOrders } from '@/services';
-import type { AdminDashboardSummaryDto, OrderDto } from '@/types/api';
+import {
+  adminExportDatasetJson,
+  adminGetDashboard,
+  adminGetExportCsvUrl,
+  adminListOrders,
+} from '@/services';
+import type {
+  AdminDashboardSummaryDto,
+  AdminExportDataset,
+  OrderDto,
+} from '@/types/api';
+
+const EXPORT_DATASETS: Array<{
+  dataset: AdminExportDataset;
+  title: string;
+  description: string;
+  usageTag: string;
+}> = [
+  {
+    dataset: 'scenario_runs',
+    title: 'Lượt chạy kịch bản A/B',
+    description:
+      'Số liệu paired AB/BA phục vụ kiểm định McNemar và Wilcoxon signed-rank — khớp script analyze_experiment.py.',
+    usageTag: 'McNemar • Wilcoxon',
+  },
+  {
+    dataset: 'events',
+    title: 'Nhật ký 14 sự kiện hành vi',
+    description:
+      'Toàn bộ 14 sự kiện chuẩn kèm participant_code, assignment_id, visitor_id cho phễu chuyển đổi & phân cụm K-Means.',
+    usageTag: 'Funnel • K-Means',
+  },
+  {
+    dataset: 'rag_logs',
+    title: 'Nhật ký Gemini RAG & Chi phí',
+    description:
+      'Prompt version, model, số ID gợi ý/truy xuất, độ trễ (ms), tokens và chi phí truy vấn cho Unit Economics.',
+    usageTag: 'Latency • Unit Economics',
+  },
+];
 
 export default function AdminAnalyticsPage() {
   const { user, isLoading: isAuthLoading } = useAuth();
@@ -21,6 +74,23 @@ export default function AdminAnalyticsPage() {
   const [orders, setOrders] = useState<OrderDto[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [exportingByDataset, setExportingByDataset] = useState<
+    Record<AdminExportDataset, boolean>
+  >({
+    scenario_runs: false,
+    events: false,
+    rag_logs: false,
+  });
+  const [exportError, setExportError] = useState<string | null>(null);
+  const [exportFeedback, setExportFeedback] = useState<string | null>(null);
+  const isMountedRef = useRef(true);
+
+  useEffect(() => {
+    isMountedRef.current = true;
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
 
   const loadAnalytics = useCallback(
     async (simFlag: boolean, signal?: AbortSignal) => {
@@ -63,6 +133,91 @@ export default function AdminAnalyticsPage() {
     };
   }, [isAuthLoading, user, includeSimulated, loadAnalytics]);
 
+  const handleToggleSimulated = (nextValue: boolean) => {
+    setIncludeSimulated(nextValue);
+    setExportError(null);
+    setExportFeedback(null);
+  };
+
+  const handleExportJson = async (dataset: AdminExportDataset) => {
+    if (exportingByDataset[dataset]) return;
+
+    setExportError(null);
+    setExportFeedback(null);
+    setExportingByDataset((prev) => ({ ...prev, [dataset]: true }));
+
+    let objectUrl: string | null = null;
+    try {
+      const res = await adminExportDatasetJson({
+        dataset,
+        include_simulated: includeSimulated,
+      });
+
+      if (!isMountedRef.current) return;
+
+      if (!res.ok) {
+        setExportError(
+          res.error?.message || 'Không thể xuất dữ liệu JSON ẩn danh.'
+        );
+        return;
+      }
+
+      if (
+        !res.data ||
+        !Array.isArray(res.data.rows) ||
+        typeof window === 'undefined' ||
+        typeof document === 'undefined' ||
+        typeof URL === 'undefined' ||
+        typeof URL.createObjectURL !== 'function'
+      ) {
+        setExportError(
+          'Trình duyệt hoặc dữ liệu phản hồi không hỗ trợ tạo tệp JSON.'
+        );
+        return;
+      }
+
+      const jsonPayload = JSON.stringify(res.data, null, 2);
+      const blob = new Blob([jsonPayload], {
+        type: 'application/json;charset=utf-8',
+      });
+      objectUrl = URL.createObjectURL(blob);
+
+      const dateTag = (
+        res.data.exported_at || new Date().toISOString()
+      ).slice(0, 10);
+      const simSuffix = res.data.include_simulated ? 'with-sim' : 'real-only';
+      const filename = `dsa-${dataset}-${simSuffix}-${dateTag}.json`;
+
+      const link = document.createElement('a');
+      link.href = objectUrl;
+      link.download = filename;
+      link.rel = 'noopener';
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+
+      setExportFeedback(
+        `Đã tải xuống ${filename} (${res.data.total_rows} bản ghi ẩn danh, 0 PII).`
+      );
+    } catch {
+      if (isMountedRef.current) {
+        setExportError(
+          'Không thể tạo tệp JSON để tải xuống. Vui lòng thử lại.'
+        );
+      }
+    } finally {
+      if (objectUrl && typeof URL.revokeObjectURL === 'function') {
+        const urlToRevoke = objectUrl;
+        window.setTimeout(() => {
+          URL.revokeObjectURL(urlToRevoke);
+        }, 1000);
+      }
+      if (isMountedRef.current) {
+        setExportingByDataset((prev) => ({ ...prev, [dataset]: false }));
+      }
+    }
+  };
+
   if (isAuthLoading) {
     return (
       <section className="section section--compact">
@@ -77,8 +232,8 @@ export default function AdminAnalyticsPage() {
     return (
       <section className="section section--compact">
         <div className="container container--narrow">
-          <div className="surface-card" style={{ display: 'grid', gap: '14px' }}>
-            <span className="type-eyebrow">Khu vực Quản trị (F10)</span>
+          <div className="surface-card dg-panel" style={{ display: 'grid', gap: '14px' }}>
+            <span className="type-eyebrow">Khu vực Quản trị DreamTeam (F10)</span>
             <h1 className="type-h2" style={{ margin: 0 }}>
               Yêu cầu đăng nhập tài khoản Admin
             </h1>
@@ -88,7 +243,7 @@ export default function AdminAnalyticsPage() {
               (tài khoản demo: <code className="type-mono">admin@digitalstore.local</code>).
             </p>
             <div>
-              <Link href="/auth" className="btn btn--primary">
+              <Link href="/auth" className="dg-btn-purchase">
                 Đi tới trang Đăng nhập
               </Link>
             </div>
@@ -103,46 +258,92 @@ export default function AdminAnalyticsPage() {
     (name) => EVENT_CATALOG[name].chatOnly
   );
 
+  const consentRate =
+    summary && summary.total_participants > 0
+      ? Math.round(
+          (summary.consented_participants / summary.total_participants) * 100
+        )
+      : 0;
+
   return (
     <section className="section section--compact">
       <div className="container" style={{ display: 'grid', gap: '24px' }}>
-        <div className="section-header" style={{ marginBottom: 0 }}>
-          <div className="section-header__copy">
-            <span className="type-eyebrow">
-              Dashboard Phân tích & Tracking (F10)
-            </span>
-            <h1 className="type-h1">Đối chứng A/B, Chi phí RAG & Đơn Sandbox</h1>
-          </div>
+        {/* 1. DreamsCore Executive Hero Banner */}
+        <div className="dg-exec-banner dg-dark-band">
+          <div className="dg-exec-banner-grid" aria-hidden="true" />
+          <div className="dg-exec-banner-content">
+            <div className="dg-exec-banner-top">
+              <div>
+                <div className="dg-exec-pills">
+                  <span className="dg-exec-pill">
+                    <span className="dg-dot" />
+                    <span>Live Telemetry • F10</span>
+                  </span>
+                  <span className="dg-exec-pill">
+                    <Sparkles size={12} />
+                    <span>
+                      {includeSimulated
+                        ? 'Đang gộp is_simulated = true'
+                        : 'Chỉ dữ liệu thật (is_simulated = false)'}
+                    </span>
+                  </span>
+                </div>
+                <h1>
+                  Bảng Điều Hành Phân Tích A/B &amp; Kinh Tế RAG — DreamTeam
+                </h1>
+                <p>
+                  Đối chứng trực tiếp hiệu quả nhánh <code className="type-mono">chatbot_on</code>{' '}
+                  so với <code className="type-mono">chatbot_off</code>, phễu 14 sự
+                  kiện và chi phí truy vấn Gemini RAG.
+                </p>
+              </div>
 
-          <div
-            className="chip-row"
-            role="group"
-            aria-label="Lọc dữ liệu mô phỏng"
-          >
-            <button
-              type="button"
-              className="chip"
-              aria-pressed={!includeSimulated}
-              onClick={() => setIncludeSimulated(false)}
-            >
-              Chỉ dữ liệu thật (is_simulated = false)
-            </button>
-            <button
-              type="button"
-              className="chip"
-              aria-pressed={includeSimulated}
-              onClick={() => setIncludeSimulated(true)}
-            >
-              Bao gồm dữ liệu mô phỏng
-            </button>
+              <div className="dg-exec-actions">
+                <button
+                  type="button"
+                  className="dg-exec-btn-light"
+                  onClick={() => void loadAnalytics(includeSimulated)}
+                  disabled={isLoading}
+                >
+                  <RefreshCw size={14} />
+                  <span>{isLoading ? 'Đang tải...' : 'Làm mới dữ liệu'}</span>
+                </button>
+              </div>
+            </div>
+
+            <div className="dg-exec-controls">
+              <div
+                className="dg-exec-segmented"
+                role="group"
+                aria-label="Lọc dữ liệu mô phỏng"
+              >
+                <button
+                  type="button"
+                  aria-pressed={!includeSimulated}
+                  className={!includeSimulated ? 'is-active' : ''}
+                  onClick={() => handleToggleSimulated(false)}
+                >
+                  Chỉ dữ liệu thật (is_simulated = false)
+                </button>
+                <button
+                  type="button"
+                  aria-pressed={includeSimulated}
+                  className={includeSimulated ? 'is-active' : ''}
+                  onClick={() => handleToggleSimulated(true)}
+                >
+                  Bao gồm dữ liệu mô phỏng
+                </button>
+              </div>
+            </div>
           </div>
         </div>
 
         {/* Mandatory Static Simulated Data Warning Banner */}
         {includeSimulated && (
           <div className="callout callout--warning" role="alert">
-            <strong>
-              ĐANG HIỂN THỊ DỮ LIỆU MÔ PHỎNG (is_simulated = true)
+            <strong style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+              <AlertTriangle size={16} />
+              <span>ĐANG HIỂN THỊ DỮ LIỆU MÔ PHỎNG (is_simulated = true)</span>
             </strong>
             <span>
               Tuyệt đối không dùng bộ số liệu mô phỏng này để kết luận báo cáo
@@ -163,60 +364,131 @@ export default function AdminAnalyticsPage() {
               <div
                 key={i}
                 className="skeleton-box"
-                style={{ height: '120px' }}
+                style={{ height: '160px' }}
               />
             ))}
           </div>
         ) : (
           <>
-            {/* 1. KPI Summary */}
+            {/* 2. 4 Executive KPI Cards (DreamsCore Dashboard Pattern) */}
             <div className="kpi-grid">
-              <div className="surface-card" style={{ display: 'grid', gap: '6px' }}>
-                <span className="type-caption">Tổng người tham gia</span>
-                <strong className="type-mono" style={{ fontSize: '2rem' }}>
+              <article className="dg-kpi-card dg-panel">
+                <div className="dg-kpi-top">
+                  <span className="dg-kpi-icon dg-grad-1">
+                    <User size={18} />
+                  </span>
+                  <span className="badge badge--accent type-mono">
+                    {consentRate}% Consent
+                  </span>
+                </div>
+                <span className="dg-kpi-label">Tổng người tham gia</span>
+                <strong className="dg-kpi-value type-mono">
                   {summary.total_participants}
                 </strong>
-                <span className="type-caption">
-                  Đã đồng ý (Consent): {summary.consented_participants}
-                </span>
-              </div>
+                <ul className="dg-kpi-meta">
+                  <li>
+                    <span>Đã đồng ý (Consent)</span>
+                    <strong className="type-mono">
+                      {summary.consented_participants}
+                    </strong>
+                  </li>
+                  <li>
+                    <span>Nguồn dữ liệu</span>
+                    <strong className="type-mono">
+                      {summary.include_simulated ? 'Thật + Mẫu' : 'Thật 100%'}
+                    </strong>
+                  </li>
+                </ul>
+              </article>
 
-              <div className="surface-card" style={{ display: 'grid', gap: '6px' }}>
-                <span className="type-caption">Lượt kịch bản hoàn thành</span>
-                <strong className="type-mono" style={{ fontSize: '2rem' }}>
+              <article className="dg-kpi-card dg-panel">
+                <div className="dg-kpi-top">
+                  <span className="dg-kpi-icon dg-grad-2">
+                    <Timer size={18} />
+                  </span>
+                  <span className="badge badge--success">AB / BA</span>
+                </div>
+                <span className="dg-kpi-label">Lượt hoàn thành F11</span>
+                <strong className="dg-kpi-value type-mono">
                   {summary.total_completed_runs}
                 </strong>
-                <span className="type-caption">Từ bảng scenario_runs</span>
-              </div>
+                <ul className="dg-kpi-meta">
+                  <li>
+                    <span>Bảng ghi nhận</span>
+                    <strong className="type-mono">scenario_runs</strong>
+                  </li>
+                  <li>
+                    <span>Phương pháp</span>
+                    <strong>Within-subject</strong>
+                  </li>
+                </ul>
+              </article>
 
-              <div className="surface-card" style={{ display: 'grid', gap: '6px' }}>
-                <span className="type-caption">Ý định mua Sandbox (Paid)</span>
-                <strong className="type-mono" style={{ fontSize: '2rem' }}>
+              <article className="dg-kpi-card dg-panel">
+                <div className="dg-kpi-top">
+                  <span className="dg-kpi-icon dg-grad-3">
+                    <ShoppingBag size={18} />
+                  </span>
+                  <span className="badge badge--info">Sandbox F5</span>
+                </div>
+                <span className="dg-kpi-label">Ý định mua Sandbox (Paid)</span>
+                <strong className="dg-kpi-value type-mono">
                   {summary.orders_summary.paid_orders} /{' '}
                   {summary.orders_summary.total_orders}
                 </strong>
-                <span className="type-caption">
-                  Giá trị sandbox:{' '}
-                  {formatVnd(summary.orders_summary.total_sandbox_value_vnd)}
-                </span>
-              </div>
+                <ul className="dg-kpi-meta">
+                  <li>
+                    <span>Tổng giá trị ý định</span>
+                    <strong className="type-price">
+                      {formatVnd(summary.orders_summary.total_sandbox_value_vnd)}
+                    </strong>
+                  </li>
+                  <li>
+                    <span>Cổng giả lập</span>
+                    <strong className="type-mono">mock_sandbox</strong>
+                  </li>
+                </ul>
+              </article>
 
-              <div className="surface-card" style={{ display: 'grid', gap: '6px' }}>
-                <span className="type-caption">Tổng chi phí LLM / RAG</span>
-                <strong className="type-mono" style={{ fontSize: '2rem' }}>
+              <article className="dg-kpi-card dg-panel">
+                <div className="dg-kpi-top">
+                  <span className="dg-kpi-icon dg-grad-4">
+                    <Cpu size={18} />
+                  </span>
+                  <span className="badge type-mono">
+                    P95 {summary.rag_metrics.p95_latency_ms}ms
+                  </span>
+                </div>
+                <span className="dg-kpi-label">Tổng chi phí LLM / RAG</span>
+                <strong className="dg-kpi-value type-mono">
                   ${summary.rag_metrics.total_cost_usd.toFixed(4)}
                 </strong>
-                <span className="type-caption">
-                  P95 độ trễ: {summary.rag_metrics.p95_latency_ms} ms
-                </span>
-              </div>
+                <ul className="dg-kpi-meta">
+                  <li>
+                    <span>Cost / Query TB</span>
+                    <strong className="type-mono">
+                      ${summary.rag_metrics.avg_cost_per_message_usd.toFixed(6)}
+                    </strong>
+                  </li>
+                  <li>
+                    <span>Tổng tokens</span>
+                    <strong className="type-mono">
+                      {summary.rag_metrics.total_tokens_used}
+                    </strong>
+                  </li>
+                </ul>
+              </article>
             </div>
 
-            {/* 2. A/B Variant Comparison Table */}
-            <div className="surface-card" style={{ display: 'grid', gap: '14px' }}>
-              <h2 className="type-h3" style={{ margin: 0 }}>
-                So sánh hiệu quả hai nhánh: chatbot_on vs chatbot_off
-              </h2>
+            {/* 3. A/B Variant Comparison Table */}
+            <div className="surface-card dg-panel" style={{ display: 'grid', gap: '14px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '10px' }}>
+                <h2 className="type-h3" style={{ margin: 0, display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+                  <BarChart3 size={18} style={{ color: 'var(--accent)' }} />
+                  <span>So sánh hiệu quả hai nhánh: chatbot_on vs chatbot_off</span>
+                </h2>
+                <span className="badge">Đơn vị đo: scenario_runs</span>
+              </div>
               <div className="data-table-wrap">
                 <table className="data-table">
                   <thead>
@@ -246,7 +518,7 @@ export default function AdminAnalyticsPage() {
                         </td>
                         <td className="type-mono">{row.completed_runs}</td>
                         <td className="type-mono">{row.correct_runs}</td>
-                        <td className="type-mono">
+                        <td className="type-mono" style={{ fontWeight: 700, color: 'var(--accent)' }}>
                           {(row.accuracy_rate * 100).toFixed(1)}%
                         </td>
                         <td className="type-mono">
@@ -265,9 +537,9 @@ export default function AdminAnalyticsPage() {
               </div>
             </div>
 
-            {/* 3. RAG Metrics & 14-Event Funnel Matrix */}
+            {/* 4. RAG Metrics & 14-Event Funnel Matrix */}
             <div className="two-col-ops">
-              <div className="surface-card" style={{ display: 'grid', gap: '14px' }}>
+              <div className="surface-card dg-panel" style={{ display: 'grid', gap: '14px' }}>
                 <h2 className="type-h3" style={{ margin: 0 }}>
                   Phễu 14 sự kiện chuẩn (Tracking Spec)
                 </h2>
@@ -313,9 +585,10 @@ export default function AdminAnalyticsPage() {
                 </div>
               </div>
 
-              <div className="surface-card" style={{ display: 'grid', gap: '14px' }}>
-                <h2 className="type-h3" style={{ margin: 0 }}>
-                  Hiệu năng & Kinh tế đơn vị Chatbot
+              <div className="surface-card dg-panel" style={{ display: 'grid', gap: '14px' }}>
+                <h2 className="type-h3" style={{ margin: 0, display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+                  <CheckCircle2 size={18} style={{ color: 'var(--accent)' }} />
+                  <span>Hiệu năng &amp; Kinh tế đơn vị Chatbot</span>
                 </h2>
                 <div className="data-table-wrap">
                   <table className="data-table">
@@ -356,8 +629,166 @@ export default function AdminAnalyticsPage() {
               </div>
             </div>
 
-            {/* 4. Recent Orders Table */}
-            <div className="surface-card" style={{ display: 'grid', gap: '14px' }}>
+            {/* 5. Anonymized Research Dataset Export (CSV / JSON) */}
+            <div className="surface-card dg-panel" style={{ display: 'grid', gap: '16px' }}>
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'flex-start',
+                  justifyContent: 'space-between',
+                  flexWrap: 'wrap',
+                  gap: '12px',
+                }}
+              >
+                <div style={{ display: 'grid', gap: '4px' }}>
+                  <h2
+                    className="type-h3"
+                    style={{
+                      margin: 0,
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '8px',
+                    }}
+                  >
+                    <Database size={18} style={{ color: 'var(--accent)' }} />
+                    <span>Xuất Dữ liệu Nghiên cứu Ẩn danh (CSV / JSON)</span>
+                  </h2>
+                  <p className="type-body-sm" style={{ margin: 0 }}>
+                    0 PII — chỉ xuất{' '}
+                    <code className="type-mono">participant_code</code>,{' '}
+                    <code className="type-mono">assignment_id</code>,{' '}
+                    <code className="type-mono">visitor_id</code>; tự động loại
+                    bỏ email, họ tên và khóa phiên.
+                  </p>
+                </div>
+
+                <div className="chip-row">
+                  <span className="badge badge--accent">
+                    <ShieldCheck size={13} />
+                    <span>0 PII • Ẩn danh nghiên cứu</span>
+                  </span>
+                  <span
+                    className={`badge ${
+                      includeSimulated ? 'badge--warning' : 'badge--success'
+                    }`}
+                  >
+                    {includeSimulated
+                      ? 'include_simulated = true (Có dữ liệu mẫu)'
+                      : 'include_simulated = false (Chỉ dữ liệu thật)'}
+                  </span>
+                </div>
+              </div>
+
+              {exportError && (
+                <div className="callout callout--danger" role="alert">
+                  <strong>Không thể xuất dữ liệu JSON</strong>
+                  <span>{exportError}</span>
+                </div>
+              )}
+
+              {exportFeedback && (
+                <div className="callout callout--success" role="status">
+                  <span>{exportFeedback}</span>
+                </div>
+              )}
+
+              <div
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns:
+                    'repeat(auto-fit, minmax(min(100%, 260px), 1fr))',
+                  gap: '16px',
+                }}
+              >
+                {EXPORT_DATASETS.map((item) => {
+                  const isExporting = Boolean(exportingByDataset[item.dataset]);
+                  const csvUrl = adminGetExportCsvUrl({
+                    dataset: item.dataset,
+                    include_simulated: includeSimulated,
+                  });
+
+                  return (
+                    <article
+                      key={item.dataset}
+                      style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: '12px',
+                        padding: '16px',
+                        borderRadius: 'var(--radius-md)',
+                        border: '1px solid var(--border-hairline)',
+                        backgroundColor: 'var(--bg-surface-subtle)',
+                        minWidth: 0,
+                      }}
+                    >
+                      <div
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          flexWrap: 'wrap',
+                          gap: '8px',
+                        }}
+                      >
+                        <code className="badge type-mono">{item.dataset}</code>
+                        <span className="badge badge--info">
+                          {item.usageTag}
+                        </span>
+                      </div>
+
+                      <div style={{ display: 'grid', gap: '6px' }}>
+                        <h3
+                          style={{
+                            margin: 0,
+                            fontSize: '1rem',
+                            fontWeight: 700,
+                            color: 'var(--ink)',
+                          }}
+                        >
+                          {item.title}
+                        </h3>
+                        <p className="type-body-sm" style={{ margin: 0 }}>
+                          {item.description}
+                        </p>
+                      </div>
+
+                      <div
+                        style={{
+                          display: 'flex',
+                          flexWrap: 'wrap',
+                          gap: '8px',
+                          marginTop: 'auto',
+                          paddingTop: '4px',
+                        }}
+                      >
+                        <a
+                          href={csvUrl}
+                          download
+                          className="btn btn--secondary btn--sm"
+                        >
+                          <Download size={14} />
+                          <span>Tải CSV</span>
+                        </a>
+                        <button
+                          type="button"
+                          className="btn btn--primary btn--sm"
+                          disabled={isExporting}
+                          onClick={() => void handleExportJson(item.dataset)}
+                        >
+                          <FileCode2 size={14} />
+                          <span>
+                            {isExporting ? 'Đang xuất JSON...' : 'Tải JSON'}
+                          </span>
+                        </button>
+                      </div>
+                    </article>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* 6. Recent Orders Table */}
+            <div className="surface-card dg-panel" style={{ display: 'grid', gap: '14px' }}>
               <h2 className="type-h3" style={{ margin: 0 }}>
                 Đơn hàng Sandbox gần đây
               </h2>

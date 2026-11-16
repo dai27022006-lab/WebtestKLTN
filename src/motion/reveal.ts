@@ -40,7 +40,7 @@ export function initScrollReveals(root: Document | Element = document): () => vo
 
   for (const el of elements) {
     const rect = el.getBoundingClientRect();
-    if (rect.top <= window.innerHeight * 0.94) {
+    if (rect.top <= window.innerHeight * 0.95) {
       el.dataset.revealState = 'visible';
     } else {
       el.dataset.revealState = 'pending';

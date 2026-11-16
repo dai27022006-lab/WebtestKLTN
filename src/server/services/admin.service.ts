@@ -1,6 +1,7 @@
 import type { z } from 'zod';
 
 import type { EventVariant } from '@/lib/tracking/events';
+import type { adminExportQuerySchema } from '@/schemas/experiment';
 import type { adminOrderQuerySchema } from '@/schemas/order';
 import type {
   adminCreateProductSchema,
@@ -11,6 +12,12 @@ import { notFoundError } from '@/server/errors';
 import { getStore } from '@/server/store';
 import type {
   AdminDashboardSummaryDto,
+  AdminExportDataset,
+  AdminExportEventRow,
+  AdminExportJsonResponse,
+  AdminExportRagLogRow,
+  AdminExportRow,
+  AdminExportScenarioRunRow,
   OrderDto,
   PaginationMeta,
   ProductDetailDto,
@@ -24,6 +31,7 @@ type ProductListQueryParsed = z.infer<typeof productListQuerySchema>;
 type AdminCreateProductParsed = z.infer<typeof adminCreateProductSchema>;
 type AdminUpdateProductParsed = z.infer<typeof adminUpdateProductSchema>;
 type AdminOrderQueryParsed = z.infer<typeof adminOrderQuerySchema>;
+type AdminExportQueryParsed = z.infer<typeof adminExportQuerySchema>;
 
 export async function adminListProducts(
   query: ProductListQueryParsed
@@ -243,5 +251,242 @@ export async function getAdminDashboardSummary(
       paid_orders: paidOrders.length,
       total_sandbox_value_vnd: totalSandboxValue,
     },
+  };
+}
+
+const PII_PROPERTY_KEYS = new Set([
+  'email',
+  'full_name',
+  'password',
+  'password_hash',
+  'phone',
+  'token',
+  'session_token',
+  'session_token_hash',
+]);
+
+function sanitizePropertiesForExport(
+  props: Record<string, unknown>
+): Record<string, unknown> {
+  const clean: Record<string, unknown> = {};
+  for (const [key, value] of Object.entries(props)) {
+    if (PII_PROPERTY_KEYS.has(key.toLowerCase())) {
+      continue;
+    }
+    clean[key] = value;
+  }
+  return clean;
+}
+
+const CSV_COLUMNS_BY_DATASET: Record<AdminExportDataset, string[]> = {
+  scenario_runs: [
+    'scenario_run_id',
+    'assignment_id',
+    'participant_code',
+    'visitor_id',
+    'assignment_variant',
+    'scenario_id',
+    'scenario_code',
+    'step_order',
+    'active_variant',
+    'selected_product_id',
+    'is_correct',
+    'confidence_score',
+    'duration_seconds',
+    'started_at',
+    'completed_at',
+    'role_in_study',
+    'shop_industry',
+    'is_simulated',
+  ],
+  events: [
+    'event_id',
+    'assignment_id',
+    'participant_code',
+    'visitor_id',
+    'variant',
+    'event_name',
+    'scenario_run_id',
+    'session_id',
+    'product_id',
+    'properties_json',
+    'is_simulated',
+    'created_at',
+  ],
+  rag_logs: [
+    'message_id',
+    'session_id',
+    'assignment_id',
+    'participant_code',
+    'visitor_id',
+    'scenario_run_id',
+    'prompt_version',
+    'model_name',
+    'retrieved_count',
+    'suggested_count',
+    'retrieved_product_ids',
+    'suggested_product_ids',
+    'latency_ms',
+    'tokens_used',
+    'cost_usd',
+    'is_simulated',
+    'created_at',
+  ],
+};
+
+function escapeCsvCell(value: unknown): string {
+  if (value === null || value === undefined) {
+    return '';
+  }
+
+  let str = typeof value === 'string' ? value : String(value);
+  if (
+    typeof value === 'string' &&
+    /^[=+\-@\t\r]/.test(str) &&
+    !/^-?\d+(?:\.\d+)?$/.test(str)
+  ) {
+    str = `'${str}`;
+  }
+
+  if (/[",\n\r]/.test(str)) {
+    return `"${str.replace(/"/g, '""')}"`;
+  }
+  return str;
+}
+
+function serializeRowsToCsv(
+  dataset: AdminExportDataset,
+  rows: AdminExportRow[]
+): string {
+  const columns = CSV_COLUMNS_BY_DATASET[dataset];
+  const headerLine = columns.join(',');
+  const dataLines = rows.map((row) => {
+    const record = row as unknown as Record<string, unknown>;
+    return columns.map((col) => escapeCsvCell(record[col])).join(',');
+  });
+  return `\uFEFF${[headerLine, ...dataLines].join('\r\n')}\r\n`;
+}
+
+export async function exportAdminDataset(
+  query: AdminExportQueryParsed
+): Promise<{
+  jsonPayload: AdminExportJsonResponse;
+  csvContent: string;
+  filename: string;
+}> {
+  const store = getStore();
+  const raw = await store.getExportRawData(query.include_simulated);
+
+  const assignmentMap = new Map(raw.assignments.map((a) => [a.id, a]));
+  const scenarioMap = new Map(raw.scenarios.map((s) => [s.id, s]));
+  const sessionMap = new Map(raw.chatSessions.map((s) => [s.id, s]));
+
+  let rows: AdminExportRow[] = [];
+
+  if (query.dataset === 'scenario_runs') {
+    const scenarioRows: AdminExportScenarioRunRow[] = raw.scenarioRuns.map(
+      (run) => {
+        const assignment = assignmentMap.get(run.assignment_id);
+        const scenario = scenarioMap.get(run.scenario_id);
+        const durationSeconds =
+          run.completed_at !== null
+            ? Math.max(
+                0,
+                roundTo(
+                  (new Date(run.completed_at).getTime() -
+                    new Date(run.started_at).getTime()) /
+                    1000,
+                  2
+                )
+              )
+            : null;
+
+        return {
+          scenario_run_id: run.id,
+          assignment_id: run.assignment_id,
+          participant_code: assignment?.participant_code ?? '',
+          visitor_id: assignment?.visitor_id ?? '',
+          assignment_variant: assignment?.variant ?? run.active_variant,
+          scenario_id: run.scenario_id,
+          scenario_code: scenario?.code ?? '',
+          step_order: run.step_order,
+          active_variant: run.active_variant,
+          selected_product_id: run.selected_product_id,
+          is_correct: run.is_correct,
+          confidence_score: run.confidence_score,
+          duration_seconds: durationSeconds,
+          started_at: run.started_at,
+          completed_at: run.completed_at,
+          role_in_study: assignment?.shop_profile?.role_in_study ?? '',
+          shop_industry: assignment?.shop_profile?.industry ?? '',
+          is_simulated: run.is_simulated,
+        };
+      }
+    );
+    rows = scenarioRows;
+  } else if (query.dataset === 'events') {
+    const eventRows: AdminExportEventRow[] = raw.events.map((evt) => {
+      const assignment = assignmentMap.get(evt.assignment_id);
+      const cleanProps = sanitizePropertiesForExport(evt.properties ?? {});
+      return {
+        event_id: evt.id,
+        assignment_id: evt.assignment_id,
+        participant_code: assignment?.participant_code ?? '',
+        visitor_id: evt.visitor_id,
+        variant: evt.variant,
+        event_name: evt.event_name,
+        scenario_run_id: evt.scenario_run_id,
+        session_id: evt.session_id,
+        product_id: evt.product_id,
+        properties_json: JSON.stringify(cleanProps),
+        is_simulated: evt.is_simulated,
+        created_at: evt.created_at,
+      };
+    });
+    rows = eventRows;
+  } else {
+    const ragRows: AdminExportRagLogRow[] = raw.assistantMessages.map((msg) => {
+      const session = sessionMap.get(msg.session_id);
+      const assignment = session
+        ? assignmentMap.get(session.assignment_id)
+        : undefined;
+      return {
+        message_id: msg.id,
+        session_id: msg.session_id,
+        assignment_id: session?.assignment_id ?? '',
+        participant_code: assignment?.participant_code ?? '',
+        visitor_id: session?.visitor_id ?? '',
+        scenario_run_id: session?.scenario_run_id ?? null,
+        prompt_version: msg.prompt_version ?? '',
+        model_name: msg.model_name ?? '',
+        retrieved_count: msg.retrieved_product_ids.length,
+        suggested_count: msg.suggested_product_ids.length,
+        retrieved_product_ids: JSON.stringify(msg.retrieved_product_ids),
+        suggested_product_ids: JSON.stringify(msg.suggested_product_ids),
+        latency_ms: msg.latency_ms,
+        tokens_used: msg.tokens_used,
+        cost_usd: msg.cost_usd,
+        is_simulated: msg.is_simulated,
+        created_at: msg.created_at,
+      };
+    });
+    rows = ragRows;
+  }
+
+  const exportedAt = new Date().toISOString();
+  const dateTag = exportedAt.slice(0, 10);
+  const simSuffix = query.include_simulated ? 'with-sim' : 'real-only';
+  const filename = `dsa-${query.dataset}-${simSuffix}-${dateTag}.csv`;
+
+  return {
+    jsonPayload: {
+      dataset: query.dataset,
+      include_simulated: query.include_simulated,
+      exported_at: exportedAt,
+      total_rows: rows.length,
+      rows,
+    },
+    csvContent: serializeRowsToCsv(query.dataset, rows),
+    filename,
   };
 }

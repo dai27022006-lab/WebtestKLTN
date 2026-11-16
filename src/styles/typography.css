@@ -1,7 +1,7 @@
 /* ==========================================================================
-   Typography System — Digital Store Advisor
-   Max 2 font families: Be Vietnam Pro (Display + Body) & JetBrains Mono (Data/Timer)
-   Vietnamese diacritic safe & Dark Mode compensation built-in
+   Typography System — DreamTeam (DreamsCore-Aligned)
+   Max 2 font families: Plus Jakarta Sans (Display + Body) & JetBrains Mono (Data/VND/Timer)
+   Vietnamese diacritic safe & Dark Mode optical compensation built-in
    ========================================================================== */
 
 body {
@@ -15,16 +15,18 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Dark mode optical compensation: slightly more breathing room so light ink doesn't halo */
-[data-theme="dark"] body {
-  letter-spacing: 0.005em;
+/* Dark mode optical compensation: slightly wider tracking & breathing room on dark surfaces */
+[data-theme="dark"] body,
+.dg-dark-band,
+[data-surface="dark"] {
+  letter-spacing: 0.008em;
   line-height: 1.66;
 }
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]):not([data-theme="dark"]) body,
   [data-theme="system"] body {
-    letter-spacing: 0.005em;
+    letter-spacing: 0.008em;
     line-height: 1.66;
   }
 }
@@ -36,7 +38,7 @@ h1.type-display {
   font-size: var(--text-display);
   line-height: var(--leading-display);
   letter-spacing: var(--tracking-display);
-  font-weight: 700;
+  font-weight: 800;
   text-wrap: balance;
   color: var(--ink);
 }
@@ -47,7 +49,7 @@ h1 {
   font-size: var(--text-h1);
   line-height: var(--leading-heading);
   letter-spacing: var(--tracking-heading);
-  font-weight: 700;
+  font-weight: 800;
   text-wrap: balance;
   color: var(--ink);
 }
@@ -58,7 +60,7 @@ h2 {
   font-size: var(--text-h2);
   line-height: var(--leading-heading);
   letter-spacing: var(--tracking-heading);
-  font-weight: 600;
+  font-weight: 800;
   text-wrap: balance;
   color: var(--ink);
 }
@@ -69,15 +71,34 @@ h3 {
   font-size: var(--text-h3);
   line-height: var(--leading-tight);
   letter-spacing: -0.01em;
-  font-weight: 600;
+  font-weight: 700;
   text-wrap: balance;
   color: var(--ink);
+}
+
+/* DreamsCore Section Heading & Gradient Text Accent */
+.dg-grad-text {
+  background: var(--dg-gradient-brand);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: var(--accent);
+}
+
+.dg-dark-band .dg-grad-text,
+[data-surface="dark"] .dg-grad-text,
+[data-theme="dark"] .dg-grad-text {
+  background: var(--dg-gradient-hero-text);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: var(--dg-cyan);
 }
 
 /* Body & Prose Measure (45-75ch) */
 .type-lead {
   font-size: var(--text-body-lg);
-  line-height: 1.55;
+  line-height: 1.7;
   color: var(--ink-soft);
   max-width: var(--measure-prose);
   text-wrap: pretty;
@@ -93,14 +114,14 @@ h3 {
 
 .type-body-sm {
   font-size: var(--text-body-sm);
-  line-height: 1.55;
+  line-height: 1.6;
   color: var(--ink-soft);
   text-wrap: pretty;
 }
 
 .type-caption {
   font-size: var(--text-caption);
-  line-height: 1.4;
+  line-height: 1.45;
   color: var(--ink-soft);
 }
 
@@ -110,7 +131,7 @@ h3 {
   line-height: 1.2;
   letter-spacing: var(--tracking-label);
   text-transform: uppercase;
-  font-weight: 600;
+  font-weight: 700;
   color: var(--accent);
 }
 
@@ -124,13 +145,13 @@ h3 {
 }
 
 .type-price {
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: -0.02em;
   color: var(--ink);
 }
 
 .type-timer {
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: 0.02em;
 }
 

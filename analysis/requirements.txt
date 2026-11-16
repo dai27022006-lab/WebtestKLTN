@@ -1,0 +1,13 @@
+# Analysis Pipeline Dependencies (Digital Store Advisor)
+#
+# Lưu ý quan trọng:
+#   Hai script chính `analyze_experiment.py` và `cluster_behavior_and_rfm.py`
+#   được viết hoàn toàn bằng Python 3 Standard Library thuần (Python >= 3.9),
+#   KHÔNG yêu cầu cài thư viện bên ngoài để chạy kiểm định và phân cụm.
+#
+# Các thư viện dưới đây chỉ mang tính TÙY CHỌN nếu thành viên Data & Analytics
+# muốn vẽ biểu đồ hoặc đối chiếu chéo trên Jupyter Notebook:
+# pandas>=2.2.0
+# scipy>=1.13.0
+# scikit-learn>=1.5.0
+# matplotlib>=3.9.0

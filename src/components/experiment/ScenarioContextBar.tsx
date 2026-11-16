@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useRef } from 'react';
 
+import { ArrowRight, Timer, X } from '@/components/icons/DreamIcons';
 import {
   DIFFICULTY_LABELS,
   formatDurationMmSs,
@@ -62,7 +63,8 @@ export function ScenarioContextBar() {
             className="badge type-timer"
             aria-label={`Thời gian đã trôi qua ${formatDurationMmSs(elapsedSeconds)}`}
           >
-            {formatDurationMmSs(elapsedSeconds)}
+            <Timer size={13} />
+            <span>{formatDurationMmSs(elapsedSeconds)}</span>
           </span>
           <button
             type="button"
@@ -71,8 +73,9 @@ export function ScenarioContextBar() {
           >
             Xem đề bài
           </button>
-          <Link href="/experiment" className="btn btn--primary btn--sm">
-            Về chốt gói
+          <Link href="/experiment" className="dg-btn-purchase dg-btn-sm">
+            <span>Về chốt gói</span>
+            <ArrowRight size={14} />
           </Link>
         </div>
       </div>
@@ -96,10 +99,11 @@ export function ScenarioContextBar() {
             </span>
             <button
               type="button"
-              className="btn btn--ghost btn--sm"
+              className="icon-btn"
               onClick={() => dialogRef.current?.close()}
+              aria-label="Đóng đề bài"
             >
-              Đóng
+              <X size={16} />
             </button>
           </div>
 
@@ -127,10 +131,11 @@ export function ScenarioContextBar() {
             </button>
             <Link
               href="/experiment"
-              className="btn btn--primary"
+              className="dg-btn-purchase dg-btn-sm"
               onClick={() => dialogRef.current?.close()}
             >
-              Quay về trang chốt gói
+              <span>Quay về trang chốt gói</span>
+              <ArrowRight size={14} />
             </Link>
           </div>
         </div>

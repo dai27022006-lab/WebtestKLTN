@@ -1,6 +1,8 @@
 import type {
   AdminCreateProductRequest,
   AdminDashboardSummaryDto,
+  AdminExportJsonResponse,
+  AdminExportQuery,
   AdminOrderListQuery,
   AdminUpdateProductRequest,
   ApiResponse,
@@ -78,4 +80,30 @@ export function adminGetDashboard(
     method: 'GET',
     signal,
   });
+}
+
+export function adminExportDatasetJson(
+  query: Omit<AdminExportQuery, 'format'>,
+  signal?: AbortSignal
+): Promise<ApiResponse<AdminExportJsonResponse>> {
+  const qs = buildQueryString({
+    dataset: query.dataset,
+    format: 'json',
+    include_simulated: query.include_simulated ?? false,
+  });
+  return apiRequest<AdminExportJsonResponse>(`/api/admin/export${qs}`, {
+    method: 'GET',
+    signal,
+  });
+}
+
+export function adminGetExportCsvUrl(
+  query: Omit<AdminExportQuery, 'format'>
+): string {
+  const qs = buildQueryString({
+    dataset: query.dataset,
+    format: 'csv',
+    include_simulated: query.include_simulated ?? false,
+  });
+  return `/api/admin/export${qs}`;
 }

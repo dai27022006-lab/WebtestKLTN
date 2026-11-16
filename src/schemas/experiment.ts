@@ -49,5 +49,20 @@ export const adminDashboardQuerySchema = z.object({
   include_simulated: booleanFlagQuerySchema.default(false),
 });
 
+export const adminExportDatasetSchema = z.enum([
+  'scenario_runs',
+  'events',
+  'rag_logs',
+]);
+
+export const adminExportFormatSchema = z.enum(['csv', 'json']);
+
+export const adminExportQuerySchema = z.object({
+  dataset: adminExportDatasetSchema,
+  format: adminExportFormatSchema.default('csv'),
+  include_simulated: booleanFlagQuerySchema.default(false),
+});
+
 export type ExperimentConsentInput = z.input<typeof experimentConsentSchema>;
 export type CompleteScenarioInput = z.infer<typeof completeScenarioSchema>;
+export type AdminExportQueryInput = z.infer<typeof adminExportQuerySchema>;

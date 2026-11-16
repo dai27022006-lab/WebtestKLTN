@@ -1,12 +1,12 @@
 /* ==========================================================================
-   Design Tokens — Digital Store Advisor
-   Style: Warm Editorial Craft / Thuc dung hien dai (Chu shop nho VN 1-3 nguoi)
-   Base unit: 4px | Color roles: 6 core tokens + 1 primary accent hue + semantics
+   Design Tokens — DreamTeam (Aligned 90-95% with DreamsCore-Tailwind-Admin)
+   Style: Emerald & Slate SaaS Commerce | Chu shop nho VN 1-3 nguoi
+   Base unit: 4px | Color roles: 6 core tokens + 1 Emerald accent hue + Copper highlight
    ========================================================================== */
 
 :root {
   /* ------------------------------------------------------------------------
-     1. Spacing Scale (4px base grid)
+     1. Spacing Scale (4px base grid) & Container Rhythm
      ------------------------------------------------------------------------ */
   --space-0: 0px;
   --space-1: 4px;
@@ -22,53 +22,58 @@
   --space-20: 80px;
   --space-24: 96px;
 
-  /* Fluid Section & Container Spacing (never hardcode desktop 8rem on 375px) */
+  /* DreamsCore Container (1280px, 24px desktop -> 16px mobile) & Fluid Section Padding */
   --container-max: 1280px;
   --container-narrow: 880px;
-  --container-px: clamp(16px, 4vw, 48px);
-  --section-py: clamp(48px, 6vw, 96px);
-  --section-py-compact: clamp(32px, 4vw, 64px);
+  --container-px: clamp(16px, 3vw, 24px);
+  --section-py: clamp(56px, 6vw, 80px);
+  --section-py-compact: clamp(36px, 4vw, 56px);
   --section-gap: clamp(24px, 3vw, 48px);
 
   /* Heading Vertical Rhythm: space ABOVE heading always > space BELOW heading */
   --heading-mt: clamp(32px, 4vw, 56px);
-  --heading-mb: clamp(12px, 1.5vw, 20px);
+  --heading-mb: clamp(14px, 1.5vw, 20px);
 
   /* Header & Sticky Offsets */
-  --header-height: 64px;
+  --header-height: 72px;
   --scenario-bar-height: 52px;
 
   /* ------------------------------------------------------------------------
-     2. Border Radius
+     2. Border Radius (DreamsCore Scale)
      ------------------------------------------------------------------------ */
-  --radius-xs: 4px;
-  --radius-sm: 8px;
+  --dg-radius: 5px;
+  --radius-xs: 5px;
+  --radius-sm: 10px;
   --radius-md: 12px;
   --radius-lg: 16px;
-  --radius-xl: 24px;
+  --radius-xl: 20px;
+  --radius-2xl: 32px;
   --radius-pill: 9999px;
 
   /* ------------------------------------------------------------------------
-     3. Typography Tokens (Fallback values; overridden by next/font variables)
+     3. Typography Tokens (Plus Jakarta Sans + JetBrains Mono)
      ------------------------------------------------------------------------ */
-  --font-sans: var(--font-be-vietnam-pro), "Be Vietnam Pro", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  --font-mono: var(--font-jetbrains-mono), "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --font-sans: var(--font-plus-jakarta-sans), var(--font-be-vietnam-pro),
+    "Plus Jakarta Sans", "Be Vietnam Pro", -apple-system, BlinkMacSystemFont,
+    "Segoe UI", sans-serif;
+  --font-mono: var(--font-jetbrains-mono), "JetBrains Mono", ui-monospace,
+    SFMono-Regular, Menlo, monospace;
 
-  --text-display: clamp(2.125rem, 4.2vw + 0.75rem, 3.75rem);
-  --text-h1: clamp(1.75rem, 2.5vw + 0.75rem, 2.75rem);
-  --text-h2: clamp(1.375rem, 1.5vw + 0.75rem, 2rem);
-  --text-h3: clamp(1.125rem, 0.8vw + 0.85rem, 1.375rem);
+  --text-display: clamp(2rem, 3.2vw + 0.75rem, 2.75rem);
+  --text-h1: clamp(1.625rem, 2.2vw + 0.65rem, 2.25rem);
+  --text-h2: clamp(1.375rem, 1.8vw + 0.5rem, 2.125rem);
+  --text-h3: clamp(1.0625rem, 0.7vw + 0.85rem, 1.25rem);
   --text-body-lg: 1.125rem;
   --text-body: 1rem;
   --text-body-sm: 0.875rem;
   --text-caption: 0.75rem;
 
-  --leading-display: 1.12;
-  --leading-heading: 1.24;
-  --leading-body: 1.62;
+  --leading-display: 1.15;
+  --leading-heading: 1.25;
+  --leading-body: 1.65;
   --leading-tight: 1.35;
 
-  --tracking-display: -0.03em;
+  --tracking-display: -0.025em;
   --tracking-heading: -0.02em;
   --tracking-body: 0em;
   --tracking-label: 0.04em;
@@ -77,83 +82,155 @@
   --measure-wide: 72ch;
 
   /* ------------------------------------------------------------------------
-     4. Elevation & Motion Tokens
+     4. Elevation, Shadows & Motion Tokens
      ------------------------------------------------------------------------ */
   --ease-out-expo: cubic-bezier(0.23, 1, 0.32, 1);
   --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
   --duration-fast: 150ms;
   --duration-base: 240ms;
-  --duration-slow: 380ms;
+  --duration-slow: 360ms;
 
   /* Z-Index Scale */
   --z-base: 1;
   --z-sticky: 20;
+  --z-back-to-top: 35;
   --z-header: 40;
   --z-drawer-backdrop: 50;
   --z-drawer: 60;
   --z-modal: 70;
   --z-toast: 80;
 
+  /* DreamsCore Shadow Scale (Slate-900 tint) */
+  --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.06);
+  --shadow-md: 0 8px 24px rgba(15, 23, 42, 0.08);
+  --shadow-lg: 0 24px 60px rgba(15, 23, 42, 0.12);
+  --dg-shadow-sm: var(--shadow-sm);
+  --dg-shadow-md: var(--shadow-md);
+  --dg-shadow-lg: var(--shadow-lg);
+
   /* ------------------------------------------------------------------------
-     5. Default Light Theme Role Values (Fallback before themes.css applies)
-     6 Core Roles + 1 Accent Hue (Warm Terracotta ~18deg) + Semantic States
+     5. DreamsCore Brand Palette Primitives (--dg-*)
      ------------------------------------------------------------------------ */
-  --bg-canvas: #faf7f2;
+  --dg-indigo: #187f65;
+  --dg-purple: #24997c;
+  --dg-blue: #146553;
+  --dg-cyan: #48b594;
+  --dg-emerald: #24997c;
+  --dg-copper: #e8830f;
+  --dg-copper-dark: #c8682a;
+
+  --dg-ink: #0f172a;
+  --dg-slate: #475569;
+  --dg-slate-light: #64748b;
+  --dg-border: #e2e8f0;
+  --dg-bg-soft: #f8fafc;
+  --dg-bg-softer: #f1f5f9;
+  --dg-white: #ffffff;
+
+  --dg-gradient-brand: linear-gradient(
+    135deg,
+    var(--dg-blue) 0%,
+    var(--dg-indigo) 45%,
+    var(--dg-cyan) 100%
+  );
+  --dg-gradient-soft: linear-gradient(
+    135deg,
+    rgba(24, 127, 101, 0.08),
+    rgba(72, 181, 148, 0.08)
+  );
+  --dg-gradient-copper: linear-gradient(
+    135deg,
+    var(--dg-copper),
+    var(--dg-copper-dark)
+  );
+  --dg-gradient-hero-text: linear-gradient(120deg, var(--dg-cyan), #a7f3d0);
+
+  /* Atmospheric Dark Surfaces (Hero & Dark Sections from DreamsCore) */
+  --dg-hero-bg: radial-gradient(
+      900px circle at 88% -10%,
+      rgba(232, 131, 15, 0.22),
+      transparent 60%
+    ),
+    radial-gradient(
+      700px circle at 15% 110%,
+      rgba(30, 41, 59, 0.55),
+      transparent 55%
+    ),
+    linear-gradient(155deg, #1e293b 0%, #0f172a 55%, #0a0f1c 100%);
+  --dg-dark-bg: radial-gradient(
+      900px circle at 88% -10%,
+      rgba(72, 181, 148, 0.16),
+      transparent 60%
+    ),
+    radial-gradient(
+      700px circle at 15% 110%,
+      rgba(232, 131, 15, 0.1),
+      transparent 55%
+    ),
+    linear-gradient(155deg, #0d1512 0%, #070a09 55%, #000000 100%);
+
+  /* ------------------------------------------------------------------------
+     6. Default Light Theme Role Values & Semantic Aliases
+     (6 Core Roles + 1 Emerald Accent Hue + Semantic States)
+     ------------------------------------------------------------------------ */
+  --bg-canvas: #ffffff;
   --bg-surface: #ffffff;
-  --bg-surface-subtle: #f2ece3;
-  --ink: #1c1917;
-  --ink-soft: #57534e;
-  --border-hairline: rgba(28, 25, 23, 0.12);
-  --border-strong: rgba(28, 25, 23, 0.24);
+  --bg-surface-subtle: #f8fafc;
+  --bg-surface-sunken: #f1f5f9;
+  --ink: #0f172a;
+  --ink-soft: #475569;
+  --ink-tertiary: #64748b;
+  --border-hairline: #e2e8f0;
+  --border-strong: #cbd5e1;
 
-  /* Single Primary Accent Hue */
-  --accent: #b93815;
-  --accent-hover: #9a2d10;
-  --accent-soft: rgba(185, 56, 21, 0.1);
+  /* Primary Accent (Emerald #187f65 -> 4.93:1 contrast with #ffffff) */
+  --accent: #187f65;
+  --accent-hover: #146553;
+  --accent-soft: rgba(24, 127, 101, 0.1);
   --accent-ink: #ffffff;
+  --accent-copper: #e8830f;
+  --accent-copper-soft: rgba(232, 131, 15, 0.12);
 
-  /* Semantic Aliases (for ergonomics across UI components) */
+  /* Ergonomic Aliases (Backwards-compatible with all UI components) */
   --surface: var(--bg-canvas);
   --surface-elevated: var(--bg-surface);
+  --surface-sunken: var(--bg-surface-sunken);
   --ink-primary: var(--ink);
   --ink-muted: var(--ink-soft);
 
-  /* Brand SVG Mark Tokens (switched automatically across Light/Dark) */
-  --brand-mark-ink: #1c1917;
-  --brand-mark-accent: #b93815;
+  /* Brand SVG Mark Tokens (switched cleanly across Light/Dark) */
+  --brand-mark-ink: #0f172a;
+  --brand-mark-accent: #187f65;
+  --brand-mark-mint: #48b594;
 
-  /* Semantic State Tokens (Muted Editorial, Zero Neon) */
-  --status-success: #166534;
-  --status-success-bg: #eef7f1;
-  --status-success-border: rgba(22, 101, 52, 0.24);
+  /* Semantic State Tokens */
+  --status-success: #15803d;
+  --status-success-bg: #ecfdf5;
+  --status-success-border: rgba(21, 128, 61, 0.25);
 
   --status-warning: #9a5b00;
-  --status-warning-bg: #fdf5e6;
-  --status-warning-border: rgba(154, 91, 0, 0.26);
+  --status-warning-bg: #fff7e0;
+  --status-warning-border: rgba(232, 131, 15, 0.32);
 
   --status-danger: #b91c1c;
-  --status-danger-bg: #fef0f0;
+  --status-danger-bg: #fef2f2;
   --status-danger-border: rgba(185, 28, 28, 0.24);
 
-  --status-info: #1e5b70;
-  --status-info-bg: #edf5f8;
-  --status-info-border: rgba(30, 91, 112, 0.24);
-
-  /* Shadows (Warm Charcoal Tint) */
-  --shadow-sm: 0 1px 2px rgba(28, 25, 23, 0.05);
-  --shadow-md: 0 6px 20px -4px rgba(28, 25, 23, 0.08), 0 2px 6px -1px rgba(28, 25, 23, 0.04);
-  --shadow-lg: 0 18px 40px -8px rgba(28, 25, 23, 0.14), 0 4px 12px -2px rgba(28, 25, 23, 0.06);
+  --status-info: #0e7490;
+  --status-info-bg: #ecfeff;
+  --status-info-border: rgba(14, 116, 144, 0.24);
 
   /* Focus Ring */
   --focus-ring: 0 0 0 2px var(--bg-canvas), 0 0 0 4px var(--accent);
 }
 
-/* Mobile Art Direction (<= 700px): drop display scale by 1 step */
+/* Mobile Art Direction (<= 700px): step down display scale & header height */
 @media (max-width: 700px) {
   :root {
-    --text-display: clamp(1.875rem, 6vw + 0.5rem, 2.375rem);
-    --text-h1: clamp(1.5rem, 4vw + 0.5rem, 1.875rem);
-    --header-height: 56px;
+    --text-display: clamp(1.75rem, 6vw + 0.4rem, 2.25rem);
+    --text-h1: clamp(1.375rem, 4vw + 0.4rem, 1.75rem);
+    --header-height: 60px;
   }
 }
 

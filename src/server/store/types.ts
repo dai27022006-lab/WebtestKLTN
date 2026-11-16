@@ -445,4 +445,13 @@ export interface DataStore {
     assistantMessages: ChatMessageRecord[];
     events: EventRecord[];
   }>;
+
+  getExportRawData(includeSimulated: boolean): Promise<{
+    assignments: ExperimentAssignmentRecord[];
+    scenarios: ScenarioRecord[];
+    scenarioRuns: ScenarioRunRecord[];
+    chatSessions: ChatSessionRecord[];
+    assistantMessages: ChatMessageRecord[];
+    events: EventRecord[];
+  }>;
 }

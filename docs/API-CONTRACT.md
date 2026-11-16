@@ -234,6 +234,18 @@ Mọi Route Handler dưới `src/app/api/**` **bắt buộc** trả về cùng m
     - **Response DTO (`200`):** `ApiResponse<AdminDashboardSummaryDto>`
     - **Error Codes:** `400 VALIDATION_ERROR`, `401 UNAUTHORIZED`, `403 FORBIDDEN`
 
+23. **`GET /api/admin/export`** *(Xuất dữ liệu ẩn danh cho pipeline phân tích `analysis/`)*
+    - **Auth & Role:** Authenticated `role === 'admin'`
+    - **Request Schema (Query):** `adminExportQuerySchema` (`src/schemas/experiment.ts`):
+      - `dataset`: `'scenario_runs' | 'events' | 'rag_logs'` (bắt buộc)
+      - `format`: `'csv' | 'json'` (mặc định `'csv'`)
+      - `include_simulated`: `boolean` (mặc định `false`)
+    - **Quy tắc ẩn danh bắt buộc (`RULES.md` Mục 12):** Tuyệt đối không truy vấn hoặc xuất `email`, `full_name`, `password_hash`, `user_id`; chỉ xuất định danh nghiên cứu `participant_code`, `assignment_id`, `visitor_id` cùng các cột số liệu phục vụ phân tích thống kê & phân cụm.
+    - **Response DTO (`200`):**
+      - Khi `format=csv`: Trả `text/csv; charset=utf-8` (`Content-Disposition: attachment`, kèm chống CSV Formula Injection) khớp trực tiếp schema đầu vào của `analysis/analyze_experiment.py` và `analysis/cluster_behavior_and_rfm.py`.
+      - Khi `format=json`: Trả `ApiResponse<AdminExportJsonResponse>`.
+    - **Error Codes:** `400 VALIDATION_ERROR`, `401 UNAUTHORIZED`, `403 FORBIDDEN`
+
 ---
 
 ## 3. Ví dụ Payload Chi tiết Cho 3 Luồng Trọng Tâm

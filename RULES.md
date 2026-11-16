@@ -6,7 +6,7 @@
 
 ## 1. Bối cảnh & Nguyên tắc tối thượng
 
-- **Đồ án tốt nghiệp:** Nền tảng thương mại điện tử kinh doanh sản phẩm số cho chủ shop nhỏ, tích hợp trợ lý ảo tư vấn thông minh (RAG) và phân tích hành vi chuyển đổi.
+- **Đồ án tốt nghiệp (`DreamTeam`):** Nền tảng thương mại điện tử kinh doanh sản phẩm số cho chủ shop nhỏ, tích hợp trợ lý ảo tư vấn thông minh (RAG) và phân tích hành vi chuyển đổi.
 - **Sản phẩm MVP:** Cửa hàng số bán template website bán hàng do nhóm tự thiết kế + prompt pack bán hàng online + 1–2 mẫu workflow tự động hóa đơn giản.
 - **Khách hàng chính:** Chủ shop nhỏ 1–3 người bán trên Shopee, TikTok Shop, Facebook. Nhóm ngách (freelancer/agency nhỏ, sinh viên khởi nghiệp) không thiết kế riêng trong MVP.
 - **Câu hỏi nghiên cứu:** *"Trợ lý ảo tư vấn có giúp người dùng chọn đúng gói sản phẩm nhanh hơn và tự tin hơn so với tự duyệt danh mục không, và chi phí cho việc đó là bao nhiêu?"*
@@ -273,6 +273,9 @@ Mọi endpoint phải được mô tả trong `docs/API-CONTRACT.md`, đồng b�
    - Cấm AI tự ý thêm thư viện mới, đổi cấu trúc thư mục `src/`, hoặc đổi tên sự kiện/endpoint khi nhóm chưa đồng ý.
    - Người đứng tên vùng file phải đọc và giải thích được code AI tạo ra trước khi merge; không hiểu thì yêu cầu AI giải thích hoặc viết lại đơn giản hơn (KISS & YAGNI).
    - Không dán API key hay dữ liệu thật của người tham gia thí nghiệm vào prompt chat.
+4. **Khóa quy chuẩn UI/UX (`Bước 7`):**
+   - Mọi chỉnh sửa giao diện `DreamTeam` phải bám sát `docs/DESIGN.md`, `docs/UI-BRIEF.md`, `docs/UI-UX-SPEC.md` và tokens trong `src/styles/tokens.css` / `themes.css`.
+   - Thư mục mẫu tham khảo (`d:\templates\...` hoặc `/reference/`) **chỉ đọc**, không chỉnh sửa hay copy chữ mẫu/testimonial giả/thư viện nặng thừa; làm từng section một và kiểm tra sạch Desktop + Mobile `375px`.
 
 ---
 

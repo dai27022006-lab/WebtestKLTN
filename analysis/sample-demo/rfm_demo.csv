@@ -1,0 +1,11 @@
+visitor_id,recency_days,frequency_count,monetary_vnd,is_simulated
+vis_sim_rfm_001,3,5,2450000,true
+vis_sim_rfm_002,6,4,1890000,true
+vis_sim_rfm_003,10,4,1620000,true
+vis_sim_rfm_004,12,3,1340000,true
+vis_sim_rfm_005,14,2,840000,true
+vis_sim_rfm_006,19,2,740000,true
+vis_sim_rfm_007,35,3,1180000,true
+vis_sim_rfm_008,42,3,990000,true
+vis_sim_rfm_009,61,1,450000,true
+vis_sim_rfm_010,78,1,250000,true

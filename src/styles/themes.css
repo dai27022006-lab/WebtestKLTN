@@ -1,90 +1,123 @@
 /* ==========================================================================
-   Theme Polarity Definitions — Light & Dark Modes
-   Supports:
-   - Explicit [data-theme="light"] / [data-theme="dark"]
-   - Scoped surface inversion (e.g. dark showcase bands inside light pages)
-   - OS preference fallback when [data-theme="system"] or unset
+   Theme Polarity Definitions — DreamTeam Light & Dark Modes
+   - Light Mode: Exact DreamsCore palette (#ffffff, #f8fafc, #f1f5f9, #0f172a, #187f65)
+   - Dark Mode: Harmonized with DreamsCore dark bands (#0d1512, #111c18, #48b594)
+   - Modern Web Guidance: `color-scheme: light dark` + scoped `.dg-dark-band`
    ========================================================================== */
+
+:root {
+  color-scheme: light dark;
+}
 
 :root,
 [data-theme="light"] {
   color-scheme: light;
 
   /* 6 Core Roles */
-  --bg-canvas: #faf7f2;
+  --bg-canvas: #ffffff;
   --bg-surface: #ffffff;
-  --bg-surface-subtle: #f2ece3;
-  --ink: #1c1917;
-  --ink-soft: #57534e;
-  --border-hairline: rgba(28, 25, 23, 0.12);
-  --border-strong: rgba(28, 25, 23, 0.24);
+  --bg-surface-subtle: #f8fafc;
+  --bg-surface-sunken: #f1f5f9;
+  --ink: #0f172a;
+  --ink-soft: #475569;
+  --ink-tertiary: #64748b;
+  --border-hairline: #e2e8f0;
+  --border-strong: #cbd5e1;
 
-  /* Single Accent Hue (Terracotta ~18deg, >= 4.5:1 contrast with white & canvas) */
-  --accent: #b93815;
-  --accent-hover: #9a2d10;
-  --accent-soft: rgba(185, 56, 21, 0.1);
+  /* Primary Emerald Accent (>= 4.5:1 contrast with white) */
+  --accent: #187f65;
+  --accent-hover: #146553;
+  --accent-soft: rgba(24, 127, 101, 0.1);
   --accent-ink: #ffffff;
+  --accent-copper: #e8830f;
+  --accent-copper-soft: rgba(232, 131, 15, 0.12);
 
   /* Ergonomic Aliases */
   --surface: var(--bg-canvas);
   --surface-elevated: var(--bg-surface);
+  --surface-sunken: var(--bg-surface-sunken);
   --ink-primary: var(--ink);
   --ink-muted: var(--ink-soft);
 
+  /* DreamsCore Palette Sync */
+  --dg-ink: #0f172a;
+  --dg-slate: #475569;
+  --dg-slate-light: #64748b;
+  --dg-border: #e2e8f0;
+  --dg-bg-soft: #f8fafc;
+  --dg-bg-softer: #f1f5f9;
+  --dg-white: #ffffff;
+
   /* Brand Mark */
-  --brand-mark-ink: #1c1917;
-  --brand-mark-accent: #b93815;
+  --brand-mark-ink: #0f172a;
+  --brand-mark-accent: #187f65;
+  --brand-mark-mint: #48b594;
 
   /* Semantic States */
-  --status-success: #166534;
-  --status-success-bg: #eef7f1;
-  --status-success-border: rgba(22, 101, 52, 0.24);
+  --status-success: #15803d;
+  --status-success-bg: #ecfdf5;
+  --status-success-border: rgba(21, 128, 61, 0.25);
 
   --status-warning: #9a5b00;
-  --status-warning-bg: #fdf5e6;
-  --status-warning-border: rgba(154, 91, 0, 0.26);
+  --status-warning-bg: #fff7e0;
+  --status-warning-border: rgba(232, 131, 15, 0.32);
 
   --status-danger: #b91c1c;
-  --status-danger-bg: #fef0f0;
+  --status-danger-bg: #fef2f2;
   --status-danger-border: rgba(185, 28, 28, 0.24);
 
-  --status-info: #1e5b70;
-  --status-info-bg: #edf5f8;
-  --status-info-border: rgba(30, 91, 112, 0.24);
+  --status-info: #0e7490;
+  --status-info-bg: #ecfeff;
+  --status-info-border: rgba(14, 116, 144, 0.24);
 
   /* Shadows */
-  --shadow-sm: 0 1px 2px rgba(28, 25, 23, 0.05);
-  --shadow-md: 0 6px 20px -4px rgba(28, 25, 23, 0.08), 0 2px 6px -1px rgba(28, 25, 23, 0.04);
-  --shadow-lg: 0 18px 40px -8px rgba(28, 25, 23, 0.14), 0 4px 12px -2px rgba(28, 25, 23, 0.06);
+  --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.06);
+  --shadow-md: 0 8px 24px rgba(15, 23, 42, 0.08);
+  --shadow-lg: 0 24px 60px rgba(15, 23, 42, 0.12);
 }
 
 [data-theme="dark"] {
   color-scheme: dark;
 
-  /* 6 Core Roles (Warm Obsidian + Soft Chalk — no #000000 or harsh #FFFFFF) */
-  --bg-canvas: #141210;
-  --bg-surface: #1e1b18;
-  --bg-surface-subtle: #282420;
-  --ink: #f5f1eb;
-  --ink-soft: #b5ada3;
-  --border-hairline: rgba(245, 241, 235, 0.12);
-  --border-strong: rgba(245, 241, 235, 0.24);
+  /* 6 Core Roles (Synchronized with DreamsCore #0d1512 / #111c18 / #48b594) */
+  --bg-canvas: #0d1512;
+  --bg-surface: #111c18;
+  --bg-surface-subtle: #16241f;
+  --bg-surface-sunken: #090f0d;
+  --ink: #f1f5f9;
+  --ink-soft: #a3b8b0;
+  --ink-tertiary: #7f968d;
+  --border-hairline: rgba(226, 232, 240, 0.12);
+  --border-strong: rgba(226, 232, 240, 0.24);
 
-  /* Same Hue (~16-18deg), elevated lightness for >= 4.5:1 on dark surfaces */
-  --accent: #f06a3e;
-  --accent-hover: #f4835e;
-  --accent-soft: rgba(240, 106, 62, 0.16);
-  --accent-ink: #141210;
+  /* Elevated Emerald Mint Accent (#48b594 -> 7.29:1 on #0d1512; #071712 ink -> 7.1:1) */
+  --accent: #48b594;
+  --accent-hover: #5ec7a7;
+  --accent-soft: rgba(72, 181, 148, 0.16);
+  --accent-ink: #071712;
+  --accent-copper: #f59e0b;
+  --accent-copper-soft: rgba(232, 131, 15, 0.18);
 
   /* Ergonomic Aliases */
   --surface: var(--bg-canvas);
   --surface-elevated: var(--bg-surface);
+  --surface-sunken: var(--bg-surface-sunken);
   --ink-primary: var(--ink);
   --ink-muted: var(--ink-soft);
 
+  /* DreamsCore Palette Sync for Dark Theme */
+  --dg-ink: #f1f5f9;
+  --dg-slate: #a3b8b0;
+  --dg-slate-light: #7f968d;
+  --dg-border: rgba(226, 232, 240, 0.14);
+  --dg-bg-soft: #16241f;
+  --dg-bg-softer: #090f0d;
+  --dg-white: #111c18;
+
   /* Brand Mark */
-  --brand-mark-ink: #f5f1eb;
-  --brand-mark-accent: #f06a3e;
+  --brand-mark-ink: #f1f5f9;
+  --brand-mark-accent: #48b594;
+  --brand-mark-mint: #8cd9b3;
 
   /* Semantic States */
   --status-success: #4ade80;
@@ -92,21 +125,21 @@
   --status-success-border: rgba(74, 222, 128, 0.28);
 
   --status-warning: #fbbf24;
-  --status-warning-bg: rgba(251, 191, 36, 0.12);
+  --status-warning-bg: rgba(251, 191, 36, 0.14);
   --status-warning-border: rgba(251, 191, 36, 0.28);
 
   --status-danger: #f87171;
   --status-danger-bg: rgba(248, 113, 113, 0.12);
   --status-danger-border: rgba(248, 113, 113, 0.28);
 
-  --status-info: #67b7d1;
-  --status-info-bg: rgba(103, 183, 209, 0.12);
-  --status-info-border: rgba(103, 183, 209, 0.28);
+  --status-info: #38bdf8;
+  --status-info-bg: rgba(56, 189, 248, 0.12);
+  --status-info-border: rgba(56, 189, 248, 0.28);
 
   /* Shadows on Dark */
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.35);
-  --shadow-md: 0 8px 24px -4px rgba(0, 0, 0, 0.45), 0 2px 6px -1px rgba(0, 0, 0, 0.3);
-  --shadow-lg: 0 20px 44px -8px rgba(0, 0, 0, 0.6), 0 6px 14px -2px rgba(0, 0, 0, 0.4);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 8px 24px -4px rgba(0, 0, 0, 0.5), 0 2px 6px -1px rgba(0, 0, 0, 0.35);
+  --shadow-lg: 0 24px 60px -8px rgba(0, 0, 0, 0.65), 0 6px 16px -2px rgba(0, 0, 0, 0.45);
 }
 
 /* OS Preference fallback when theme is not explicitly forced */
@@ -115,46 +148,60 @@
   [data-theme="system"] {
     color-scheme: dark;
 
-    --bg-canvas: #141210;
-    --bg-surface: #1e1b18;
-    --bg-surface-subtle: #282420;
-    --ink: #f5f1eb;
-    --ink-soft: #b5ada3;
-    --border-hairline: rgba(245, 241, 235, 0.12);
-    --border-strong: rgba(245, 241, 235, 0.24);
+    --bg-canvas: #0d1512;
+    --bg-surface: #111c18;
+    --bg-surface-subtle: #16241f;
+    --bg-surface-sunken: #090f0d;
+    --ink: #f1f5f9;
+    --ink-soft: #a3b8b0;
+    --ink-tertiary: #7f968d;
+    --border-hairline: rgba(226, 232, 240, 0.12);
+    --border-strong: rgba(226, 232, 240, 0.24);
 
-    --accent: #f06a3e;
-    --accent-hover: #f4835e;
-    --accent-soft: rgba(240, 106, 62, 0.16);
-    --accent-ink: #141210;
+    --accent: #48b594;
+    --accent-hover: #5ec7a7;
+    --accent-soft: rgba(72, 181, 148, 0.16);
+    --accent-ink: #071712;
+    --accent-copper: #f59e0b;
+    --accent-copper-soft: rgba(232, 131, 15, 0.18);
 
     --surface: var(--bg-canvas);
     --surface-elevated: var(--bg-surface);
+    --surface-sunken: var(--bg-surface-sunken);
     --ink-primary: var(--ink);
     --ink-muted: var(--ink-soft);
 
-    --brand-mark-ink: #f5f1eb;
-    --brand-mark-accent: #f06a3e;
+    --dg-ink: #f1f5f9;
+    --dg-slate: #a3b8b0;
+    --dg-slate-light: #7f968d;
+    --dg-border: rgba(226, 232, 240, 0.14);
+    --dg-bg-soft: #16241f;
+    --dg-bg-softer: #090f0d;
+    --dg-white: #111c18;
+
+    --brand-mark-ink: #f1f5f9;
+    --brand-mark-accent: #48b594;
+    --brand-mark-mint: #8cd9b3;
 
     --status-success: #4ade80;
     --status-success-bg: rgba(74, 222, 128, 0.12);
     --status-success-border: rgba(74, 222, 128, 0.28);
 
     --status-warning: #fbbf24;
-    --status-warning-bg: rgba(251, 191, 36, 0.12);
+    --status-warning-bg: rgba(251, 191, 36, 0.14);
     --status-warning-border: rgba(251, 191, 36, 0.28);
 
     --status-danger: #f87171;
     --status-danger-bg: rgba(248, 113, 113, 0.12);
     --status-danger-border: rgba(248, 113, 113, 0.28);
 
-    --status-info: #67b7d1;
-    --status-info-bg: rgba(103, 183, 209, 0.12);
-    --status-info-border: rgba(103, 183, 209, 0.28);
+    --status-info: #38bdf8;
+    --status-info-bg: rgba(56, 189, 248, 0.12);
+    --status-info-border: rgba(56, 189, 248, 0.28);
 
-    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.35);
-    --shadow-md: 0 8px 24px -4px rgba(0, 0, 0, 0.45), 0 2px 6px -1px rgba(0, 0, 0, 0.3);
-    --shadow-lg: 0 20px 44px -8px rgba(0, 0, 0, 0.6), 0 6px 14px -2px rgba(0, 0, 0, 0.4);
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+    --shadow-md: 0 8px 24px -4px rgba(0, 0, 0, 0.5), 0 2px 6px -1px rgba(0, 0, 0, 0.35);
+    --shadow-lg: 0 24px 60px -8px rgba(0, 0, 0, 0.65), 0 6px 16px -2px rgba(0, 0, 0, 0.45);
   }
 }
 
@@ -169,6 +216,45 @@ body {
   color: var(--ink);
   transition: background-color var(--duration-base) var(--ease-standard),
     color var(--duration-base) var(--ease-standard);
+}
+
+/* Scoped Dark Band Polarity Helper (Hero, Feature Highlights, CTA Strip, Footer, Auth Right Panel) */
+.dg-dark-band,
+[data-surface="dark"] {
+  color-scheme: dark;
+  --bg-canvas: #0d1512;
+  --bg-surface: rgba(255, 255, 255, 0.06);
+  --bg-surface-subtle: rgba(255, 255, 255, 0.08);
+  --bg-surface-sunken: rgba(7, 10, 9, 0.72);
+  --ink: #ffffff;
+  --ink-soft: rgba(255, 255, 255, 0.74);
+  --ink-tertiary: rgba(255, 255, 255, 0.56);
+  --border-hairline: rgba(255, 255, 255, 0.16);
+  --border-strong: rgba(255, 255, 255, 0.28);
+  --accent: #48b594;
+  --accent-hover: #5ec7a7;
+  --accent-ink: #071712;
+  --brand-mark-ink: #ffffff;
+  --brand-mark-accent: #48b594;
+  color: var(--ink);
+}
+
+/* Scoped Light Card Polarity Helper inside Dark Bands (e.g. Browser Mockup / Feature Cards if Light) */
+[data-surface="light"] {
+  color-scheme: light;
+  --bg-canvas: #ffffff;
+  --bg-surface: #ffffff;
+  --bg-surface-subtle: #f8fafc;
+  --bg-surface-sunken: #f1f5f9;
+  --ink: #0f172a;
+  --ink-soft: #475569;
+  --ink-tertiary: #64748b;
+  --border-hairline: #e2e8f0;
+  --border-strong: #cbd5e1;
+  --accent: #187f65;
+  --accent-hover: #146553;
+  --accent-ink: #ffffff;
+  color: var(--ink);
 }
 
 /* Scoped Polarity Surface Helper (prevents hardcoded light CSS leaks) */

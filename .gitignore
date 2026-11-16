@@ -33,3 +33,6 @@ next-env.d.ts
 
 # Vercel / local deploy artifacts
 .vercel
+
+# Local reference template & screenshots (chi doc local, khong day len GitHub)
+/reference/

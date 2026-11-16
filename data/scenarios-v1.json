@@ -1,0 +1,205 @@
+{
+  "version": "1.0.0",
+  "updated_at": "2026-11-16T08:00:00.000Z",
+  "notes": "4 thẻ kịch bản thí nghiệm F11 (SC-01..04) khớp với HomeLanding.tsx và RULES.md Mục 4. Đáp án chuẩn được thẩm định bởi >= 3 người chấm độc lập (gồm >= 1 người ngoài nhóm).",
+  "scoring_policy": {
+    "min_independent_raters": 3,
+    "includes_external_rater": true,
+    "correct_rule": "selected_product_id thuộc expected_product_ids (expected_product_id hoặc acceptable_product_ids) và price_vnd <= budget_vnd"
+  },
+  "scenarios": [
+    {
+      "id": "9f1e2d3c-4b5a-4678-8901-abcdef123456",
+      "code": "SC-01",
+      "title": "Kịch bản 1: Shop mỹ phẩm dưỡng da trên TikTok Shop",
+      "persona": "Chủ shop Mỹ phẩm dưỡng da",
+      "channel": "TikTok Shop • Quy mô 2 người",
+      "prompt_text": "Bạn đang vận hành shop mỹ phẩm 2 người trên TikTok Shop, ngân sách dưới 1.000.000đ. Hãy chọn gói sản phẩm phù hợp nhất để làm trang bán hàng tối ưu màn hình điện thoại 375px, trình bày bảng thành phần dịu nhẹ và tuân thủ chính sách quảng cáo không cam kết trị liệu.",
+      "industry": "Mỹ phẩm",
+      "budget_vnd": 1000000,
+      "difficulty": "medium",
+      "expected_product_id": "2c5a98b1-90c4-4f88-a2b3-1c4f9b012a10",
+      "acceptable_product_ids": [
+        "7a9c11d2-54e3-4c99-8b10-0f2d3e4a5b6c"
+      ],
+      "expected_product_ids": [
+        "2c5a98b1-90c4-4f88-a2b3-1c4f9b012a10",
+        "7a9c11d2-54e3-4c99-8b10-0f2d3e4a5b6c"
+      ],
+      "rubric_note": "Đáp án ưu tiên nhất là Template Landing Page Mỹ Phẩm Chuẩn TikTok Shop (490.000đ) vì giải quyết trực tiếp nhu cầu trang bán hàng 375px & bảng thành phần; chấp nhận Prompt Pack Mô Tả & Kịch Bản Video Mỹ Phẩm (290.000đ) nếu người tham gia ưu tiên nội dung tuân thủ chính sách không trị liệu.",
+      "raters_rubric": {
+        "rater_count": 3,
+        "raters": [
+          {
+            "rater_id": "RATER-INT-01",
+            "role": "Nghiên cứu + QA (Trong nhóm)",
+            "primary_choice_id": "2c5a98b1-90c4-4f88-a2b3-1c4f9b012a10",
+            "acceptable_ids": ["7a9c11d2-54e3-4c99-8b10-0f2d3e4a5b6c"],
+            "rationale": "Yêu cầu cốt lõi là làm trang bán hàng tối ưu 375px và tuân thủ chính sách mỹ phẩm."
+          },
+          {
+            "rater_id": "RATER-INT-02",
+            "role": "Nội dung + Marketing (Trong nhóm)",
+            "primary_choice_id": "2c5a98b1-90c4-4f88-a2b3-1c4f9b012a10",
+            "acceptable_ids": ["7a9c11d2-54e3-4c99-8b10-0f2d3e4a5b6c"],
+            "rationale": "Template Landing Page Mỹ Phẩm đáp ứng 100% bài toán trang bán hàng dưới 1 triệu."
+          },
+          {
+            "rater_id": "RATER-EXT-01",
+            "role": "Chủ shop mỹ phẩm độc lập (Ngoài nhóm)",
+            "primary_choice_id": "2c5a98b1-90c4-4f88-a2b3-1c4f9b012a10",
+            "acceptable_ids": ["7a9c11d2-54e3-4c99-8b10-0f2d3e4a5b6c"],
+            "rationale": "Landing page là ưu tiên chính, có thể chấp nhận prompt pack nếu shop đã có sẵn web."
+          }
+        ],
+        "agreement_note": "3/3 người chấm đồng thuận đáp án chuẩn là 2c5a98b1-90c4-4f88-a2b3-1c4f9b012a10."
+      },
+      "sort_order": 1,
+      "is_active": true
+    },
+    {
+      "id": "8e2d3c4b-5a6b-4789-9012-bcdef1234567",
+      "code": "SC-02",
+      "title": "Kịch bản 2: Shop thời trang cần trang Lookbook & bảng size",
+      "persona": "Chủ shop Thời trang local",
+      "channel": "Instagram & Shopee • 2 người",
+      "prompt_text": "Bạn quản lý shop thời trang local 2 người, ngân sách tối đa 700.000đ. Bạn cần một trang trưng bày bộ sưu tập lookbook kèm bảng quy đổi size trực quan cho khách xem livestream từ Instagram và Shopee cùng form giữ đơn nhanh.",
+      "industry": "Thời trang",
+      "budget_vnd": 700000,
+      "difficulty": "medium",
+      "expected_product_id": "3d6b22e3-11a4-4d88-9c21-2e3f4a5b6c7d",
+      "acceptable_product_ids": [
+        "a1b2c3d4-1007-4107-8107-1c4f9b012a07"
+      ],
+      "expected_product_ids": [
+        "3d6b22e3-11a4-4d88-9c21-2e3f4a5b6c7d",
+        "a1b2c3d4-1007-4107-8107-1c4f9b012a07"
+      ],
+      "rubric_note": "Đáp án chuẩn là Template Lookbook Thời Trang Shop Nhỏ (590.000đ) vì có đủ gallery bộ sưu tập và bảng quy đổi size trực quan; chấp nhận Template Landing Page Flash Sale & Livestream Thời Trang (550.000đ) vì cùng nằm dưới trần 700.000đ và có chức năng giữ đơn livestream.",
+      "raters_rubric": {
+        "rater_count": 3,
+        "raters": [
+          {
+            "rater_id": "RATER-INT-01",
+            "role": "Nghiên cứu + QA (Trong nhóm)",
+            "primary_choice_id": "3d6b22e3-11a4-4d88-9c21-2e3f4a5b6c7d",
+            "acceptable_ids": ["a1b2c3d4-1007-4107-8107-1c4f9b012a07"],
+            "rationale": "Lookbook + bảng size khớp trực tiếp mô tả bài toán."
+          },
+          {
+            "rater_id": "RATER-INT-02",
+            "role": "Nội dung + Marketing (Trong nhóm)",
+            "primary_choice_id": "3d6b22e3-11a4-4d88-9c21-2e3f4a5b6c7d",
+            "acceptable_ids": ["a1b2c3d4-1007-4107-8107-1c4f9b012a07"],
+            "rationale": "Cả hai template thời trang đều <= 700k, ưu tiên Template Lookbook."
+          },
+          {
+            "rater_id": "RATER-EXT-01",
+            "role": "Chủ shop thời trang độc lập (Ngoài nhóm)",
+            "primary_choice_id": "3d6b22e3-11a4-4d88-9c21-2e3f4a5b6c7d",
+            "acceptable_ids": ["a1b2c3d4-1007-4107-8107-1c4f9b012a07"],
+            "rationale": "Template Lookbook đáp ứng tốt nhất phần trưng bày bộ sưu tập Instagram/Shopee."
+          }
+        ],
+        "agreement_note": "3/3 người chấm đồng thuận đáp án chuẩn là 3d6b22e3-11a4-4d88-9c21-2e3f4a5b6c7d."
+      },
+      "sort_order": 2,
+      "is_active": true
+    },
+    {
+      "id": "7d3c4b5a-6b7c-4890-a123-cdef12345678",
+      "code": "SC-03",
+      "title": "Kịch bản 3: Quán đồ uống nhỏ cần menu QR đặt món nhanh",
+      "persona": "Quán đồ uống & Bếp nhỏ",
+      "channel": "Quét QR tại quầy & Zalo • 2 người",
+      "prompt_text": "Quán đồ uống & bếp nhỏ của bạn có 2 nhân sự, ngân sách dưới 600.000đ, muốn khách quét mã QR tại quầy để xem menu điện tử, chọn topping ngọt/đá và gửi tóm tắt đơn thẳng qua Zalo thay vì nhắn hỏi từng món.",
+      "industry": "F&B",
+      "budget_vnd": 600000,
+      "difficulty": "easy",
+      "expected_product_id": "4e7c33f4-22b5-4e99-ad32-3f4a5b6c7d8e",
+      "acceptable_product_ids": [],
+      "expected_product_ids": [
+        "4e7c33f4-22b5-4e99-ad32-3f4a5b6c7d8e"
+      ],
+      "rubric_note": "Đáp án chuẩn duy nhất là Template Menu & Đặt Món Nhanh Quán F&B Nhỏ (450.000đ) vì có sẵn QR tại quầy, chọn topping/độ ngọt đá và gửi đơn qua Zalo đúng trần 600.000đ.",
+      "raters_rubric": {
+        "rater_count": 3,
+        "raters": [
+          {
+            "rater_id": "RATER-INT-01",
+            "role": "Nghiên cứu + QA (Trong nhóm)",
+            "primary_choice_id": "4e7c33f4-22b5-4e99-ad32-3f4a5b6c7d8e",
+            "acceptable_ids": [],
+            "rationale": "Bài toán dễ với yêu cầu menu QR + Zalo rõ ràng."
+          },
+          {
+            "rater_id": "RATER-INT-02",
+            "role": "Nội dung + Marketing (Trong nhóm)",
+            "primary_choice_id": "4e7c33f4-22b5-4e99-ad32-3f4a5b6c7d8e",
+            "acceptable_ids": [],
+            "rationale": "Chỉ Template Menu & Đặt Món Nhanh F&B có đủ QR quầy + topping ngọt/đá."
+          },
+          {
+            "rater_id": "RATER-EXT-02",
+            "role": "Quản lý quán đồ uống độc lập (Ngoài nhóm)",
+            "primary_choice_id": "4e7c33f4-22b5-4e99-ad32-3f4a5b6c7d8e",
+            "acceptable_ids": [],
+            "rationale": "Đúng nhu cầu quán nhỏ 2 người và giá 450k rất hợp lý."
+          }
+        ],
+        "agreement_note": "3/3 người chấm đồng thuận tuyệt đối 4e7c33f4-22b5-4e99-ad32-3f4a5b6c7d8e."
+      },
+      "sort_order": 3,
+      "is_active": true
+    },
+    {
+      "id": "6c4b5a6b-7c8d-4901-b234-def123456789",
+      "code": "SC-04",
+      "title": "Kịch bản 4: Shop đa kênh giờ cao điểm cần tự động ghi đơn & chốt inbox",
+      "persona": "Shop đa kênh giờ cao điểm",
+      "channel": "Shopee, TikTok, FB • 1–3 người",
+      "prompt_text": "Bạn vận hành shop bán đa kênh trên Shopee, TikTok Shop và Facebook (1–3 người), ngân sách tối đa 700.000đ. Trong giờ cao điểm hay bị sót đơn và chậm trả lời tin nhắn, bạn cần luồng tự động ghi đơn mới về Google Sheets kèm báo Telegram hoặc bộ kịch bản trả lời inbox chốt đơn nhanh.",
+      "industry": "Đa ngành",
+      "budget_vnd": 700000,
+      "difficulty": "medium",
+      "expected_product_id": "6a9e55b6-44d7-40b1-cf54-5b6c7d8e9f01",
+      "acceptable_product_ids": [
+        "5f8d44a5-33c6-4fa0-be43-4a5b6c7d8e9f"
+      ],
+      "expected_product_ids": [
+        "6a9e55b6-44d7-40b1-cf54-5b6c7d8e9f01",
+        "5f8d44a5-33c6-4fa0-be43-4a5b6c7d8e9f"
+      ],
+      "rubric_note": "Đáp án chuẩn là Workflow Tự Động Ghi Đơn & Cảnh Báo Tồn Kho (690.000đ) để xử lý triệt để chống sót đơn qua Google Sheets & Telegram; chấp nhận Prompt Pack Chăm Sóc Khách & Chốt Đơn Đa Kênh (250.000đ) nếu người tham gia ưu tiên giải quyết nhanh khâu trả lời inbox.",
+      "raters_rubric": {
+        "rater_count": 3,
+        "raters": [
+          {
+            "rater_id": "RATER-INT-01",
+            "role": "Nghiên cứu + QA (Trong nhóm)",
+            "primary_choice_id": "6a9e55b6-44d7-40b1-cf54-5b6c7d8e9f01",
+            "acceptable_ids": ["5f8d44a5-33c6-4fa0-be43-4a5b6c7d8e9f"],
+            "rationale": "Workflow 690k nằm sát trần 700k và giải quyết đồng bộ Google Sheets + Telegram."
+          },
+          {
+            "rater_id": "RATER-INT-02",
+            "role": "Nội dung + Marketing (Trong nhóm)",
+            "primary_choice_id": "6a9e55b6-44d7-40b1-cf54-5b6c7d8e9f01",
+            "acceptable_ids": ["5f8d44a5-33c6-4fa0-be43-4a5b6c7d8e9f"],
+            "rationale": "Khớp mô tả thẻ SC-04 trên trang chủ: hoặc workflow ghi đơn hoặc prompt trả lời inbox."
+          },
+          {
+            "rater_id": "RATER-EXT-01",
+            "role": "Chủ shop bán đa kênh độc lập (Ngoài nhóm)",
+            "primary_choice_id": "6a9e55b6-44d7-40b1-cf54-5b6c7d8e9f01",
+            "acceptable_ids": ["5f8d44a5-33c6-4fa0-be43-4a5b6c7d8e9f"],
+            "rationale": "Chống sót đơn là nỗi đau lớn nhất khi nhiều kênh cùng đổ tin nhắn."
+          }
+        ],
+        "agreement_note": "3/3 người chấm đồng thuận đáp án chuẩn là 6a9e55b6-44d7-40b1-cf54-5b6c7d8e9f01."
+      },
+      "sort_order": 4,
+      "is_active": true
+    }
+  ]
+}

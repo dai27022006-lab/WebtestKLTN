@@ -742,4 +742,23 @@ export class InMemoryDevStore implements DataStore {
       events: filterSim(state.events),
     };
   }
+
+  async getExportRawData(includeSimulated: boolean) {
+    const state = getDevState();
+    const filterSim = <T extends { is_simulated: boolean }>(rows: T[]) =>
+      includeSimulated ? rows : rows.filter((r) => !r.is_simulated);
+
+    return {
+      assignments: filterSim(state.assignments),
+      scenarios: [...state.scenarios].sort((a, b) => a.sort_order - b.sort_order),
+      scenarioRuns: filterSim(state.scenarioRuns),
+      chatSessions: filterSim(state.chatSessions).filter(
+        (s) => s.deleted_at === null
+      ),
+      assistantMessages: filterSim(state.chatMessages).filter(
+        (m) => m.role === 'assistant' && m.deleted_at === null
+      ),
+      events: filterSim(state.events),
+    };
+  }
 }

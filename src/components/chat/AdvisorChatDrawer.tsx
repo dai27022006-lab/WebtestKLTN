@@ -4,6 +4,14 @@ import Link from 'next/link';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 import {
+  AlertTriangle,
+  ArrowRight,
+  MessageSquare,
+  ShieldCheck,
+  Sparkles,
+  X,
+} from '@/components/icons/DreamIcons';
+import {
   formatVnd,
   PRODUCT_TYPE_LABELS,
 } from '@/components/shared/formatters';
@@ -186,7 +194,7 @@ export function AdvisorChatDrawer() {
           onClick={handleOpen}
           aria-label="Mở Trợ lý ảo tư vấn gói sản phẩm"
         >
-          <span aria-hidden="true">✦</span>
+          <Sparkles size={17} />
           <span>Trợ lý tư vấn</span>
         </button>
       )}
@@ -205,31 +213,38 @@ export function AdvisorChatDrawer() {
                 gap: '8px',
               }}
             >
-              <div>
-                <strong style={{ fontSize: '1rem' }}>
-                  Trợ lý Tư vấn Gói Số
-                </strong>
-                <div className="type-caption">
-                  Grounding 100% ID sản phẩm thật trong danh mục
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <span className="chat-drawer__icon-chip" aria-hidden="true">
+                  <MessageSquare size={16} />
+                </span>
+                <div>
+                  <strong style={{ fontSize: '0.95rem', display: 'block' }}>
+                    Trợ lý Tư vấn DreamTeam
+                  </strong>
+                  <div className="type-caption">
+                    Grounding 100% ID sản phẩm thật trong danh mục
+                  </div>
                 </div>
               </div>
               <button
                 type="button"
-                className="btn btn--ghost btn--sm"
+                className="icon-btn"
                 onClick={() => setIsOpen(false)}
                 aria-label="Đóng khung trợ lý ảo"
               >
-                Đóng
+                <X size={18} />
               </button>
             </div>
 
             {isStubMode ? (
               <span className="badge badge--warning">
-                Chế độ Chatbot Stub (Chưa kết nối Gemini API thật)
+                <AlertTriangle size={12} />
+                <span>Chế độ Stub — Dữ liệu thử nghiệm (Chưa gắn Gemini Key)</span>
               </span>
             ) : (
               <span className="badge badge--success">
-                AI RAG ({latestAssistantModel}) • Chỉ gợi ý gói có trong DB
+                <ShieldCheck size={12} />
+                <span>Gemini RAG ({latestAssistantModel}) • 100% Grounding DB</span>
               </span>
             )}
           </div>
@@ -244,9 +259,9 @@ export function AdvisorChatDrawer() {
             {messages.length === 0 && !isLoadingHistory && (
               <div style={{ display: 'grid', gap: '12px' }}>
                 <div className="chat-bubble chat-bubble--assistant">
-                  Chào bạn! Mình là trợ lý tư vấn giải pháp số cho chủ shop nhỏ.
-                  Hãy cho mình biết ngành hàng, kênh bán và ngân sách dự kiến để
-                  mình lọc đúng gói phù hợp trong danh mục.
+                  Chào bạn! Mình là Trợ lý DreamTeam hỗ trợ chủ shop nhỏ. Hãy cho
+                  mình biết ngành hàng, kênh bán và ngân sách dự kiến để mình lọc
+                  đúng gói phù hợp nhất trong danh mục.
                 </div>
 
                 <div style={{ display: 'grid', gap: '6px' }}>
@@ -260,7 +275,7 @@ export function AdvisorChatDrawer() {
                         justifyContent: 'flex-start',
                         whiteSpace: 'normal',
                         height: 'auto',
-                        paddingBlock: '8px',
+                        paddingBlock: '9px',
                         textAlign: 'left',
                       }}
                       onClick={() => void handleSend(prompt)}
@@ -319,7 +334,7 @@ export function AdvisorChatDrawer() {
                           industry={product.industry}
                           compact
                         />
-                        <div style={{ display: 'grid', gap: '4px' }}>
+                        <div style={{ display: 'grid', gap: '4px', minWidth: 0 }}>
                           <span className="type-caption">
                             {PRODUCT_TYPE_LABELS[product.product_type]} •{' '}
                             {product.industry}
@@ -327,7 +342,10 @@ export function AdvisorChatDrawer() {
                           <strong style={{ fontSize: '0.875rem' }}>
                             {product.name}
                           </strong>
-                          <span className="type-price" style={{ fontSize: '0.875rem' }}>
+                          <span
+                            className="type-price"
+                            style={{ fontSize: '0.875rem', color: 'var(--accent)' }}
+                          >
                             {formatVnd(product.price_vnd)}
                           </span>
                         </div>
@@ -366,7 +384,7 @@ export function AdvisorChatDrawer() {
             }}
           >
             <label htmlFor="advisor-chat-input" className="type-caption">
-              Mô tả nhu cầu & ngân sách của shop (tối đa 1.500 ký tự)
+              Mô tả nhu cầu &amp; ngân sách của shop (tối đa 1.500 ký tự)
             </label>
             <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-end' }}>
               <textarea
@@ -387,10 +405,12 @@ export function AdvisorChatDrawer() {
               />
               <button
                 type="submit"
-                className="btn btn--primary"
+                className="dg-btn-purchase dg-btn-sm"
+                style={{ minHeight: '48px', paddingInline: '16px' }}
                 disabled={isSending || !inputText.trim()}
               >
-                Gửi
+                <span>Gửi</span>
+                <ArrowRight size={14} />
               </button>
             </div>
           </form>

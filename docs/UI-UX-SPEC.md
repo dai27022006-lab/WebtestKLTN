@@ -1,273 +1,214 @@
-# UI-UX-SPEC.md — Đặc Tả Kiến Trúc Giao Diện, Trải Nghiệm & Design System
+# UI-UX-SPEC.md — Đặc Tả Kiến Trúc Giao Diện, Trải Nghiệm & Design System (`DreamTeam`)
 
-> **Phiên bản:** v1.0 (Pha 1A — `ai-template-1-ux`)  
-> **Đối tượng bàn giao:** `ai-template-2-fe` (Frontend UI/Motion), `ai-skill-design-web` (API/Tracking Bridge), `web-qa-verifier` (Kiểm định QA 8 cổng).  
-> **Tài liệu nguồn đối chiếu:** [`RULES.md`](file:///d:/Dự%20án%20web%20tốt%20nghiệp/RULES.md), [`docs/API-CONTRACT.md`](file:///d:/Dự%20án%20web%20tốt%20nghiệp/docs/API-CONTRACT.md), [`src/types/api.ts`](file:///d:/Dự%20án%20web%20tốt%20nghiệp/src/types/api.ts), [`src/lib/tracking/events.ts`](file:///d:/Dự%20án%20web%20tốt%20nghiệp/src/lib/tracking/events.ts), [`FINGERPRINTS.md`](file:///d:/Dự%20án%20web%20tốt%20nghiệp/FINGERPRINTS.md), [`image-style.md`](file:///d:/Dự%20án%20web%20tốt%20nghiệp/image-style.md).
+> **Phiên bản:** v2.0 (Bước 2 — Đồng bộ thương hiệu **DreamTeam** 90–95% theo mẫu [`DreamsCore-Tailwind-Admin`](file:///d:/templates/16_ADMIN_DASHBOARD/DreamsCore-Tailwind-Admin/index.html))  
+> **Đối tượng bàn giao:** `ai-template-2-fe` (Frontend UI/Motion & `src/app/**/page.tsx`), `ai-skill-design-web` (API/Tracking Bridge), `web-qa-verifier` (Kiểm định QA 8 cổng).  
+> **Tài liệu nguồn đối chiếu:** [`docs/DESIGN.md`](file:///d:/Dự%20án%20web%20tốt%20nghiệp/docs/DESIGN.md), [`RULES.md`](file:///d:/Dự%20án%20web%20tốt%20nghiệp/RULES.md), [`docs/API-CONTRACT.md`](file:///d:/Dự%20án%20web%20tốt%20nghiệp/docs/API-CONTRACT.md), [`src/types/api.ts`](file:///d:/Dự%20án%20web%20tốt%20nghiệp/src/types/api.ts), [`src/lib/tracking/events.ts`](file:///d:/Dự%20án%20web%20tốt%20nghiệp/src/lib/tracking/events.ts), [`FINGERPRINTS.md`](file:///d:/Dự%20án%20web%20tốt%20nghiệp/FINGERPRINTS.md), [`image-style.md`](file:///d:/Dự%20án%20web%20tốt%20nghiệp/image-style.md).
 
 ---
 
-## 1. Linh Hồn Thị Giác & Chân Dung Khách Hàng
+## 1. Linh Hồn Thị Giác & Chân Dung Khách Hàng (`DreamTeam`)
 
-- **Người dùng cốt lõi:** Chủ shop online nhỏ Việt Nam (quy mô **1–3 người**, bán trên Shopee, TikTok Shop, Facebook) và người tham gia thí nghiệm A/B (`F11`).
-- **Tông thẩm mỹ — *Warm Editorial Craft / Thực dụng hiện đại*:**
-  - Cảm giác như một **xưởng biên tập giải pháp số** gần gũi, minh bạch, dễ đọc nhanh trong lúc chủ shop đang bận xử lý đơn hàng.
-  - Bề mặt giấy ấm (`#FAF7F2`), mực than ấm (`#1C1917`), đường viền mảnh (`1px` hairline) phân tách khối thông tin thay vì đổ bóng nặng nề; duy nhất 1 màu nhấn đất nung (`#B93815` Light / `#F06A3E` Dark).
-- **Danh sách từ chối bắt buộc (Anti-AI Template):**
-  - **CẤM** gradient tím neon (*AI-purple glow*), gradient chữ cho mọi heading, hoặc glow phát sáng ở card/button.
-  - **CẤM** dùng `Inter` mặc định hoặc nhồi 3+ họ font.
-  - **CẤM** lưới 3 card bằng phẳng giống hệt nhau ở trang chủ; thay bằng **Bento `1+2`** hoặc **Sticky 2 cột** / **Asymmetric Grid**.
-  - **CẤM** số đếm trang trí sáo rỗng `01 / 06`, dòng `"Scroll to explore"`, `Lorem ipsum`, hoặc số liệu/testimonial bịa đặt.
+- **Thương hiệu:** **DreamTeam** — Cửa hàng sản phẩm số (Template Website, Prompt Pack, Workflow tự động) tích hợp Trợ lý ảo RAG (`F7`) và Thí nghiệm A/B (`F11`).
+- **Người dùng cốt lõi:** Chủ shop nhỏ Việt Nam (**1–3 người**, bán hàng trên Shopee, TikTok Shop, Facebook) và người tham gia thí nghiệm định lượng có kiểm soát.
+- **Tông thẩm mỹ — *Emerald & Slate SaaS Commerce (`DreamsCore` Aligned)*:**
+  - **90–95% đồng bộ ngôn ngữ thị giác của `DreamsCore-Tailwind-Admin`:** Bề mặt sáng sắc nét (`#ffffff`, `#f8fafc`, `#f1f5f9`), mực Slate đậm (`#0f172a`), điểm nhấn Emerald (`#187f65` Light / `#48b594` Dark) kết hợp Copper ấm (`#e8830f`) cho các chi tiết làm nổi phụ trợ, xen kẽ dải Hero Slate-Navy (`#1e293b → #0f172a → #0a0f1c`) và các dải tối Emerald Obsidian (`#0d1512 → #070a09`).
+  - **Độ tin cậy thương mại thật:** Trình bày rõ ràng, khoảng thở rộng (`container 1280px`), nút bấm to rõ, minh bạch bản quyền & giá VND, kết nối 100% dữ liệu thật từ `src/services/**`.
+- **Danh sách từ chối bắt buộc (Anti-AI Template & `RULES.md`):**
+  - **CẤM** preloader giả `1–4s` (vào trang tức thì `0ms`).
+  - **CẤM** testimonial bịa đặt, `Lorem ipsum`, số liệu ảo (`20 Dashboards`, `400+ Pages`, `12,000+ teams`), chữ tiếng Anh mẫu còn sót, liên kết `href="#"` chết, dòng `"Scroll to explore"`, hoặc chỉ số trang trí `01 / 06`.
+  - **CẤM** gradient tím neon (*AI-purple glow*) hoặc font `Inter` mặc định.
+  - **CẤM** nạp Bootstrap CSS/JS, jQuery, AOS, Owl, GLightbox hoặc Lucide icon font dễ lỗi ô vuông `▯` — dùng CSS thuần + Inline SVG Lucide-style.
 
 ---
 
 ## 2. Hệ Thống Design System (`src/styles/**`)
 
-### 2.1. Bảng Màu 6 Vai Trò + 1 Hue Accent + Semantic States (`tokens.css` & `themes.css`)
+### 2.1. Bảng Màu 6 Vai Trò + Emerald Accent + Copper Highlight (`tokens.css` & `themes.css`)
 
-Mọi component **bắt buộc** đọc màu qua CSS Custom Properties — tuyệt đối không hardcode mã hex hoặc `rgb(0,0,0)` trong component CSS/Tailwind để tránh lỗi tàng hình chữ khi đổi sang Dark Mode (lỗi QA Đợt 4).
+Mọi component **bắt buộc** đọc màu qua CSS Custom Properties — tuyệt đối không hardcode `#fff`, `#000` hay mã hex Light Mode cố định trong component để tránh lỗi tàng hình chữ khi lật Dark Mode.
 
-| Vai trò Token | Token chính (`CSS var`) | Giá trị Light (`[data-theme="light"]`) | Giá trị Dark (`[data-theme="dark"]`) | Mục đích sử dụng |
+| Vai trò Token | Token chính (`CSS var`) | Light Mode (`[data-theme="light"]`) | Dark Mode (`[data-theme="dark"]`) | Mục đích sử dụng |
 |---|---|---|---|---|
-| **1. Surface (Canvas)** | `--bg-canvas` *(alias `--surface`)* | `#FAF7F2` | `#141210` | Nền trang tổng thể (tránh trắng lóa `#FFF` và đen tuyền `#000`) |
-| **2. Elevated Surface** | `--bg-surface` / `--bg-surface-subtle` | `#FFFFFF` / `#F2ECE3` | `#1E1B18` / `#282420` | Card sản phẩm, drawer, modal, input, banner đảo sắc nhẹ |
-| **3. Primary Ink** | `--ink` *(alias `--ink-primary`)* | `#1C1917` | `#F5F1EB` | Tiêu đề, văn bản chính, giá VND (`>= 15:1` contrast) |
-| **4. Muted Ink** | `--ink-soft` *(alias `--ink-muted`)* | `#57534E` | `#B5ADA3` | Mô tả phụ, nhãn metadata, placeholder (`>= 7:1` contrast) |
-| **5. Border Hairline** | `--border-hairline` / `--border-strong` | `rgba(28,25,23,0.12)` / `0.24` | `rgba(245,241,235,0.12)` / `0.24` | Đường kẻ chia bảng, viền card, đường phân cách header |
-| **6. Primary Accent** | `--accent` / `--accent-hover` / `--accent-soft` / `--accent-ink` | `#B93815` / `#9A2D10` / `10%` / `#FFFFFF` | `#F06A3E` / `#F4835E` / `16%` / `#141210` | CTA chính, trạng thái active, indicator (`>= 5.3:1` contrast ở cả 2 mode) |
-| **Semantic: Success** | `--status-success` / `-bg` / `-border` | `#166534` / `#EEF7F1` | `#4ADE80` / `12%` | Đơn `paid`, bản quyền `original`, nút tải sẵn sàng |
-| **Semantic: Warning** | `--status-warning` / `-bg` / `-border` | `#9A5B00` / `#FDF5E6` | `#FBBF24` / `12%` | Cảnh báo chế độ **Stub Chatbot**, cảnh báo dữ liệu `is_simulated = true` |
-| **Semantic: Danger** | `--status-danger` / `-bg` / `-border` | `#B91C1C` / `#FEF0F0` | `#F87171` / `12%` | Đơn `failed`, lỗi validation, hết hạn/lượt tải `422` |
-| **Semantic: Info** | `--status-info` / `-bg` / `-border` | `#1E5B70` / `#EDF5F8` | `#67B7D1` / `12%` | Trạng thái nhánh đối chứng `chatbot_off`, thông tin hướng dẫn F11 |
+| **1. Canvas** | `--bg-canvas` *(alias `--surface`)* | `#ffffff` | `#0d1512` | Nền trang tổng thể (`color-scheme: light dark`) |
+| **2. Subtle & Surface** | `--bg-surface` / `--bg-surface-subtle` / `--bg-surface-sunken` | `#ffffff` / `#f8fafc` / `#f1f5f9` | `#111c18` / `#16241f` / `#090f0d` | Card nổi, dải section xen kẽ (`dg-bg-soft`), tag pill, input |
+| **3. Primary Ink** | `--ink` *(alias `--ink-primary`, `--dg-ink`)* | `#0f172a` | `#f1f5f9` | Tiêu đề, nội dung chính, giá VND (`>= 14.5:1` contrast) |
+| **4. Muted Ink** | `--ink-soft` / `--ink-tertiary` | `#475569` / `#64748b` | `#a3b8b0` / `#7f968d` | Mô tả phụ, metadata, URL bar (`>= 4.7:1` contrast) |
+| **5. Borders** | `--border-hairline` / `--border-strong` | `#e2e8f0` / `#cbd5e1` | `rgba(226,232,240,0.12)` / `0.24` | Viền card `1px`, đường kẻ chia bảng, viền header |
+| **6. Primary Accent** | `--accent` / `--accent-hover` / `--accent-soft` / `--accent-ink` | `#187f65` / `#146553` / `10%` / `#ffffff` | `#48b594` / `#5ec7a7` / `16%` / `#071712` | CTA chính, link active, tab đang chọn (`>= 4.9:1` cả 2 mode) |
+| **Brand Primitives** | `--dg-blue`, `--dg-indigo`, `--dg-emerald`, `--dg-cyan`, `--dg-copper` | `#146553`, `#187f65`, `#24997c`, `#48b594`, `#e8830f` | Giữ nguyên hệ hue Emerald & Copper cho gradient/glow | `--dg-gradient-brand`, `.dg-grad-1..6`, ambient glows |
+| **Dark Bands** | `.dg-dark-band` (`--dg-hero-bg`, `--dg-dark-bg`) | Nền tối `#1e293b→#0a0f1c` hoặc `#0d1512→#000000`, chữ `#ffffff` | Đồng bộ `#0d1512` / `#111c18`, chữ `#f1f5f9` | Hero, Dark Feature Highlights, Dark CTA Strip, Footer, Auth Right Panel |
+| **Semantic States** | `--status-success` / `warning` / `danger` / `info` | `#15803d` / `#9a5b00` / `#b91c1c` / `#0e7490` | `#4ade80` / `#fbbf24` / `#f87171` / `#38bdf8` | Đơn `paid`, banner Stub / `is_simulated`, lỗi `422`, nhánh `chatbot_off` |
 
-- **Quy tắc Theme Switcher:** Lưu vào `localStorage` (`dsa-theme`) và gắn `data-theme="light" | "dark"` lên `<html>` (mặc định `light`). Logo SVG của cửa hàng dùng `var(--brand-mark-ink)` và `var(--brand-mark-accent)` để tự đổi màu sạch sẽ không cần 2 file ảnh riêng.
+- **Quy tắc Theme Switcher:** Lưu vào `localStorage` (`dsa-theme`) và gắn `data-theme="light" | "dark"` lên `<html>` (tôn trọng `prefers-color-scheme` khi chưa lưu, mặc định Light khớp `DreamsCore`). Logo lục giác **DreamTeam** dùng `var(--brand-mark-ink)`, `var(--brand-mark-accent)`, `var(--brand-mark-mint)` để đổi màu đồng bộ mà không cần tải 2 file SVG.
 
 ### 2.2. Typography (`src/styles/typography.css`)
 
-- **Tối đa 2 họ font** nạp qua `next/font/google` trong `src/app/layout.tsx`:
-  1. `Be_Vietnam_Pro` (`subsets: ['vietnamese', 'latin']`, `weight: ['400', '500', '600', '700']`, `variable: '--font-be-vietnam-pro'`) — Display + UI Body.
-  2. `JetBrains_Mono` (`subsets: ['vietnamese', 'latin']`, `weight: ['400', '500', '600']`, `variable: '--font-jetbrains-mono'`) — Giá tiền VND, `participant_code`, đồng hồ bấm giờ F11, slug/token, bảng số liệu F10.
-- **Thang chữ & Quy tắc Việt hóa:**
-  - `.type-display`: `clamp(2.125rem, 4.2vw + 0.75rem, 3.75rem)` trên Desktop; tự động hạ 1 bậc về `clamp(1.875rem, 6vw + 0.5rem, 2.375rem)` tại `@media (max-width: 700px)` để tiêu đề Hero không rớt 5–6 dòng trên mobile `375px`.
-  - Độ rộng đoạn văn (`max-width: 62ch`), `text-wrap: balance` cho heading, `text-wrap: pretty` cho đoạn mô tả.
-  - Mọi số tiền (`490.000đ`), thời gian (`02:28`), tỉ lệ (`84.5%`) dùng `.type-mono` (`font-variant-numeric: tabular-nums`) để không giật số khi đếm.
-  - Mọi text có mask/clip dòng dùng class `.text-line-clip` (`padding-bottom: 0.16em; margin-bottom: -0.16em`) tránh cắt dấu huyền/nặng tiếng Việt.
+- **Tối đa 2 họ font** nạp qua `next/font/google` trong `src/app/layout.tsx` *(nhắc `ai-template-2-fe` cập nhật `Plus_Jakarta_Sans` vào `layout.tsx`; `tokens.css` đặt `--font-plus-jakarta-sans` ưu tiên hàng đầu và giữ `--font-be-vietnam-pro` làm fallback an toàn trong lúc chuyển tiếp)*:
+  1. `Plus_Jakarta_Sans` (`subsets: ['vietnamese', 'latin']`, `weight: ['400', '500', '600', '700', '800']`, `variable: '--font-plus-jakarta-sans'`) — Display + UI Body.
+  2. `JetBrains_Mono` (`subsets: ['vietnamese', 'latin']`, `weight: ['400', '500', '600']`, `variable: '--font-jetbrains-mono'`) — Giá tiền VND, `participant_code`, đồng hồ bấm giờ F11, token, metrics F10.
+- **Quy tắc tiếng Việt & Mobile (`<= 700px`):**
+  - `--text-display`: `clamp(2rem, 3.2vw + 0.75rem, 2.75rem)` desktop → hạ xuống `clamp(1.75rem, 6vw + 0.4rem, 2.25rem)` tại `@media (max-width: 700px)`.
+  - Bỏ `white-space: nowrap` trên tiêu đề H2 và chuỗi Typewriter ở mobile để tuyệt đối không tràn ngang `375px`; dùng `text-wrap: balance` cho heading và `max-width: 62ch` (`text-wrap: pretty`) cho văn bản.
+  - Mọi text có `overflow: hidden` gắn `.text-line-clip` (`padding-bottom: 0.16em; margin-bottom: -0.16em`) bảo vệ chân dấu nặng/huyền tiếng Việt (`ạ, ệ, ộ, ự`).
+  - Bù quang học Dark Mode: tăng nhẹ `letter-spacing: 0.008em` và `line-height: 1.66` trên `[data-theme="dark"]` và `.dg-dark-band`.
 
-### 2.3. Spacing & Nhịp Điệu (`src/styles/tokens.css`)
+### 2.3. Spacing, Container & Radius (`src/styles/tokens.css`)
 
-- Thang `4px`: `--space-1` (`4px`) → `--space-24` (`96px`).
-- Khoảng trống trên tiêu đề section (`--heading-mt: clamp(32px, 4vw, 56px)`) luôn lớn hơn khoảng trống dưới tiêu đề (`--heading-mb: clamp(12px, 1.5vw, 20px)`).
-- Padding section dùng `clamp(48px, 6vw, 96px)` theo chiều dọc và `clamp(16px, 4vw, 48px)` theo chiều ngang.
+- Thang `4px`: `--space-1` (`4px`) → `--space-24` (`96px`), `--container-max: 1280px`, `--container-px: clamp(16px, 3vw, 24px)`.
+- Section padding: `--section-py: clamp(56px, 6vw, 80px)`, khoảng trống trên tiêu đề (`--heading-mt`) luôn lớn hơn dưới tiêu đề (`--heading-mb`).
+- Radius: `--dg-radius: 5px` (khối chuẩn DreamsCore), `--radius-sm: 10px`, `--radius-md: 12px` (buttons), `--radius-lg: 16px` (tiles/FAQ/cards), `--radius-xl: 20px` (Hero mockup/carousel cards), `--radius-2xl: 32px` (Dark CTA banner).
 
 ---
 
 ## 3. Khung Điều Hướng Toàn Cục & Layout Shell
 
-### 3.1. Global Top Navigation (`Header`)
+### 3.1. Global Top Header (`SiteHeader` — Theo mẫu `.dg-header`)
 
-- **Chiều cao:** `64px` desktop, `56px` mobile `<= 700px`, nền `--bg-canvas` có hairline đáy `--border-hairline`.
-- **Cấu trúc tối giản 1 hàng:**
-  - Trái: Brand Mark SVG + tên cửa hàng (vd: *Tiệm Số Thực Chiến* / *Digital Store Advisor*).
-  - Giữa (Desktop): 3 liên kết chính: `Sản phẩm` (`/products`), `Thí nghiệm A/B (F11)` (`/experiment`), `Phân tích (Admin)` (`/admin/analytics` — chỉ hiện hoặc gắn nhãn rõ khi đăng nhập `admin`).
-  - Phải:
-    - Nút chuyển Light/Dark (`aria-label="Đổi giao diện Sáng/Tối"`).
-    - Nút Giỏ hàng (`/cart`) kèm badge số lượng từ `CartDto.item_count` (`tabular-nums`).
-    - Nút Tài khoản (`/auth` hoặc menu `full_name` + Đăng xuất).
-  - Mobile `<= 700px`: Hiện Brand Mark, Giỏ hàng, Theme Toggle, và nút Menu (`<dialog>` hoặc slide-down panel sạch sẽ, có focus trap).
-- **Ngoại lệ trang `/experiment`:** Ẩn thanh điều hướng mua sắm rườm rà khi người tham gia đang trong phiên làm bài; thay bằng **Focus Experiment Bar** (hiển thị `participant_code`, bước `1/2` hoặc `2/2`, biến thể hiện tại).
+- **Cấu trúc:** Fixed/sticky `top: 0`, chiều cao `72px` desktop (`60px` mobile `<= 700px`), nền kính mờ (`backdrop-filter: blur(16px)`), viền đáy `1px solid var(--border-hairline)`.
+- **Thanh tiến độ cuộn (`3px` ở mép trên Header):** Dùng GPU `animation-timeline: scroll()` + `transform: scaleX(...)` với `--dg-gradient-brand` (có fallback scroll listener `{ passive: true }`).
+- **Bố cục 1 hàng:**
+  - *Trái:* DreamTeam Hexagon SVG Logo (`BrandMark` nâng cấp theo lục giác `logo.svg` DreamsCore) + tên **DreamTeam** *(sub: Cửa hàng số & Trợ lý RAG)*.
+  - *Giữa (Desktop `>= 992px`):* 4 liên kết sạch: `Sản phẩm` (`/products`), `Thí nghiệm F11` (`/experiment`), `Phân tích Admin` (`/admin/analytics`), `Hỏi đáp` (`/#faqs`).
+  - *Phải:* Nút chuyển Sáng/Tối (`aria-label`), nút Giỏ hàng (`/cart`) kèm badge `CartDto.item_count` (`tabular-nums`), nút Tài khoản (`/auth` hoặc tên user + Thoát), và CTA gradient `Thử F11` (`/experiment`).
+  - *Mobile (`<= 991px`):* Nút Drawer mở native `<dialog>` slide từ phải (`min(320px, 88vw)`), có `overscroll-behavior: contain` và focus trap.
+- **Ngoại lệ trang `/experiment`:** Ẩn nav mua sắm rườm rà khi người tham gia đang trong phiên làm bài; thay bằng **Focus Experiment Bar** (`participant_code`, `Lượt 1/2` hoặc `2/2`, biến thể `chatbot_on` / `chatbot_off`, nút quay lại `/products`).
 
-### 3.2. F11 Scenario Context Bar (Thanh Giữ Bối Cảnh Kịch Bản Toàn Cục)
+### 3.2. F11 Scenario Context Bar
 
-- **Điều kiện hiển thị:** Xuất hiện ngay dưới Header khi phiên làm việc đang có `scenario_run_id` chưa hoàn thành (trên `/products`, `/products/[slug]`, hoặc khi mở Chatbot).
-- **Thành phần trên thanh (`--scenario-bar-height: 52px` trên desktop, xếp gọn 2 dòng trên mobile `375px`):**
-  1. Mã phiên + Nhánh hiện tại (`P-018 • Lượt 1/2 • Có trợ lý ảo` hoặc `Không trợ lý ảo`).
-  2. Tóm tắt đề bài kịch bản (1 dòng cắt gọn + nút `Xem đề bài` mở popover đọc đầy đủ `prompt_text`, `industry`, `budget_vnd`).
-  3. Đồng hồ thời gian đã trôi qua (`tabular-nums`, tính từ `started_at`).
-  4. Nút `Về trang chốt gói (/experiment)`.
+- Hiển thị dính ngay dưới Header (`top: var(--header-height)`) khi phiên có `scenario_run_id` chưa hoàn tất trên `/products`, `/products/[slug]`, hoặc khi mở Chatbot.
+- Gồm: Mã phiên + Nhánh AB/BA, Tóm tắt đề bài + Popover đọc đầy đủ `prompt_text`, Đồng hồ đếm thực (`tabular-nums`), Nút `Về trang chốt gói (/experiment)`.
 
 ---
 
-## 4. Đặc Tả Page Grammar & Feeling Curve Theo Từng Màn Hình
+## 4. Đặc Tả Page Grammar, Feeling Curve & Thành Phần Từng Trang
 
-### 4.1. Trang Chủ `/` — *Cửa hàng & Lối vào Thí nghiệm F11*
+### 4.1. Trang Chủ `/` — *DreamTeam Landing (90–95% Cấu Trúc `DreamsCore-Tailwind-Admin`)*
 
-- **Page Grammar:** **2. Chaptered editorial** (bố cục biên tập phân chương dứt khoát, xen Bento `1+2` và Sticky 2 cột).
-- **Danh sách CẤM (Forbids):** Cấm lưới 3 card bằng nhau; cấm preloader giả; cấm gradient drift trôi lơ lửng; cấm số đếm `01/06`; cấm fake social proof.
-- **Feeling Curve (5 chặng, không trùng cảm xúc liền kề):**
+- **Page Grammar:** **2. Chaptered editorial** (xen kẽ nhịp nhàng các chương Light `#ffffff`, Soft Slate `#f8fafc` và Dark Emerald `#0d1512` dứt khoát theo cấu trúc 11 section của `DreamsCore`).
+- **Danh sách CẤM (Forbids):** Cấm preloader giả; cấm AOS delay gây mảng trắng; cấm testimonial bịa; cấm số liệu ảo; cấm `"Scroll to explore"`; cấm icon font ô vuông `▯`.
+- **Mở đầu tức thì (`0ms`):** Toàn bộ Fold 1 (Hero headline, Typewriter, 2 CTA, 3D Mockup Stack) hiển thị ngay tại `opacity: 1` lúc tải trang (`delay(0)`).
+- **Feeling Curve (11 chặng khớp `DreamsCore`, không trùng cảm xúc kề nhau):**
 
-| STT | Cảm xúc | Thành phần trên màn hình | Chi tiết UI & Component |
+| STT | Chặng / Section | Cảm xúc | Thành phần UI & Ánh xạ Nghiệp Vụ `DreamTeam` |
 |---|---|---|---|
-| **1** | **Tin cậy & Rõ ràng** *(Grounded Clarity)* | **Asymmetric Editorial Hero Split** | Cột trái (`55%`): Eyebrow *"Dành cho shop nhỏ 1–3 người"*, Headline `type-display` 1 câu súc tích + 2 CTA rõ (`Khám phá gói giải pháp` → `/products`, `Tham gia Thí nghiệm F11` → `/experiment`).<br>Cột phải (`45%`): `WorkspaceShowcaseFrame` (HTML/CSS/SVG framing xếp lớp nhẹ 3 định dạng: Template, Prompt Pack, Workflow — hoặc ảnh neo `ASSET-HERO-OPT`). |
-| **2** | **Đồng cảm vấn đề** *(Empathic Recognition)* | **Sticky 2-Column Pain-to-Tool** *(kiểu `IT-Infinite`)* | Cột trái ghim (`position: sticky; top: 96px`): Câu hỏi trọng tâm của chủ shop nhỏ (làm web đắt, viết mô tả chậm, sót đơn).<br>Cột phải trôi 3 hàng nhu cầu có tương tác (bấm/hover đổi chế độ xem trước bên `WorkspaceShowcaseFrame` hoặc highlight trực tiếp). **Không ẩn tiêu đề khi hover.** |
-| **3** | **Hào hứng khám phá — PEAK** *(Focused Discovery)* | **Bento `1+2` Gói Giải Pháp Nổi Bật** *(kiểu `Exploreist home-2`)* | Lấy tối đa **3 gói tiêu biểu** từ `GET /api/products?limit=3`: 1 card dọc lớn bên trái (Template flagship) + 2 card ngang xếp chồng bên phải (Prompt Pack & Workflow). Mỗi card có `ProductPlaceholderFrame`, loại gói, ngành, giá VND (`tabular-nums`), và badge `source_type`. |
-| **4** | **Tò mò khoa học & Minh bạch** *(Research Invitation)* | **Dải Đảo Sắc Ấm — Mời Tham Gia Thí Nghiệm F11** (`--bg-surface-subtle`) | Giải thích ngắn gọn câu hỏi nghiên cứu: *"Trợ lý ảo có giúp chủ shop chọn gói nhanh và tự tin hơn?"*. Hiển thị 3 bước tham gia thực tế (Đồng ý ẩn danh → Làm 2 kịch bản ~5 phút → Chấm độ tự tin 1–5) + nút `Bắt đầu ngay (Không cần tạo tài khoản)` → `/experiment`. |
-| **5** | **An tâm bản quyền & Bàn giao** *(Calm Assurance)* | **Close Pattern — Cam kết Nguồn gốc & Giao hàng số** | 2 khối song song gọn: (A) Minh bạch bản quyền `original` / `adapted` / `licensed` theo `RULES.md` Mục 11; (B) Quy trình nhận file sau thanh toán sandbox qua token có hạn (`F6`) + Footer tối giản. |
+| **1** | **Hero + 3D Stack + Typewriter** (`#hero`) | **Tin cậy & Tầm nhìn** *(Authoritative Clarity)* | Nền `--dg-hero-bg` + dot grid GPU `translate3d` + 2 glow Emerald/Copper. Trái (`6/12`): Pill badge *"Dành cho chủ shop nhỏ 1–3 người"*, H1 *"Vận hành nhanh hơn với DreamTeam — Chọn đúng [Typewriter: Template Web / Prompt Pack / Workflow Chốt Đơn / Trợ Lý RAG]"*, Lead copy, 2 CTA (`Khám phá gói số` → `/products`, `Tham gia Thí nghiệm F11` → `/experiment`), 2 trust chips có `useCountUp` (*3 Nhóm giải pháp thực chiến*, *100% Grounding từ DB thật*). Phải (`6/12`): **3D Mockup Stack** (`back-2`, `back-1`, `dg-hero-mockup-frame` với mac dots + URL `dreamteam.vn/store` + pill `F11 Sẵn sàng`) tích hợp `WorkspaceShowcaseFrame` cho phép bấm chuyển 3 chế độ ngay trên Hero + `rAF` 3D tilt khi hover chuột. |
+| **2** | **6 Category Cards** (`#categories`) | **Định hướng nhanh** *(Quick Orientation)* | Lưới 6 cột (`col-6 col-md-4 col-lg-2` CSS Grid): `Template Website`, `Prompt Pack AI`, `Workflow Tự Động`, `Shop Mỹ Phẩm`, `Shop Thời Trang`, `Gia Dụng & F&B`. Icon tròn `64×64px` viền mảnh xoay nhẹ `-6deg` khi hover chuột, click dẫn thẳng `/products?product_type=...` hoặc `?industry=...`. |
+| **3** | **Showcase Gallery + Filter Tabs — PEAK** (`#showcase`, `--bg-surface-subtle`) | **Hào hứng khám phá** *(Focused Discovery)* | Section header + pill icon + gạch chân gradient `64×4px`. Hàng **Filter Tabs** (`Tất cả`, `Template Website`, `Prompt Pack`, `Workflow Tự Động`) lọc trực tiếp dữ liệu từ `GET /api/products` (và bắn `filter_applied`). Lưới 3 cột `.dg-showcase-card` (`16:10`, viền trên `3px` brand gradient lộ khi hover, overlay trên desktop giữ link bấm trực tiếp trên mobile, badge `source_type`, giá VND `tabular-nums`). |
+| **4** | **Dark Feature Highlights** (`#features`, `.dg-dark-band`) | **Thuyết phục kỹ thuật** *(Technical Rigor)* | Nền `--dg-dark-bg` (`#0d1512 → #070a09`). Lưới 4×2 (`8` thẻ `.dg-feature-card` không đánh số `01/06` trang trí thừa): `F7 RAG Grounding`, `F8 AB/BA Crossover`, `F11 Task Timer & Likert`, `F3 Minh Bạch Bản Quyền`, `F5 Sandbox HMAC`, `F6 Token Download`, `F10 14 Events Tracking`, `F12 Eval Tự Động`. |
+| **5** | **Tech Stack Tiles** (`#stack`) | **Chắc chắn nền tảng** *(Stack Trust)* | Lưới 6×2 (`12` ô `.dg-stack-tile` bo `16px`, icon tròn `.dg-grad-1..6`): `Next.js 16`, `TypeScript`, `Supabase Postgres`, `pgvector 768d`, `Gemini Flash`, `Zod Contract`, `HMAC Webhook`, `Signed URL F6`, `14 Events`, `Eval Set F12`, `Light/Dark Mode`, `Mobile 375px`. |
+| **6** | **Inner Pages Gallery** (`#pages`, `--bg-surface-subtle`) | **Toàn cảnh hệ thống** *(System Breadth)* | Lưới 3 cột `.dg-ip2-card` (`4:3` preview frame + scrim emerald đáy `#082720` + nút mở trang + tag chức năng): dẫn tới `/products`, `/products/[slug]`, `/experiment`, `/cart` & `/checkout`, `/orders/[id]`, `/admin/analytics` & `/auth`. |
+| **7** | **3-Card Carousel — Kịch Bản Thực Tế F11** (`#scenarios`) | **Đồng cảm thực tiễn** *(Relatable Scenarios)* | **Thay thế hoàn toàn testimonial bịa bằng Carousel Kịch Bản & Hồ Sơ Chủ Shop F11:** CSS Scroll Snap + nút Prev/Next mượt (card giữa nổi nhẹ `scale(1.04)`). Hiển thị các thẻ kịch bản thật từ đề tài (`SC-01 Shop Mỹ phẩm TikTok`, `SC-02 Shop Thời trang đa kênh`, `SC-03 Shop Gia dụng cần Landing 375px`, `SC-04 Chủ shop mới tối ưu mô tả`), gồm ngân sách VND, quy mô `1–3 người`, tag ngành và link `Thử kịch bản này tại /experiment`. |
+| **8** | **FAQ Accordion** (`#faqs`, `--bg-surface-subtle`) | **Giải tỏa băn khoăn** *(Clarifying Relief)* | Khối `max-width: 820px` + 6 câu hỏi thật (không ép tạo tài khoản F11, bản chất thanh toán Sandbox, bản quyền `original/adapted/licensed`, chống bịa RAG, giới hạn token tải file, ẩn danh nghiên cứu) + dải 4 tile lối tắt (`.dg-faq-help`). |
+| **9** | **Dark CTA Strip** (`.dg-cta-dark`) | **Thúc đẩy hành động** *(Decisive Momentum)* | Banner bo `32px` nền tối `#0d1512`, bên trái 2 CTA (`Tham gia Thí nghiệm F11`, `Khám phá Danh mục`), bên phải mockup preview F11 nghiêng `-2deg` + chip *"Within-subject AB/BA • Miễn tạo tài khoản"*. |
+| **10** | **Footer + Back-to-Top** (`.dg-footer`) | **An tâm & Khép lại** *(Calm Closure)* | Footer tối `#0d1512` viền trên `3px` gradient, 3 cột gọn (Tóm tắt DreamTeam + Khám phá + Nghiên cứu/API Health), tuyên bố Sandbox đo ý định mua + nút **Progress + Back-to-Top (`conic-gradient`)** thông minh. |
 
-- **Peak:** Chặng 3 (Bento `1+2` Gói Giải Pháp).
-- **Signature Move:** **Interactive Need-to-Frame Switcher** (ở Chặng 2 hoặc Hero: chọn 1 trong 3 loại nhu cầu *Trang bán hàng* / *Bộ Prompt viết bài* / *Workflow chốt đơn* để preview framing chuyển trạng thái mượt bằng CSS `transform`/`opacity`).
-- **Mobile (`<= 700px`):** Hero xếp dọc (chữ trước, showcase gọn 4:3 sau), Bento `1+2` rớt về stack 1 cột thẳng hàng, tắt hiệu ứng `sticky` 2 cột ở Chặng 2.
-
----
-
-### 4.2. Trang Danh Mục `/products` — *Lọc, Tìm Kiếm & Ngữ Cảnh Kịch Bản*
-
-- **Page Grammar:** **6. Gallery / Catalog** (tập trung quét nhanh, lọc chính xác, giữ ngữ cảnh F11).
-- **Danh sách CẤM (Forbids):** Cấm hero ảnh lớn chiếm chỗ đẩy danh mục xuống dưới fold; cấm nhồi mô tả dài > 2 dòng trên card; cấm ẩn tiêu đề card khi hover.
-- **Feeling Curve (3 chặng):**
-  1. **Chủ động tìm kiếm** *(Active Control)* → **Compact Utility Header + Sticky Filter Ribbon**: Ô tìm kiếm từ khóa (`search_used`), chip lọc theo Loại (`Tất cả`, `Template`, `Prompt Pack`, `Workflow`), Dropdown/Chip Ngành hàng (`industry` lấy từ dữ liệu thực, vd: Mỹ phẩm, Thời trang, Gia dụng...), Khoảng giá (`Dưới 300k`, `300k–700k`, `Dưới 1 triệu`, hoặc `min_price`/`max_price`), Sắp xếp (`Mới nhất`, `Giá tăng dần`, `Giá giảm dần`). Bấm bất kỳ bộ lọc nào gọi `GET /api/products` & bắn `filter_applied`.
-  2. **So sánh thực tế — PEAK** *(Clear Evaluation)* → **Asymmetric Catalog Grid**: Desktop 2–3 cột thoáng (với card đầu tiên mỗi hàng hoặc featured type có độ nhấn viền tinh tế, hoặc zic-zac nhẹ theo hàng không quá lố để vẫn dễ so sánh giá), Mobile `375px` 1 cột gọn rõ. Mỗi card hiển thị: `ProductPlaceholderFrame` (`4:3`), Badge loại + `source_type`, Tên gói, 1 dòng `short_description`, Ngành hàng, Giá VND (`type-price`), 2 nút: `Xem chi tiết` và `Thêm vào giỏ` *(hoặc thêm nút `Chọn cho kịch bản` khi đang chạy F11)*.
-  3. **Chốt bước tiếp theo** *(Clear Next Step)* → **Pagination Bar + F11 Context Summary**.
-- **Trạng thái bắt buộc:**
-  - *Loading:* Skeleton card giữ đúng `aspect-ratio: 4 / 3` + chiều cao text ước lượng (`CLS = 0`).
-  - *Empty:* `EditorialEmptyIllustration` + thông điệp *"Chưa tìm thấy gói phù hợp với bộ lọc hiện tại"* + nút `Xóa toàn bộ bộ lọc`.
-  - *Error:* Banner thông báo lỗi từ `ApiError.error.message` + nút `Thử tải lại`.
+- **Peak:** Chặng 3 (Showcase Gallery + Live Filter Tabs nối dữ liệu DB thật).
+- **Signature Move:** **Interactive 3D Mockup Stack + In-Place Showcase Filter Tabs** (`rAF` mouse-tilt an toàn + lọc danh mục tức thì trên lưới Showcase chuẩn `DreamsCore`).
 
 ---
 
-### 4.3. Trang Chi Tiết Sản Phẩm `/products/[slug]` — *Preview, Bản Quyền & Bàn Giao*
+### 4.2. Trang Danh Mục `/products` (`F2`)
 
-- **Page Grammar:** **7. Split stage** (cột trái cuộn chi tiết & preview, cột phải ghim thông số chốt đơn / chọn gói F11).
-- **Danh sách CẤM (Forbids):** Cấm thiếu `source_type` hoặc `license_note`; cấm nhồi carousel thừa thư viện; cấm trôi cả 2 cột rối mắt trên desktop.
-- **Feeling Curve (3 chặng):**
-  1. **Định vị nhanh** *(Context Orientation)* → Breadcrumb (`Sản phẩm / Ngành / Tên gói`) + Scenario Return Pill (nếu đang trong F11).
-  2. **Kiểm chứng cấu trúc — PEAK** *(Tactile Inspection)* → **2-Column Split Stage**:
-     - *Cột trái (Scrollable):*
-       - **Interactive Placeholder Preview Stage:** Hiển thị `ProductPlaceholderFrame` cỡ lớn kèm **Signature Move: Nút chuyển Viewport `Desktop (1280px)` ↔ `Mobile (375px)`** bằng CSS thuần (cho phép chủ shop hình dung template/workflow hiển thị ra sao trên điện thoại khách hàng), kèm link `Mở Demo trực tiếp` nếu `demo_url` khác `null`.
-       - Khối **Gói này bao gồm gì (`specs.deliverables`)**, **Nền tảng phù hợp (`specs.platforms`)**, **Tech stack (`specs.tech_stack`)**, và **Hướng dẫn bàn giao & cài đặt (`specs.guide_summary`, `specs.setup_time_minutes`)**.
-     - *Cột phải (Sticky Dock `top: 88px`):*
-       - Tên gói, Giá VND (`type-price` cỡ lớn), Quy mô shop phù hợp (`specs.target_shop_size`).
-       - **Hộp Minh Bạch Bản Quyền (bắt buộc):** Badge `source_type` (`original` = *Nhóm tự thiết kế gốc*, `adapted` = *Điều chỉnh có ghi nguồn*, `licensed` = *Bản quyền hợp lệ*) + toàn văn `license_note`.
-       - Hành động chính: Nút `Thêm vào giỏ hàng` (`POST /api/cart` + bắn `add_to_cart`) và nút `Mua ngay (Sandbox)`.
-       - **Nếu đang trong F11 (`scenario_run_id` active):** Hiện thêm khối nổi bật `Chọn gói này cho Kịch bản hiện tại` → dẫn thẳng về `/experiment?selected_product_id=...` để chấm độ tự tin 1–5.
-  3. **Liên kết an tâm** *(Gentle Continuation)* → 2 gói gợi ý cùng ngành hoặc nút quay lại `/products`.
-- **Tracking:** Bắn `product_viewed` ngay khi trang load dữ liệu sản phẩm thành công.
-- **Mobile (`<= 700px`):** Bỏ `sticky` cột phải; hiển thị thanh CTA cố định gọn ở đáy màn hình (`Giá VND` + `Thêm vào giỏ` / `Chọn cho kịch bản`) tôn trọng `safe-area-inset-bottom`.
+- **Page Grammar:** **6. Gallery / Catalog** (quét nhanh, lọc chính xác, không đặt Hero ảnh lớn choán chỗ).
+- **Thành phần:**
+  - Compact Utility Header: Tiêu đề + bộ đếm tổng sản phẩm + nút Reset bộ lọc.
+  - Sticky Filter Ribbon: Thanh tìm kiếm (`search_used`), dải pill tab theo loại giống `.dg-fw-tabs` (`Tất cả`, `Template Website`, `Prompt Pack`, `Workflow`), bộ lọc `industry`, khoảng giá (`Dưới 300k`, `300k–700k`, `Dưới 1 triệu`), sắp xếp (`Mới nhất`, `Giá tăng dần`, `Giá giảm dần`).
+  - Lưới **3 cột Showcase Cards** (`.dg-showcase-card` với `aspect-ratio: 16/10` hoặc `4/3`, badge `product_type` + `source_type`, giá VND `tabular-nums`, 2 nút rõ trên card: `Xem chi tiết` & `Thêm vào giỏ` — kèm nút `Chọn cho kịch bản` khi đang trong F11).
+  - *Loading / Empty / Error:* Skeleton giữ `CLS = 0`; `EditorialEmptyIllustration` SVG 2 màu `--ink-soft` & `--accent`; banner lỗi API kèm nút `Thử tải lại`.
 
 ---
 
-### 4.4. Giỏ Hàng & Thanh Toán Sandbox `/cart` & `/checkout`
+### 4.3. Trang Chi Tiết Sản Phẩm `/products/[slug]` (`F3`)
 
-- **Page Grammar:** **3. Live surface** (mặt phẳng giao dịch thực dụng, không animation rườm rà, ưu tiên minh bạch giá DB và luồng test webhook).
-- **Danh sách CẤM (Forbids):** Cấm tự cộng giá từ `localStorage` để gửi lên server (luôn dùng `CartDto` trả về từ `GET /api/cart`); cấm đánh lừa người dùng rằng đây là cổng thanh toán tiền thật.
-- **Feeling Curve (3 chặng):**
-  1. **Kiểm tra đơn gọn nhẹ** *(Ledger Clarity)* → Stepper 3 bước ở đỉnh (`1. Giỏ hàng` → `2. Thanh toán Sandbox` → `3. Nhận file`).
-  2. **Đối chiếu & Mô phỏng thanh toán — PEAK** *(Confident Execution)*:
-     - **Ở `/cart`:** Bảng/danh sách item (`ProductPlaceholderFrame` nhỏ, tên gói, `product_type`, đơn giá VND, nút xóa `DELETE /api/cart`) + Khối Tóm tắt tạm tính (`subtotal_vnd`) + nút `Tiến hành Thanh toán Sandbox` → `/checkout`. *(Empty state: `EditorialEmptyIllustration` + nút `Xem danh mục sản phẩm`.)*
-     - **Ở `/checkout`:**
-       - Cột trái: Tóm tắt đơn hàng chốt giá từ server. Khi bấm `Tạo đơn Sandbox`, gọi `POST /api/orders` (gắn `assignment_id`, `visitor_id` nếu có) + bắn `checkout_started`.
-       - Cột phải (**Signature Move — Mock Sandbox Webhook Simulator Panel**): Sau khi có `CreateOrderResponse` (`order`, `payment_intent`), hiển thị rõ hộp mô phỏng cổng thanh toán nội bộ (`mock_sandbox`) với mã đơn `order_code`, số tiền `amount_vnd`, và **2 nút kiểm thử luồng rõ ràng**:
-         1. `Mô phỏng Thanh toán Thành công (Paid)` → gửi webhook `status: 'paid'`, bắn sự kiện `purchase`, và chuyển sang `/orders/[id]`.
-         2. `Mô phỏng Thanh toán Thất bại (Failed)` → gửi webhook `status: 'failed'`, hiển thị trạng thái lỗi rõ ràng + nút `Thử thanh toán lại`.
-       - Ghi chú chân khối: *"Thanh toán Sandbox phục vụ đo ý định mua trong đồ án nghiên cứu, không thu tiền thật."*
+- **Page Grammar:** **7. Split stage** (trái cuộn xem preview & specs, phải ghim dock mua hàng / chọn gói F11).
+- **Thành phần:**
+  - Breadcrumb + Scenario Return Pill (nếu đang chạy F11).
+  - *Cột trái:* **CSS Desktop (`1280px`) ↔ Mobile (`375px`) Viewport Switcher**, khối `deliverables`, `platforms`, `tech_stack`, `guide_summary`, `setup_time_minutes`.
+  - *Cột phải (Sticky Dock):* Giá VND lớn (`type-price`), quy mô shop phù hợp, **Hộp Minh Bạch Bản Quyền** (`source_type`: `original` | `adapted` | `licensed` + toàn văn `license_note`), nút `Thêm vào giỏ` & `Mua ngay (Sandbox)`, và khối nổi bật `Chọn gói này cho Kịch bản F11` (nếu đang có `scenario_run_id`).
+  - *Mobile (`<= 700px`):* Bỏ sticky, hiện thanh CTA cố định ở đáy màn hình tôn trọng `safe-area-inset-bottom`.
 
 ---
 
-### 4.5. Đơn Hàng & Giao Hàng Số `/orders/[id]` (F6)
+### 4.4. Giỏ Hàng `/cart`, Thanh Toán `/checkout` & Giao Hàng Số `/orders/[id]` (`F4–F6`)
 
-- **Page Grammar:** **3. Live surface** (bảng trạng thái đơn & kho tải file an toàn).
-- **Feeling Curve (2 chặng):**
-  1. **Xác nhận trạng thái đơn** *(Instant Status)* → Header đơn hàng (`order_code`, `created_at`, badge trạng thái `pending` / `paid` / `failed`, tổng tiền `total_vnd`, `paid_at`). Nếu `failed` hoặc `pending`, hiện nút quay lại thanh toán sandbox hoặc liên hệ hỗ trợ.
-  2. **Nhận bàn giao file — PEAK** *(Secure Fulfillment)* → Khi `status === 'paid'`, hiển thị danh sách `download_grants`:
-     - Tên sản phẩm tương ứng từ `items`.
-     - Thanh trạng thái lượt tải: `Đã tải X / Y lượt` (`download_count / max_downloads`, `tabular-nums`).
-     - Thời hạn link: `Hết hạn lúc DD/MM/YYYY HH:mm` (`expires_at`).
-     - Nút `Tải gói sản phẩm`: Gọi `GET /api/downloads/:token`, nhận `DownloadAccessResponse.download_url` (Signed URL), kích hoạt tải file và bắn `download_completed`.
-     - **Xử lý lỗi `422` / `403` rõ ràng:** Nếu trả về `DOWNLOAD_EXPIRED` hoặc `DOWNLOAD_LIMIT_EXCEEDED`, disable nút tải và hiện badge cảnh báo giải thích lý do ngay trên dòng grant đó.
+- **Page Grammar:** **3. Live surface** (thực dụng, minh bạch giá 100% từ DB).
+- **Thành phần:**
+  - **3-Step Stepper:** `1. Giỏ hàng` → `2. Thanh toán Sandbox` → `3. Nhận file`.
+  - **`/cart`:** Danh sách item từ `GET /api/cart`, nút xóa, tạm tính `subtotal_vnd`, CTA `Tiến hành Thanh toán Sandbox`.
+  - **`/checkout`:** Cột trái đối chiếu đơn (`POST /api/orders` + bắn `checkout_started`); Cột phải là **Mock Sandbox Webhook Simulator Panel** với 2 nút test (`Mô phỏng Thanh toán Thành công (Paid)` → bắn `purchase` & chuyển `/orders/[id]`, `Mô phỏng Thanh toán Thất bại (Failed)` → hiện lỗi + thử lại).
+  - **`/orders/[id]`:** Header trạng thái đơn (`pending` / `paid` / `failed`), bảng `download_grants` hiển thị `download_count / max_downloads`, `expires_at`, nút `Tải gói sản phẩm` (`GET /api/downloads/:token` + bắn `download_completed`) và xử lý rõ lỗi `422 DOWNLOAD_EXPIRED` / `DOWNLOAD_LIMIT_EXCEEDED`.
 
 ---
 
-### 4.6. Chế Độ Thí Nghiệm A/B `/experiment` (F11)
+### 4.5. Chế Độ Thí Nghiệm A/B `/experiment` (`F8`, `F11`)
 
-- **Page Grammar:** **1. Filmic one-shot** (trải nghiệm tập trung, tuyến tính từng chặng, loại bỏ nhiễu).
-- **Danh sách CẤM (Forbids):** Cấm lộ `expected_product_id` hoặc `rubric_note` dưới mọi hình thức trong lúc làm bài; cấm cho phép tự chuyển đổi `chatbot_on`/`chatbot_off` bằng tay (chỉ server quyết định theo `step_order` và `variant` AB/BA); cấm ép đăng ký tài khoản email/mật khẩu mới được tham gia.
-- **Feeling Curve (4 chặng tuyến tính khép kín):**
-
-| Pha | Cảm xúc | Thành phần giao diện | API & Tracking liên quan |
-|---|---|---|---|
-| **Pha 1: Consent & Hồ sơ ngắn** | **Minh bạch & An tâm** *(Informed Trust)* | Màn hình đồng ý tham gia nghiên cứu: giải thích mục đích ẩn danh, dữ liệu thu thập chỉ gắn với `participant_code`, thời gian dự kiến ~5 phút (2 kịch bản). Form phụ tùy chọn `shop_profile` (ngành hàng, quy mô 1–3 người, kênh bán, vai trò `shop_owner` / `student_roleplay`) + checkbox bắt buộc `Tôi đồng ý tham gia`. | `POST /api/experiments/consent` → Nhận `participant_code` (vd `P-018`), `variant` (`abba_on_first` / `abba_off_first`), `active_variant`. |
-| **Pha 2: Thẻ Kịch Bản & Bấm Giờ** | **Tập trung nhiệm vụ** *(Mission Clarity)* | Hiển thị `participant_code`, thanh bước `Lượt 1 / 2` hoặc `Lượt 2 / 2`, **AB/BA Condition Banner** báo rõ lượt này **CÓ Trợ lý ảo** (`chatbot_on`, nút mở Chatbot nổi bật) hay **KHÔNG có Trợ lý ảo** (`chatbot_off`, hướng dẫn tự duyệt danh mục `/products`).<br>Hiển thị Thẻ Kịch Bản (`scenario.code`, `title`, `prompt_text`, `industry`, `budget_vnd`) + **Đồng hồ đếm thời gian thực (`tabular-nums`)** + nút `Đi tới Danh mục sản phẩm để chọn gói` (`/products`). | `GET /api/scenarios/next` → Nhận `scenario_run_id`, `scenario`, `started_at`. Bắn `scenario_started`. |
-| **Pha 3: Chốt Gói & Chấm Tự Tin — PEAK** | **Quyết đoán & Phản hồi** *(Decisive Reflection)* | Sau khi người tham gia chọn 1 gói (từ `/products`, `/products/[slug]` hoặc chọn trực tiếp trong dropdown/card tại `/experiment`), hiển thị tóm tắt gói đã chọn (`selected_product_id`) + **Thanh Likert 1–5 chạm lớn** (*1: Rất không chắc chắn → 5: Rất tự tin*) + ô ghi chú lý do ngắn (`decision_note`, tùy chọn) + nút `Xác nhận hoàn thành kịch bản`. | `POST /api/scenarios/:id/complete` + bắn `scenario_completed`. |
-| **Pha 4: Chuyển lượt / Kết thúc** | **Hoàn tất nhẹ nhàng** *(Satisfying Closure)* | Nếu `has_next_scenario === true`: Hiện màn chuyển tiếp ngắn thông báo vừa xong lượt 1, lượt 2 sẽ **đảo trạng thái trợ lý ảo** (`AB → BA` hoặc `BA → AB`) + nút `Nhận kịch bản tiếp theo`.<br>Nếu `is_finished === true`: Hiện màn hình cảm ơn kèm `participant_code` và nút quay lại cửa hàng tự do. | Gọi lại `GET /api/scenarios/next` cho lượt 2. |
-
-- **Signature Move:** **AB/BA Crossover State Indicator + Live Tabular Timer + Tactile Likert 1–5 Selector** (các nút 1–5 có nhãn mô tả rõ bên dưới, vùng chạm tối thiểu `48×48px` trên mobile `375px`).
+- **Page Grammar:** **1. Filmic one-shot** (tập trung, tuyến tính 4 pha, không lộ `expected_product_id` hay `rubric_note`).
+- **4 Pha tuyến tính:**
+  1. **Consent & Hồ sơ shop ngắn:** Giải thích ẩn danh `participant_code`, form tùy chọn `shop_profile`, checkbox đồng ý (`POST /api/experiments/consent`).
+  2. **Thẻ Kịch Bản & Bấm Giờ:** **AB/BA Condition Banner** báo rõ lượt hiện tại `chatbot_on` hay `chatbot_off`, hiển thị `scenario.code`, `title`, `prompt_text`, `industry`, `budget_vnd`, **Live Tabular Timer** (`tabular-nums`), nút `Đi tới Danh mục sản phẩm` (`/products`).
+  3. **Chốt Gói & Chấm Tự Tin:** Tóm tắt `selected_product_id` + **Thang Likert 1–5 chạm lớn** (`>= 48×48px`) + `decision_note` → `POST /api/scenarios/:id/complete` + `scenario_completed`.
+  4. **Đảo Chéo / Hoàn Tất:** Thông báo đảo trạng thái (`AB → BA` / `BA → AB`) cho lượt 2 hoặc màn cảm ơn kèm `participant_code` khi `is_finished === true`.
 
 ---
 
-### 4.7. Chatbot Drawer / Floating Panel (F7 Overlay)
+### 4.6. Đăng Nhập / Đăng Ký `/auth` (`F1` — Split-Panel Theo Mẫu `DreamsCore` `login.html` & `register.html`)
 
-- **Điều kiện hiển thị tuyệt đối:**
-  - **CHỈ** render nút kích hoạt nổi (Floating Action Button) và Panel khi `active_variant === 'chatbot_on'` (khi `chatbot_off`, không render cả nút lẫn DOM drawer, đồng thời backend chặn `403 CHATBOT_DISABLED_FOR_VARIANT`).
-- **Vị trí & Kích thước Responsive:**
-  - *Desktop (`> 700px`):* Nút neo ở góc dưới-phải (`bottom: 24px; right: 24px`); khi mở trượt thành Side Drawer rộng `400px`, cao `min(680px, 85dvh)` bo góc `--radius-lg`, có viền `--border-strong` và `--shadow-lg` (không chặn toàn màn hình để user vẫn nhìn thấy sản phẩm bên trái).
-  - *Mobile (`<= 700px`):* Khi mở bung thành Bottom Sheet / Full-height Modal (`100dvh`, `overscroll-behavior: contain`) có nút Đóng `44×44px` rõ ràng ở góc trên-phải.
-- **Cấu trúc bên trong Panel:**
-  1. **Header + Badge Trạng thái LLM (Bắt buộc):**
-     - Tên: *Trợ lý Tư vấn Gói Số*.
-     - **Status Badge:**
-       - Nếu đang chạy LLM thật (`model_name` là model Gemini thật): Badge xanh/trung tính *"AI RAG (Gemini) • Chỉ gợi ý gói có trong DB"*.
-       - Nếu đang ở chế độ **Stub / Chưa nối LLM key thật** (vd `model_name` chứa `stub`/`mock` hoặc flag cấu hình server): Badge cảnh báo màu hổ phách (`--status-warning-bg` / `--status-warning`): **"Chế độ Stub — Chưa nối LLM thật (Dữ liệu thử nghiệm)"** để người dùng và hội đồng nhận diện minh bạch ngay trên UI.
-  2. **Vùng Hội Thoại:**
-     - Lời chào ban đầu + tối đa 3 Quick Prompt Chips gợi ý theo ngành chủ shop hay hỏi (vd: *"Shop mỹ phẩm ngân sách dưới 1 triệu"*, *"Cần prompt viết mô tả TikTok Shop"*).
-     - Bong bóng tin nhắn User (`--accent` / `--accent-ink` hoặc `--bg-surface-subtle` dễ đọc) & Assistant (`--bg-surface` viền hairline).
-     - **Suggested Product Cards (tối đa 3 card từ `assistant_message.suggested_products`):** Mỗi card hiện thumbnail framing nhỏ, tên gói, `product_type`, giá VND (`tabular-nums`), và dòng `reason` ngắn gọn từ RAG. **Khi bấm vào card:** bắn sự kiện `suggestion_clicked` (kèm `product_id`, `session_id`, `scenario_run_id`) rồi mở `/products/[slug]`.
-  3. **Input Bar:** Textarea tự giãn tối đa 4 dòng (giới hạn `1500` ký tự theo `sendChatMessageSchema`) + nút Gửi + trạng thái `isLoading` (*"Đang tra cứu danh mục..."*) + xử lý lỗi `429 RATE_LIMIT_EXCEEDED` hoặc `422 CONSENT_REQUIRED` ngay trong luồng chat.
+- **Page Grammar:** **7. Split stage (Auth Split-Panel)**.
+- **Bố cục 2 cột `lg:grid-cols-2` (`min-height: calc(100dvh - var(--header-height))`):**
+  - **Cột trái (Form — `max-width: 420px` căn giữa):**
+    - Logo **DreamTeam** + chuyển Tab `Đăng nhập` / `Đăng ký`.
+    - Input kèm icon SVG bên trái (`Mail`, `Lock`, `User`, `Store`) và nút ẩn/hiện mật khẩu.
+    - Ở Tab `Đăng ký`: Hiện thêm ô `full_name`, `shop_category` (tùy chọn) và **Password Strength Meter 4 nấc** (CSS thuần đồng bộ với `register.html`).
+    - **Callout thông tin (`--status-info`):** *"Bạn đang muốn tham gia thí nghiệm F11? Không cần đăng nhập hoặc tạo tài khoản — Bấm vào đây để bắt đầu ngay"* → link `/experiment`.
+  - **Cột phải (Brand Panel — ẩn trên `<= 991px`, nền `.dg-dark-band` Emerald gradient `#146553 → #0d1512` + lưới chấm):**
+    - Tiêu đề *"Mọi công cụ số tinh gọn cho chủ shop 1–3 người"*.
+    - 3 giá trị thực tế kèm icon check Emerald Mint: (1) *Template & Prompt tối ưu cho Shopee, TikTok Shop, Facebook*; (2) *Minh bạch bản quyền `original / adapted / licensed`*; (3) *Trợ lý RAG đối chiếu 100% ID thật từ danh mục*.
+    - **Thẻ Kịch Bản Mẫu F11** (thẻ glass `bg-white/10 border-white/15` trình bày tóm tắt 1 kịch bản thí nghiệm thật — **tuyệt đối không dùng testimonial giả `Marcus Lee` hay `12,000+ teams`**).
 
 ---
 
-### 4.8. Đăng Nhập / Đăng Ký `/auth` (F1) & Dashboard Phân Tích `/admin/analytics` (F10)
+### 4.7. Dashboard Phân Tích `/admin/analytics` (`F10` — KPI Cards Theo Mẫu `DreamsCore` Dashboard)
 
-- **Page Grammar:** **3. Live surface (Operational)** — Rõ ràng, trung thực dữ liệu, không trang trí thừa.
-- **Màn hình `/auth`:**
-  - Khung card căn giữa (`max-width: 440px`), chuyển tab mượt `Đăng nhập` / `Đăng ký`.
-  - Form Đăng ký gồm: `full_name`, `email`, `password`, `shop_category` (tùy chọn).
-  - **Callout quan trọng (`--status-info`):** *"Bạn đang muốn tham gia thí nghiệm F11? Không cần đăng nhập hoặc tạo tài khoản — Bấm vào đây để bắt đầu ngay"* → link `/experiment`.
-- **Màn hình `/admin/analytics` (`role === 'admin'`):**
-  - **Thanh Kiểm Soát Dữ Liệu Mô Phỏng (`is_simulated`) — Bắt buộc theo `RULES.md` Mục 12:**
-    - Toggle/Segmented Filter: `Chỉ dữ liệu thật (Mặc định: include_simulated=false)` vs `Bao gồm dữ liệu mô phỏng (include_simulated=true)`.
-    - **Banner Cảnh Báo Tĩnh Khi Bật `include_simulated=true`:** Dải `--status-warning-bg` toàn chiều rộng ghi rõ: *"ĐANG HIỂN THỊ DỮ LIỆU MÔ PHỎNG (`is_simulated = true`) — Tuyệt đối không dùng bộ số liệu này để kết luận báo cáo thí nghiệm."*
-  - **4 Khối Dữ Liệu Khớp `AdminDashboardSummaryDto`:**
-    1. **KPI Tổng Quan (4 ô số `tabular-nums`):** Tổng người tham gia (`total_participants`), Đã consent (`consented_participants`), Lượt hoàn thành (`total_completed_runs`), Tổng đơn sandbox (`orders_summary.paid_orders` / `total_orders` kèm nhãn *"Ý định mua sandbox"*).
-    2. **Bảng So Sánh Đối Chứng A/B (`variants[]`):** So sánh `chatbot_on` vs `chatbot_off` trên 5 cột: Số lượt (`completed_runs`), Tỉ lệ chọn đúng (`accuracy_rate`), Thời gian TB (`avg_duration_seconds`), Độ tự tin TB (`avg_confidence_score`), Số ý định mua (`sandbox_purchase_count`).
-    3. **Phễu 14 Sự Kiện Chuẩn (`EVENT_NAMES`):** Hiển thị 14 tên sự kiện từ `src/lib/tracking/events.ts` tách rõ 3 sự kiện chỉ phát sinh khi `chatbot_on` (`chat_opened`, `chat_message_sent`, `product_suggested`).
-    4. **Chi Phí & Hiệu Năng RAG (`rag_metrics`):** Tổng tin nhắn bot, Độ trễ TB (`avg_latency_ms`), P95 Latency (`p95_latency_ms`), Tổng token (`total_tokens_used`), Tổng chi phí USD (`total_cost_usd`), và Chi phí trung bình/lượt (`avg_cost_per_message_usd`).
+- **Page Grammar:** **3. Live surface (Operational Cockpit)** — chỉ truy cập khi `role === 'admin'`.
+- **Cấu trúc đồng bộ `tailwind/index.html`:**
+  1. **Executive Hero Banner:** Khối gradient Emerald (`#146553 → #187f65 → #0d1512`) bo `16px` có lưới vuông mờ, trạng thái `Live`, nút `Làm mới dữ liệu`, và **Công tắc lọc dữ liệu `include_simulated`** (`false` mặc định / `true`).
+  2. **Simulated Data Guard Banner:** Khi `include_simulated === true`, hiện dải cảnh báo `--status-warning-bg` toàn chiều rộng ghi rõ *"ĐANG HIỂN THỊ DỮ LIỆU MÔ PHỎNG (`is_simulated = true`) — Tuyệt đối không dùng cho kết luận báo cáo."*
+  3. **4 Executive KPI Cards (`bento-grid` 4 cột desktop / 2 tablet / 1 mobile):** Theo đúng anatomy thẻ KPI của `DreamsCore` (icon chip `.dg-grad-*` góc trên-trái + pill badge ngữ cảnh góc trên-phải + nhãn chỉ số + số liệu lớn `tabular-nums` + 2 dòng metadata phụ phía dưới) nối trực tiếp `AdminDashboardSummaryDto`:
+     - Card 1: **Người tham gia** (`total_participants`) — metadata: *Đã đồng ý consent (`consented_participants`)*, *Tỷ lệ consent*.
+     - Card 2: **Lượt hoàn thành F11** (`total_completed_runs`) — metadata: *Thiết kế Within-subject AB/BA*.
+     - Card 3: **Đơn hàng Sandbox** (`orders_summary.paid_orders / total_orders`) — metadata: *Tổng giá trị ý định mua (`total_sandbox_value_vnd`)*.
+     - Card 4: **Chi phí & Tốc độ RAG** (`rag_metrics.avg_cost_per_message_usd`) — metadata: *P95 Latency (`p95_latency_ms` ms)* & *Tổng token (`total_tokens_used`)*.
+  4. **Bảng So Sánh Đối Chứng A/B (`variants[]`):** `chatbot_on` vs `chatbot_off` (Số lượt, Accuracy chọn đúng, Thời gian TB, Độ tự tin TB 1–5, Số ý định mua sandbox).
+  5. **Phễu 14 Sự Kiện Chuẩn (`EVENT_NAMES`):** Tách rõ 3 sự kiện `chatOnly` (`chat_opened`, `chat_message_sent`, `product_suggested`).
+  6. **Tóm Tắt Kinh Tế Đơn Vị RAG (`rag_metrics`):** Tổng tin nhắn bot, Avg/P95 Latency, Tổng tokens, Tổng USD & Cost/Query.
 
 ---
 
-## 5. Bản Đồ Tích Hợp UI ↔ API Contract & 14 Sự Kiện Tracking
+### 4.8. Trợ Lý Ảo RAG Drawer (`AdvisorChatDrawer` — `F7` Overlay)
 
-> Bảng đối chiếu để `ai-template-2-fe` và `ai-skill-design-web` nối đúng endpoint & sự kiện theo `RULES.md` Mục 9–10.
-
-| Màn hình / Tương tác | API Endpoint | Tracking Event (`POST /api/events`) | Ghi chú bảo mật / Trạng thái |
-|---|---|---|---|
-| Mở / chuyển bất kỳ trang nào | — | `page_viewed` | Gửi kèm `visitor_id`, `assignment_id`, `variant`, `scenario_run_id` (nếu có) |
-| Tìm kiếm ở `/products` | `GET /api/products?q=...` | `search_used` | Debounce `350ms` hoặc khi submit Enter |
-| Bấm chip lọc ngành / loại / giá | `GET /api/products?industry=...` | `filter_applied` | Gửi `properties: { industry, product_type, min_price, max_price }` |
-| Mở trang `/products/[slug]` | `GET /api/products/:id` | `product_viewed` | Hiển thị `source_type`, `license_note` |
-| Consent tại `/experiment` | `POST /api/experiments/consent` | — | Sinh `participant_code`, lưu session HTTP-only |
-| Nhận thẻ kịch bản F11 | `GET /api/scenarios/next` | `scenario_started` | Không trả `expected_product_id` về client |
-| Hoàn thành thẻ kịch bản F11 | `POST /api/scenarios/:id/complete` | `scenario_completed` | Gửi `selected_product_id`, `confidence_score` (1–5) |
-| Mở Chatbot Drawer | `GET /api/chat/sessions` | `chat_opened` | Chỉ cho phép khi `active_variant === 'chatbot_on'` |
-| Gửi câu hỏi cho Chatbot | `POST /api/chat` | `chat_message_sent` | Server chặn `403` nếu `chatbot_off` |
-| Bot trả về `suggested_products` | *(response của `/api/chat`)* | `product_suggested` | Chỉ hiển thị sản phẩm đã ground tồn tại trong DB |
-| Bấm vào card gợi ý trong Chatbot | Điều hướng `/products/[slug]` | `suggestion_clicked` | Giữ `scenario_run_id` nếu đang chạy F11 |
-| Bấm `Thêm vào giỏ` | `POST /api/cart` | `add_to_cart` | Server hydrate giá VND từ bảng `products` |
-| Mở/bắt đầu thanh toán `/checkout` | `POST /api/orders` | `checkout_started` | Cấm client gửi giá; server tự tính `total_vnd` |
-| Webhook Sandbox trả `paid` | `POST /api/payments/webhook` | `purchase` | Đánh dấu ý định mua sandbox; phát hành `download_grants` |
-| Tải file thành công ở `/orders/[id]` | `GET /api/downloads/:token` | `download_completed` | Kiểm tra `expires_at` và `max_downloads` |
+- **Điều kiện hiển thị tuyệt đối:** Chỉ render FAB (Emerald gradient pill) và Drawer khi `active_variant === 'chatbot_on'`. Khi `chatbot_off`, không render DOM drawer và backend chặn `403 CHATBOT_DISABLED_FOR_VARIANT`.
+- **Responsive:** Desktop (`> 700px`): Side Drawer `410px` × `min(680px, 84dvh)` bo `--radius-lg`, viền `--border-strong`, `--shadow-lg`. Mobile (`<= 700px`): Full-height Bottom Sheet (`100dvh`, `overscroll-behavior: contain`) có nút đóng `44×44px`.
+- **Thành phần bên trong:**
+  - Header + **Mode Badge bắt buộc:** Xanh Emerald *"Gemini RAG • 100% Grounding DB"* khi chạy LLM thật; Hổ phách `--status-warning` *"Chế độ Stub — Dữ liệu thử nghiệm"* nếu `model_name` chứa `stub`/`mock`.
+  - Tối đa 3 Quick Prompt Chips theo nhu cầu chủ shop.
+  - Bong bóng User & Assistant + **Suggested Product Cards (tối đa 3 thẻ từ `suggested_products`):** Bấm thẻ bắn `suggestion_clicked` và mở `/products/[slug]`.
+  - Input bar (tối đa `1500` ký tự) + trạng thái loading + xử lý lỗi `429` / `422`.
 
 ---
 
-## 6. Quy Chuẩn Chống Lỗi QA (8 Cổng Bắt Buộc Cho `ai-template-2-fe` & `web-qa-verifier`)
+## 5. Bản Đồ API Contract & 14 Sự Kiện Tracking
 
-Mọi code UI và motion dựng từ spec này **phải** tuân thủ toàn bộ 8 cổng kiểm định từ Đợt 1 → Đợt 4:
+Giữ nguyên 100% danh sách 14 sự kiện chuẩn trong [`src/lib/tracking/events.ts`](file:///d:/Dự%20án%20web%20tốt%20nghiệp/src/lib/tracking/events.ts) và [`docs/API-CONTRACT.md`](file:///d:/Dự%20án%20web%20tốt%20nghiệp/docs/API-CONTRACT.md). Mọi sự kiện gửi `POST /api/events` phải đủ 4 trường bắt buộc (`visitor_id`, `assignment_id`, `variant`, `created_at` kèm `scenario_run_id` khi trong F11).
 
-1. **Không Preloader Giả:** Tuyệt đối không đặt màn hình chờ `1–4s` lúc mở trang chủ hoặc khi chuyển trang con (`delay(0)` tức thì).
-2. **Không `.fade-anim` Che Nội Dung:** Không đặt `opacity: 0` với ngưỡng kích hoạt trễ (`top 85%`) hay `delay >= 0.25s` làm người dùng thấy mảng trắng khi cuộn nhanh. Mọi nội dung chính trên fold đầu tiên phải hiển thị sẵn sàng ngay (`opacity: 1`).
-3. **Skeleton & `aspect-ratio` Cố Định (`CLS = 0`):** Mọi ảnh và placeholder framing `4:3` / `16:9` phải khai báo rõ `aspect-ratio` để không nhảy layout khi dữ liệu về.
-4. **Không Nạp Thừa / Trùng Thư Viện:** Không kéo `Swiper` + `Owl`, `WOW.js`, hay các GSAP plugin không dùng. Ưu tiên CSS transitions/animations nhẹ (`transform`, `opacity`) chạy trên GPU.
-5. **Tôn Trọng `prefers-reduced-motion` & Touch Devices:** Mọi chuyển động trang trí (preview switcher, drawer slide) tự động tắt hoặc chuyển về tức thì khi `prefers-reduced-motion: reduce)`. Mọi hover effect bọc trong `@media (hover: hover) and (pointer: fine)` — không ẩn tiêu đề card khi hover.
-6. **Không Hardcode Màu Light Sang Dark:** Mọi gradient chữ, border, shadow, SVG logo đều đọc từ biến CSS trong `tokens.css` & `themes.css`.
-7. **Null-Check & Cleanup An Toàn:** Không dùng `window.onscroll = ...` hay `setInterval` trong `mousemove`; không gọi `ScrollTrigger.getAll().kill()` toàn cục nếu có dùng GSAP `matchMedia`.
-8. **Responsive Sạch Tại `375px` & Nội Dung Thật:**
-   - Kiểm tra `0px` tràn ngang (`horizontal overflow`) tại `375px` cho tất cả 8 màn hình.
-   - Touch target tối thiểu `44×44px` cho nút bấm, bộ lọc chip, nút Likert `1–5` và nút Đóng Drawer.
-   - `0%` nội dung `Lorem ipsum`, `href="#"` chết, hay lỗi copy-paste mô tả trùng lặp.
+---
+
+## 6. Checklist Kiểm Định QA 8 Cổng Dành Cho `ai-template-2-fe` & `web-qa-verifier`
+
+1. **Mở đầu tức thì `0ms`:** Không đặt màn hình preloader giả; Hero H1 & Mockup Stack hiển thị ngay `opacity: 1`.
+2. **Không dùng AOS / `.fade-anim` trễ:** Reveal nhẹ bằng `IntersectionObserver` (`rootMargin: '-6% 0px'`, `translate3d <= 12px`) hoặc hiển thị sẵn — không gây mảng trắng khi cuộn nhanh.
+3. **Zero Library Bloat & Zero Icon Font `▯`:** Không dùng Bootstrap, jQuery, AOS, Swiper, Owl, GLightbox; dùng Inline SVG Lucide-style components + native `<dialog>` + CSS Scroll Snap.
+4. **CLS = 0:** Mọi frame `16:10` / `4:3`, skeleton và cụm Typewriter giữ sẵn kích thước cố định.
+5. **Khóa Hover & Reduced Motion:** Mọi hover elevation/overlay/3D tilt bọc trong `@media (hover: hover) and (pointer: fine)` và `prefers-reduced-motion: no-preference`; không ẩn tiêu đề card khi hover.
+6. **Đồng bộ Light/Dark qua Tokens:** Mọi class đều dùng CSS variables từ `tokens.css` & `themes.css`; các khối tối cố định trên nền sáng (Hero, Features, Dark CTA, Footer, Auth panel) dùng scoped `.dg-dark-band` để không lệch chữ.
+7. **An toàn Tiếng Việt & Mobile `375px`:** Bỏ `white-space: nowrap` trên tiêu đề/Typewriter ở mobile; gắn `.text-line-clip` ở dòng có mask/clip; `0px` tràn ngang tại `375px`; touch target tối thiểu `44×44px` (`48×48px` cho Likert `1–5`); Back-to-Top `conic-gradient` tự ẩn khi cuộn xuống trên mobile để không che CTA đáy.
+8. **100% Nội dung & Nghiệp vụ thật:** Không còn testimonial giả, số liệu bịa, `Lorem ipsum`, `cdn-cgi`, hay `href="#"` chết.

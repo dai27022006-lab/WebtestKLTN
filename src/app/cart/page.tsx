@@ -4,6 +4,13 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
 import {
+  ArrowRight,
+  Download,
+  Lock,
+  ShoppingBag,
+  X,
+} from '@/components/icons/DreamIcons';
+import {
   formatDateTimeVi,
   formatVnd,
   ORDER_STATUS_META,
@@ -39,15 +46,21 @@ export default function CartPage() {
       <div className="container">
         <div className="stepper" aria-label="Tiến trình giao dịch Sandbox">
           <div className="stepper__item stepper__item--active">
-            <span className="badge badge--accent">1</span>
+            <span className="badge badge--accent">
+              <ShoppingBag size={12} /> 1
+            </span>
             <span>Giỏ hàng</span>
           </div>
           <div className="stepper__item">
-            <span className="badge">2</span>
+            <span className="badge">
+              <Lock size={12} /> 2
+            </span>
             <span>Thanh toán Sandbox</span>
           </div>
           <div className="stepper__item">
-            <span className="badge">3</span>
+            <span className="badge">
+              <Download size={12} /> 3
+            </span>
             <span>Nhận file qua token</span>
           </div>
         </div>
@@ -64,7 +77,8 @@ export default function CartPage() {
               disabled={isLoading}
               onClick={() => void clearAll()}
             >
-              Xóa toàn bộ giỏ
+              <X size={14} />
+              <span>Xóa toàn bộ giỏ</span>
             </button>
           )}
         </div>
@@ -81,7 +95,7 @@ export default function CartPage() {
 
         {cart.items.length === 0 ? (
           <div
-            className="surface-card"
+            className="surface-card dg-panel"
             style={{
               textAlign: 'center',
               paddingBlock: '48px',
@@ -98,8 +112,9 @@ export default function CartPage() {
               Khám phá danh mục template, prompt pack hoặc workflow để thêm vào
               giỏ và kiểm thử luồng thanh toán Sandbox.
             </p>
-            <Link href="/products" className="btn btn--primary">
-              Xem danh mục sản phẩm
+            <Link href="/products" className="dg-btn-purchase">
+              <span>Xem danh mục sản phẩm</span>
+              <ArrowRight size={15} />
             </Link>
           </div>
         ) : (
@@ -108,7 +123,7 @@ export default function CartPage() {
               {cart.items.map((item) => (
                 <article
                   key={item.product_id}
-                  className="surface-card cart-item-card"
+                  className="surface-card dg-panel cart-item-card"
                 >
                   <ProductPlaceholderFrame
                     productType={item.product_type}
@@ -117,7 +132,7 @@ export default function CartPage() {
                   />
 
                   <div style={{ display: 'grid', gap: '4px', minWidth: 0 }}>
-                    <span className="type-caption">
+                    <span className="type-caption" style={{ color: 'var(--accent)', fontWeight: 700 }}>
                       {PRODUCT_TYPE_LABELS[item.product_type]}
                     </span>
                     <Link href={`/products/${item.slug}`}>
@@ -134,7 +149,7 @@ export default function CartPage() {
                   </div>
 
                   <div className="cart-item-card__meta">
-                    <strong className="type-price">
+                    <strong className="type-price" style={{ color: 'var(--accent)' }}>
                       {formatVnd(item.line_total_vnd)}
                     </strong>
                     <button
@@ -150,7 +165,7 @@ export default function CartPage() {
               ))}
             </div>
 
-            <aside className="surface-card" style={{ display: 'grid', gap: '16px' }}>
+            <aside className="surface-card dg-panel" style={{ display: 'grid', gap: '16px' }}>
               <h2 className="type-h3" style={{ margin: 0 }}>
                 Tóm tắt tạm tính (Từ Server)
               </h2>
@@ -167,13 +182,21 @@ export default function CartPage() {
                 <span className="type-body-sm">
                   Tổng ({cart.item_count} gói)
                 </span>
-                <strong className="type-price" style={{ fontSize: '1.5rem' }}>
+                <strong
+                  className="type-price"
+                  style={{ fontSize: '1.5rem', color: 'var(--accent)' }}
+                >
                   {formatVnd(cart.subtotal_vnd)}
                 </strong>
               </div>
 
-              <Link href="/checkout" className="btn btn--primary btn--lg btn--block">
-                Tiến hành Thanh toán Sandbox
+              <Link
+                href="/checkout"
+                className="dg-btn-purchase btn--block"
+                style={{ justifyContent: 'center' }}
+              >
+                <span>Tiến hành Thanh toán Sandbox</span>
+                <ArrowRight size={16} />
               </Link>
 
               <p className="type-caption" style={{ margin: 0 }}>
@@ -190,7 +213,7 @@ export default function CartPage() {
             <h2 className="type-h3" style={{ margin: 0 }}>
               Đơn hàng Sandbox gần đây của bạn
             </h2>
-            <div className="data-table-wrap">
+            <div className="data-table-wrap dg-panel">
               <table className="data-table">
                 <thead>
                   <tr>

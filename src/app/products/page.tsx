@@ -1,9 +1,16 @@
 'use client';
 
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { Suspense, useCallback, useEffect, useRef, useState } from 'react';
 
+import {
+  ArrowRight,
+  CheckCircle2,
+  Filter,
+  Search,
+  ShoppingBag,
+} from '@/components/icons/DreamIcons';
 import {
   formatVnd,
   PRODUCT_TYPE_LABELS,
@@ -37,16 +44,33 @@ const MAX_PRICE_OPTIONS = [
   { label: 'Dưới 1.000.000đ', value: '1000000' },
 ];
 
-export default function ProductsCatalogPage() {
+function parseInitialProductType(val: string | null): '' | ProductType {
+  if (val === 'template' || val === 'prompt_pack' || val === 'workflow') {
+    return val;
+  }
+  return '';
+}
+
+function ProductsCatalogContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { addItem } = useCart();
   const { scenarioState, track } = useExperiment();
 
-  const [searchInput, setSearchInput] = useState('');
-  const [debouncedQuery, setDebouncedQuery] = useState('');
-  const [productType, setProductType] = useState<'' | ProductType>('');
-  const [industry, setIndustry] = useState('Tất cả');
-  const [maxPrice, setMaxPrice] = useState('');
+  const initialQuery = searchParams.get('q') ?? '';
+  const initialType = parseInitialProductType(searchParams.get('product_type'));
+  const initialIndustryParam = searchParams.get('industry');
+  const initialIndustry =
+    initialIndustryParam && INDUSTRIES.includes(initialIndustryParam)
+      ? initialIndustryParam
+      : 'Tất cả';
+  const initialMaxPrice = searchParams.get('max_price') ?? '';
+
+  const [searchInput, setSearchInput] = useState(initialQuery);
+  const [debouncedQuery, setDebouncedQuery] = useState(initialQuery);
+  const [productType, setProductType] = useState<'' | ProductType>(initialType);
+  const [industry, setIndustry] = useState(initialIndustry);
+  const [maxPrice, setMaxPrice] = useState(initialMaxPrice);
   const [sort, setSort] = useState<'newest' | 'price_asc' | 'price_desc'>(
     'newest'
   );
@@ -63,6 +87,29 @@ export default function ProductsCatalogPage() {
     scenarioState?.scenario_run_id && !scenarioState.is_finished
   );
   const lastSearchTrackedRef = useRef<string>('');
+
+  // Sync URL query updates when navigating from Home categories or Footer
+  useEffect(() => {
+    const paramType = parseInitialProductType(searchParams.get('product_type'));
+    const paramIndustry = searchParams.get('industry');
+    const paramQ = searchParams.get('q') ?? '';
+    const paramMax = searchParams.get('max_price') ?? '';
+
+    const timer = setTimeout(() => {
+      setProductType(paramType);
+      setIndustry(
+        paramIndustry && INDUSTRIES.includes(paramIndustry)
+          ? paramIndustry
+          : 'Tất cả'
+      );
+      setSearchInput(paramQ);
+      setDebouncedQuery(paramQ);
+      setMaxPrice(paramMax);
+      setPage(1);
+    }, 0);
+
+    return () => clearTimeout(timer);
+  }, [searchParams]);
 
   // Debounce keyword search 350ms
   useEffect(() => {
@@ -139,6 +186,7 @@ export default function ProductsCatalogPage() {
     setMaxPrice('');
     setSort('newest');
     setPage(1);
+    router.replace('/products');
   };
 
   const handleAddToCart = async (productId: string) => {
@@ -154,27 +202,70 @@ export default function ProductsCatalogPage() {
     }
   };
 
+  const hasActiveFilter = Boolean(
+    debouncedQuery || productType || industry !== 'Tất cả' || maxPrice || sort !== 'newest'
+  );
+
   return (
     <section className="section section--compact">
       <div className="container">
+        {/* Compact Utility Header (Page Grammar 6: Gallery / Catalog) */}
         <div className="section-header" style={{ marginBottom: '24px' }}>
           <div className="section-header__copy">
-            <span className="type-eyebrow">Danh mục giải pháp số (F2)</span>
-            <h1 className="type-h1">Tìm kiếm & Lọc theo nhu cầu shop</h1>
+            <span className="type-eyebrow">Kho Sản Phẩm Số DreamTeam (F2)</span>
+            <h1 className="type-h1">Tìm kiếm &amp; Lọc theo nhu cầu shop</h1>
             <p className="type-body-sm">
-              Lọc theo loại sản phẩm, ngành hàng và mức ngân sách để so sánh
-              nhanh từng gói.
+              Lọc theo loại sản phẩm, ngành hàng và ngân sách tối đa để chọn đúng
+              gói tối ưu cho shop 1–3 người.
             </p>
           </div>
-          {meta && (
-            <span className="badge type-mono">
-              Tìm thấy {meta.total} gói sản phẩm
-            </span>
-          )}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+            {meta && (
+              <span className="badge badge--accent type-mono">
+                <Filter size={12} />
+                <span>{meta.total} gói sản phẩm</span>
+              </span>
+            )}
+            {hasActiveFilter && (
+              <button
+                type="button"
+                className="btn btn--ghost btn--sm"
+                onClick={handleResetFilters}
+              >
+                Đặt lại bộ lọc
+              </button>
+            )}
+          </div>
         </div>
 
-        {/* Sticky Filter Ribbon */}
-        <div className="catalog-toolbar">
+        {/* DreamsCore Pill Tabs + Sticky Filter Ribbon */}
+        <div className="catalog-toolbar dg-panel">
+          <div
+            className="dg-fw-tabs dg-fw-tabs--inline"
+            role="tablist"
+            aria-label="Lọc theo loại sản phẩm"
+          >
+            {PRODUCT_TYPES.map((item) => {
+              const selected = productType === item.value;
+              return (
+                <button
+                  key={item.label}
+                  type="button"
+                  role="tab"
+                  aria-selected={selected}
+                  className={`dg-fw-tab ${selected ? 'active' : ''}`}
+                  onClick={() => {
+                    setProductType(item.value);
+                    setPage(1);
+                    trackFilterChange({ product_type: item.value || null });
+                  }}
+                >
+                  {item.label}
+                </button>
+              );
+            })}
+          </div>
+
           <form
             className="catalog-search-row"
             onSubmit={(e) => {
@@ -188,14 +279,18 @@ export default function ProductsCatalogPage() {
               }
             }}
           >
-            <input
-              type="search"
-              className="input"
-              aria-label="Tìm kiếm gói giải pháp theo tên hoặc mô tả"
-              placeholder="Tìm theo từ khóa (vd: mỹ phẩm, TikTok Shop, bảng size, Google Sheets)..."
-              value={searchInput}
-              onChange={(e) => setSearchInput(e.target.value)}
-            />
+            <div className="dg-input-icon-wrap">
+              <Search size={16} className="dg-input-icon" />
+              <input
+                type="search"
+                className="input dg-input-has-left"
+                aria-label="Tìm kiếm gói giải pháp theo tên hoặc mô tả"
+                placeholder="Tìm theo từ khóa (vd: mỹ phẩm, TikTok Shop, bảng size, Google Sheets)..."
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
+              />
+            </div>
+
             <select
               className="select"
               aria-label="Lọc mức ngân sách tối đa"
@@ -213,6 +308,7 @@ export default function ProductsCatalogPage() {
                 </option>
               ))}
             </select>
+
             <select
               className="select"
               aria-label="Sắp xếp kết quả"
@@ -234,24 +330,6 @@ export default function ProductsCatalogPage() {
           </form>
 
           <div className="catalog-filters-row">
-            <div className="chip-row" role="group" aria-label="Loại sản phẩm">
-              {PRODUCT_TYPES.map((item) => (
-                <button
-                  key={item.label}
-                  type="button"
-                  className="chip"
-                  aria-pressed={productType === item.value}
-                  onClick={() => {
-                    setProductType(item.value);
-                    setPage(1);
-                    trackFilterChange({ product_type: item.value || null });
-                  }}
-                >
-                  {item.label}
-                </button>
-              ))}
-            </div>
-
             <div className="chip-row" role="group" aria-label="Ngành hàng">
               {INDUSTRIES.map((ind) => (
                 <button
@@ -302,16 +380,15 @@ export default function ProductsCatalogPage() {
         )}
 
         {isLoading ? (
-          <div className="catalog-grid">
+          <div className="dg-showcase-grid">
             {Array.from({ length: 6 }).map((_, idx) => (
               <div
                 key={idx}
-                className="surface-card"
-                style={{ display: 'grid', gap: '16px' }}
+                className="dg-panel dg-showcase-skeleton"
               >
                 <div
                   className="skeleton-box"
-                  style={{ width: '100%', aspectRatio: '4 / 3' }}
+                  style={{ width: '100%', aspectRatio: '16 / 10' }}
                 />
                 <div className="skeleton-box" style={{ height: '24px', width: '75%' }} />
                 <div className="skeleton-box" style={{ height: '42px', width: '100%' }} />
@@ -320,7 +397,7 @@ export default function ProductsCatalogPage() {
           </div>
         ) : products.length === 0 ? (
           <div
-            className="surface-card"
+            className="surface-card dg-panel"
             style={{
               textAlign: 'center',
               paddingBlock: '48px',
@@ -339,7 +416,7 @@ export default function ProductsCatalogPage() {
             </p>
             <button
               type="button"
-              className="btn btn--primary"
+              className="dg-btn-purchase"
               onClick={handleResetFilters}
             >
               Xóa toàn bộ bộ lọc
@@ -347,52 +424,55 @@ export default function ProductsCatalogPage() {
           </div>
         ) : (
           <>
-            <div className="catalog-grid">
-              {products.map((product, index) => {
+            <div className="dg-showcase-grid">
+              {products.map((product) => {
                 const sourceMeta = SOURCE_TYPE_META[product.source_type];
-                const isFeaturedLead =
-                  index === 0 && products.length >= 4 && page === 1;
+                const isAdded = addedProductId === product.id;
                 return (
                   <article
                     key={product.id}
-                    className={`product-card ${
-                      isFeaturedLead ? 'catalog-card-featured' : ''
-                    }`}
+                    className="dg-showcase-card dg-panel"
                   >
-                    <div style={{ display: 'grid', gap: '14px' }}>
+                    <div className="dg-showcase-img-wrap">
                       <ProductPlaceholderFrame
                         productType={product.product_type}
                         industry={product.industry}
                         sourceType={product.source_type}
+                        aspect="16/10"
+                        slug={product.slug}
                       />
-                      <div className="product-card__body">
-                        <div className="chip-row">
-                          <span className="badge">
-                            {PRODUCT_TYPE_LABELS[product.product_type]}
-                          </span>
-                          <span className="badge">{product.industry}</span>
-                          <span
-                            className={`badge badge--${sourceMeta.badgeTone}`}
-                          >
-                            {sourceMeta.label}
-                          </span>
-                        </div>
-                        <h2 className="product-card__title">
-                          <Link href={`/products/${product.slug}`}>
-                            {product.name}
-                          </Link>
-                        </h2>
-                        <p className="product-card__desc">
-                          {product.short_description}
-                        </p>
+                      <div className="dg-showcase-overlay">
+                        <Link
+                          href={`/products/${product.slug}`}
+                          className="dg-btn-purchase"
+                        >
+                          <span>Xem chi tiết</span>
+                          <ArrowRight size={15} />
+                        </Link>
                       </div>
                     </div>
 
-                    <div style={{ display: 'grid', gap: '12px' }}>
-                      <div className="product-card__footer">
+                    <div className="dg-showcase-body">
+                      <div className="dg-showcase-meta-row">
+                        <span className="dg-showcase-category">
+                          {PRODUCT_TYPE_LABELS[product.product_type]} •{' '}
+                          {product.industry}
+                        </span>
+                        <span className={`badge badge--${sourceMeta.badgeTone}`}>
+                          {sourceMeta.label}
+                        </span>
+                      </div>
+
+                      <h2 className="text-line-clip" style={{ fontSize: '1.08rem', fontWeight: 700, margin: '0 0 8px' }}>
+                        <Link href={`/products/${product.slug}`}>
+                          {product.name}
+                        </Link>
+                      </h2>
+                      <p>{product.short_description}</p>
+
+                      <div className="dg-showcase-footer">
                         <span
-                          className="type-price"
-                          style={{ fontSize: '1.125rem' }}
+                          className="type-price dg-showcase-price"
                         >
                           {formatVnd(product.price_vnd)}
                         </span>
@@ -401,19 +481,29 @@ export default function ProductsCatalogPage() {
                             href={`/products/${product.slug}`}
                             className="btn btn--secondary btn--sm"
                           >
-                            Xem chi tiết
+                            Chi tiết
                           </Link>
                           <button
                             type="button"
-                            className="btn btn--primary btn--sm"
+                            className="dg-btn-purchase dg-btn-sm"
                             disabled={addingId === product.id}
                             onClick={() => void handleAddToCart(product.id)}
                           >
-                            {addedProductId === product.id
-                              ? 'Đã thêm'
-                              : addingId === product.id
-                                ? 'Đang thêm...'
-                                : 'Thêm vào giỏ'}
+                            {isAdded ? (
+                              <>
+                                <CheckCircle2 size={14} />
+                                <span>Đã thêm</span>
+                              </>
+                            ) : (
+                              <>
+                                <ShoppingBag size={14} />
+                                <span>
+                                  {addingId === product.id
+                                    ? 'Đang thêm...'
+                                    : 'Thêm giỏ'}
+                                </span>
+                              </>
+                            )}
                           </button>
                         </div>
                       </div>
@@ -422,13 +512,15 @@ export default function ProductsCatalogPage() {
                         <button
                           type="button"
                           className="btn btn--ghost btn--sm btn--block"
+                          style={{ marginTop: '12px' }}
                           onClick={() =>
                             router.push(
                               `/experiment?selected_product_id=${encodeURIComponent(product.id)}`
                             )
                           }
                         >
-                          Chọn gói này cho kịch bản F11 →
+                          <span>Chọn gói này cho kịch bản F11</span>
+                          <ArrowRight size={14} />
                         </button>
                       )}
                     </div>
@@ -472,5 +564,29 @@ export default function ProductsCatalogPage() {
         )}
       </div>
     </section>
+  );
+}
+
+export default function ProductsCatalogPage() {
+  return (
+    <Suspense
+      fallback={
+        <section className="section section--compact">
+          <div className="container">
+            <div className="dg-showcase-grid">
+              {Array.from({ length: 3 }).map((_, idx) => (
+                <div
+                  key={idx}
+                  className="skeleton-box"
+                  style={{ height: '320px' }}
+                />
+              ))}
+            </div>
+          </div>
+        </section>
+      }
+    >
+      <ProductsCatalogContent />
+    </Suspense>
   );
 }

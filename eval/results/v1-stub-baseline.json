@@ -1,0 +1,1726 @@
+{
+  "eval_set_version": "1.0.0",
+  "catalog_version": "1.0.0",
+  "mode": "stub_baseline",
+  "model_name": "stub-keyword-v1",
+  "prompt_version": "v1",
+  "executed_at": "2026-11-16T16:36:16.970Z",
+  "counts": {
+    "total_cases": 60,
+    "correct_total": 60,
+    "in_catalog_total": 42,
+    "in_catalog_correct": 42,
+    "trap_total": 18,
+    "trap_correct": 18,
+    "queries_with_post_hallucination": 0,
+    "queries_with_raw_hallucination": 0,
+    "trap_false_suggestions": 0
+  },
+  "metrics": {
+    "accuracy": 1,
+    "in_catalog_accuracy": 1,
+    "trap_rejection_accuracy": 1,
+    "hallucination_rate": 0,
+    "raw_llm_hallucination_rate": 0,
+    "trap_false_suggestion_rate": 0,
+    "p95_latency_ms": 1.83,
+    "avg_latency_ms": 0.93,
+    "avg_cost_usd": 0,
+    "total_cost_usd": 0,
+    "total_tokens": 0
+  },
+  "failures": [],
+  "results": [
+    {
+      "id": "EV-01",
+      "category": "in_catalog",
+      "industry": "Mỹ phẩm",
+      "target_product_type": "template",
+      "budget_vnd": 600000,
+      "expected_out_of_catalog": false,
+      "expected_product_ids": [
+        "2c5a98b1-90c4-4f88-a2b3-1c4f9b012a10"
+      ],
+      "raw_suggested_product_ids": [
+        "2c5a98b1-90c4-4f88-a2b3-1c4f9b012a10"
+      ],
+      "suggested_product_ids": [
+        "2c5a98b1-90c4-4f88-a2b3-1c4f9b012a10"
+      ],
+      "suggested_product_names": [
+        "Template Landing Page Mỹ Phẩm Chuẩn TikTok Shop"
+      ],
+      "missing_catalog_info": false,
+      "raw_hallucinated_ids": [],
+      "post_grounding_hallucinated_ids": [],
+      "is_correct": true,
+      "failure_reason": null,
+      "latency_ms": 6.5,
+      "tokens_used": 0,
+      "cost_usd": 0,
+      "model_name": "stub-keyword-v1",
+      "prompt_version": "v1"
+    },
+    {
+      "id": "EV-02",
+      "category": "in_catalog",
+      "industry": "Mỹ phẩm",
+      "target_product_type": "template",
+      "budget_vnd": 500000,
+      "expected_out_of_catalog": false,
+      "expected_product_ids": [
+        "2c5a98b1-90c4-4f88-a2b3-1c4f9b012a10"
+      ],
+      "raw_suggested_product_ids": [
+        "2c5a98b1-90c4-4f88-a2b3-1c4f9b012a10"
+      ],
+      "suggested_product_ids": [
+        "2c5a98b1-90c4-4f88-a2b3-1c4f9b012a10"
+      ],
+      "suggested_product_names": [
+        "Template Landing Page Mỹ Phẩm Chuẩn TikTok Shop"
+      ],
+      "missing_catalog_info": false,
+      "raw_hallucinated_ids": [],
+      "post_grounding_hallucinated_ids": [],
+      "is_correct": true,
+      "failure_reason": null,
+      "latency_ms": 1.65,
+      "tokens_used": 0,
+      "cost_usd": 0,
+      "model_name": "stub-keyword-v1",
+      "prompt_version": "v1"
+    },
+    {
+      "id": "EV-03",
+      "category": "in_catalog",
+      "industry": "Mỹ phẩm",
+      "target_product_type": "template",
+      "budget_vnd": null,
+      "expected_out_of_catalog": false,
+      "expected_product_ids": [
+        "2c5a98b1-90c4-4f88-a2b3-1c4f9b012a10"
+      ],
+      "raw_suggested_product_ids": [
+        "2c5a98b1-90c4-4f88-a2b3-1c4f9b012a10"
+      ],
+      "suggested_product_ids": [
+        "2c5a98b1-90c4-4f88-a2b3-1c4f9b012a10"
+      ],
+      "suggested_product_names": [
+        "Template Landing Page Mỹ Phẩm Chuẩn TikTok Shop"
+      ],
+      "missing_catalog_info": false,
+      "raw_hallucinated_ids": [],
+      "post_grounding_hallucinated_ids": [],
+      "is_correct": true,
+      "failure_reason": null,
+      "latency_ms": 1.83,
+      "tokens_used": 0,
+      "cost_usd": 0,
+      "model_name": "stub-keyword-v1",
+      "prompt_version": "v1"
+    },
+    {
+      "id": "EV-04",
+      "category": "in_catalog",
+      "industry": "Mỹ phẩm",
+      "target_product_type": "prompt_pack",
+      "budget_vnd": 350000,
+      "expected_out_of_catalog": false,
+      "expected_product_ids": [
+        "7a9c11d2-54e3-4c99-8b10-0f2d3e4a5b6c"
+      ],
+      "raw_suggested_product_ids": [
+        "7a9c11d2-54e3-4c99-8b10-0f2d3e4a5b6c"
+      ],
+      "suggested_product_ids": [
+        "7a9c11d2-54e3-4c99-8b10-0f2d3e4a5b6c"
+      ],
+      "suggested_product_names": [
+        "Prompt Pack Mô Tả & Kịch Bản Video Mỹ Phẩm"
+      ],
+      "missing_catalog_info": false,
+      "raw_hallucinated_ids": [],
+      "post_grounding_hallucinated_ids": [],
+      "is_correct": true,
+      "failure_reason": null,
+      "latency_ms": 0.89,
+      "tokens_used": 0,
+      "cost_usd": 0,
+      "model_name": "stub-keyword-v1",
+      "prompt_version": "v1"
+    },
+    {
+      "id": "EV-05",
+      "category": "in_catalog",
+      "industry": "Mỹ phẩm",
+      "target_product_type": "prompt_pack",
+      "budget_vnd": 300000,
+      "expected_out_of_catalog": false,
+      "expected_product_ids": [
+        "7a9c11d2-54e3-4c99-8b10-0f2d3e4a5b6c"
+      ],
+      "raw_suggested_product_ids": [
+        "7a9c11d2-54e3-4c99-8b10-0f2d3e4a5b6c"
+      ],
+      "suggested_product_ids": [
+        "7a9c11d2-54e3-4c99-8b10-0f2d3e4a5b6c"
+      ],
+      "suggested_product_names": [
+        "Prompt Pack Mô Tả & Kịch Bản Video Mỹ Phẩm"
+      ],
+      "missing_catalog_info": false,
+      "raw_hallucinated_ids": [],
+      "post_grounding_hallucinated_ids": [],
+      "is_correct": true,
+      "failure_reason": null,
+      "latency_ms": 1.04,
+      "tokens_used": 0,
+      "cost_usd": 0,
+      "model_name": "stub-keyword-v1",
+      "prompt_version": "v1"
+    },
+    {
+      "id": "EV-06",
+      "category": "in_catalog",
+      "industry": "Mỹ phẩm",
+      "target_product_type": "prompt_pack",
+      "budget_vnd": null,
+      "expected_out_of_catalog": false,
+      "expected_product_ids": [
+        "7a9c11d2-54e3-4c99-8b10-0f2d3e4a5b6c"
+      ],
+      "raw_suggested_product_ids": [
+        "7a9c11d2-54e3-4c99-8b10-0f2d3e4a5b6c"
+      ],
+      "suggested_product_ids": [
+        "7a9c11d2-54e3-4c99-8b10-0f2d3e4a5b6c"
+      ],
+      "suggested_product_names": [
+        "Prompt Pack Mô Tả & Kịch Bản Video Mỹ Phẩm"
+      ],
+      "missing_catalog_info": false,
+      "raw_hallucinated_ids": [],
+      "post_grounding_hallucinated_ids": [],
+      "is_correct": true,
+      "failure_reason": null,
+      "latency_ms": 0.94,
+      "tokens_used": 0,
+      "cost_usd": 0,
+      "model_name": "stub-keyword-v1",
+      "prompt_version": "v1"
+    },
+    {
+      "id": "EV-07",
+      "category": "in_catalog",
+      "industry": "Mỹ phẩm",
+      "target_product_type": "workflow",
+      "budget_vnd": 700000,
+      "expected_out_of_catalog": false,
+      "expected_product_ids": [
+        "f6a7b8c9-1012-4112-8112-6c7d8e9f0a12"
+      ],
+      "raw_suggested_product_ids": [
+        "f6a7b8c9-1012-4112-8112-6c7d8e9f0a12"
+      ],
+      "suggested_product_ids": [
+        "f6a7b8c9-1012-4112-8112-6c7d8e9f0a12"
+      ],
+      "suggested_product_names": [
+        "Workflow Nhắc Lịch Mua Lại & CSKH Mỹ Phẩm Tự Động"
+      ],
+      "missing_catalog_info": false,
+      "raw_hallucinated_ids": [],
+      "post_grounding_hallucinated_ids": [],
+      "is_correct": true,
+      "failure_reason": null,
+      "latency_ms": 4.19,
+      "tokens_used": 0,
+      "cost_usd": 0,
+      "model_name": "stub-keyword-v1",
+      "prompt_version": "v1"
+    },
+    {
+      "id": "EV-08",
+      "category": "in_catalog",
+      "industry": "Mỹ phẩm",
+      "target_product_type": "workflow",
+      "budget_vnd": 800000,
+      "expected_out_of_catalog": false,
+      "expected_product_ids": [
+        "f6a7b8c9-1012-4112-8112-6c7d8e9f0a12"
+      ],
+      "raw_suggested_product_ids": [
+        "f6a7b8c9-1012-4112-8112-6c7d8e9f0a12"
+      ],
+      "suggested_product_ids": [
+        "f6a7b8c9-1012-4112-8112-6c7d8e9f0a12"
+      ],
+      "suggested_product_names": [
+        "Workflow Nhắc Lịch Mua Lại & CSKH Mỹ Phẩm Tự Động"
+      ],
+      "missing_catalog_info": false,
+      "raw_hallucinated_ids": [],
+      "post_grounding_hallucinated_ids": [],
+      "is_correct": true,
+      "failure_reason": null,
+      "latency_ms": 1.46,
+      "tokens_used": 0,
+      "cost_usd": 0,
+      "model_name": "stub-keyword-v1",
+      "prompt_version": "v1"
+    },
+    {
+      "id": "EV-09",
+      "category": "in_catalog",
+      "industry": "Mỹ phẩm",
+      "target_product_type": "template",
+      "budget_vnd": 850000,
+      "expected_out_of_catalog": false,
+      "expected_product_ids": [
+        "2c5a98b1-90c4-4f88-a2b3-1c4f9b012a10",
+        "7a9c11d2-54e3-4c99-8b10-0f2d3e4a5b6c"
+      ],
+      "raw_suggested_product_ids": [
+        "7a9c11d2-54e3-4c99-8b10-0f2d3e4a5b6c",
+        "2c5a98b1-90c4-4f88-a2b3-1c4f9b012a10"
+      ],
+      "suggested_product_ids": [
+        "7a9c11d2-54e3-4c99-8b10-0f2d3e4a5b6c",
+        "2c5a98b1-90c4-4f88-a2b3-1c4f9b012a10"
+      ],
+      "suggested_product_names": [
+        "Prompt Pack Mô Tả & Kịch Bản Video Mỹ Phẩm",
+        "Template Landing Page Mỹ Phẩm Chuẩn TikTok Shop"
+      ],
+      "missing_catalog_info": false,
+      "raw_hallucinated_ids": [],
+      "post_grounding_hallucinated_ids": [],
+      "is_correct": true,
+      "failure_reason": null,
+      "latency_ms": 0.89,
+      "tokens_used": 0,
+      "cost_usd": 0,
+      "model_name": "stub-keyword-v1",
+      "prompt_version": "v1"
+    },
+    {
+      "id": "EV-10",
+      "category": "in_catalog",
+      "industry": "Mỹ phẩm",
+      "target_product_type": "template",
+      "budget_vnd": 1200000,
+      "expected_out_of_catalog": false,
+      "expected_product_ids": [
+        "2c5a98b1-90c4-4f88-a2b3-1c4f9b012a10",
+        "f6a7b8c9-1012-4112-8112-6c7d8e9f0a12"
+      ],
+      "raw_suggested_product_ids": [
+        "f6a7b8c9-1012-4112-8112-6c7d8e9f0a12",
+        "2c5a98b1-90c4-4f88-a2b3-1c4f9b012a10"
+      ],
+      "suggested_product_ids": [
+        "f6a7b8c9-1012-4112-8112-6c7d8e9f0a12",
+        "2c5a98b1-90c4-4f88-a2b3-1c4f9b012a10"
+      ],
+      "suggested_product_names": [
+        "Workflow Nhắc Lịch Mua Lại & CSKH Mỹ Phẩm Tự Động",
+        "Template Landing Page Mỹ Phẩm Chuẩn TikTok Shop"
+      ],
+      "missing_catalog_info": false,
+      "raw_hallucinated_ids": [],
+      "post_grounding_hallucinated_ids": [],
+      "is_correct": true,
+      "failure_reason": null,
+      "latency_ms": 1.08,
+      "tokens_used": 0,
+      "cost_usd": 0,
+      "model_name": "stub-keyword-v1",
+      "prompt_version": "v1"
+    },
+    {
+      "id": "EV-11",
+      "category": "in_catalog",
+      "industry": "Thời trang",
+      "target_product_type": "template",
+      "budget_vnd": 650000,
+      "expected_out_of_catalog": false,
+      "expected_product_ids": [
+        "3d6b22e3-11a4-4d88-9c21-2e3f4a5b6c7d"
+      ],
+      "raw_suggested_product_ids": [
+        "3d6b22e3-11a4-4d88-9c21-2e3f4a5b6c7d"
+      ],
+      "suggested_product_ids": [
+        "3d6b22e3-11a4-4d88-9c21-2e3f4a5b6c7d"
+      ],
+      "suggested_product_names": [
+        "Template Lookbook Thời Trang Shop Nhỏ"
+      ],
+      "missing_catalog_info": false,
+      "raw_hallucinated_ids": [],
+      "post_grounding_hallucinated_ids": [],
+      "is_correct": true,
+      "failure_reason": null,
+      "latency_ms": 1.52,
+      "tokens_used": 0,
+      "cost_usd": 0,
+      "model_name": "stub-keyword-v1",
+      "prompt_version": "v1"
+    },
+    {
+      "id": "EV-12",
+      "category": "in_catalog",
+      "industry": "Thời trang",
+      "target_product_type": "template",
+      "budget_vnd": 600000,
+      "expected_out_of_catalog": false,
+      "expected_product_ids": [
+        "3d6b22e3-11a4-4d88-9c21-2e3f4a5b6c7d"
+      ],
+      "raw_suggested_product_ids": [
+        "3d6b22e3-11a4-4d88-9c21-2e3f4a5b6c7d"
+      ],
+      "suggested_product_ids": [
+        "3d6b22e3-11a4-4d88-9c21-2e3f4a5b6c7d"
+      ],
+      "suggested_product_names": [
+        "Template Lookbook Thời Trang Shop Nhỏ"
+      ],
+      "missing_catalog_info": false,
+      "raw_hallucinated_ids": [],
+      "post_grounding_hallucinated_ids": [],
+      "is_correct": true,
+      "failure_reason": null,
+      "latency_ms": 1.25,
+      "tokens_used": 0,
+      "cost_usd": 0,
+      "model_name": "stub-keyword-v1",
+      "prompt_version": "v1"
+    },
+    {
+      "id": "EV-13",
+      "category": "in_catalog",
+      "industry": "Thời trang",
+      "target_product_type": "template",
+      "budget_vnd": null,
+      "expected_out_of_catalog": false,
+      "expected_product_ids": [
+        "3d6b22e3-11a4-4d88-9c21-2e3f4a5b6c7d"
+      ],
+      "raw_suggested_product_ids": [
+        "3d6b22e3-11a4-4d88-9c21-2e3f4a5b6c7d"
+      ],
+      "suggested_product_ids": [
+        "3d6b22e3-11a4-4d88-9c21-2e3f4a5b6c7d"
+      ],
+      "suggested_product_names": [
+        "Template Lookbook Thời Trang Shop Nhỏ"
+      ],
+      "missing_catalog_info": false,
+      "raw_hallucinated_ids": [],
+      "post_grounding_hallucinated_ids": [],
+      "is_correct": true,
+      "failure_reason": null,
+      "latency_ms": 0.86,
+      "tokens_used": 0,
+      "cost_usd": 0,
+      "model_name": "stub-keyword-v1",
+      "prompt_version": "v1"
+    },
+    {
+      "id": "EV-14",
+      "category": "in_catalog",
+      "industry": "Thời trang",
+      "target_product_type": "template",
+      "budget_vnd": 570000,
+      "expected_out_of_catalog": false,
+      "expected_product_ids": [
+        "a1b2c3d4-1007-4107-8107-1c4f9b012a07"
+      ],
+      "raw_suggested_product_ids": [
+        "a1b2c3d4-1007-4107-8107-1c4f9b012a07"
+      ],
+      "suggested_product_ids": [
+        "a1b2c3d4-1007-4107-8107-1c4f9b012a07"
+      ],
+      "suggested_product_names": [
+        "Template Landing Page Flash Sale & Livestream Thời Trang"
+      ],
+      "missing_catalog_info": false,
+      "raw_hallucinated_ids": [],
+      "post_grounding_hallucinated_ids": [],
+      "is_correct": true,
+      "failure_reason": null,
+      "latency_ms": 1.19,
+      "tokens_used": 0,
+      "cost_usd": 0,
+      "model_name": "stub-keyword-v1",
+      "prompt_version": "v1"
+    },
+    {
+      "id": "EV-15",
+      "category": "in_catalog",
+      "industry": "Thời trang",
+      "target_product_type": "template",
+      "budget_vnd": 600000,
+      "expected_out_of_catalog": false,
+      "expected_product_ids": [
+        "a1b2c3d4-1007-4107-8107-1c4f9b012a07"
+      ],
+      "raw_suggested_product_ids": [
+        "a1b2c3d4-1007-4107-8107-1c4f9b012a07"
+      ],
+      "suggested_product_ids": [
+        "a1b2c3d4-1007-4107-8107-1c4f9b012a07"
+      ],
+      "suggested_product_names": [
+        "Template Landing Page Flash Sale & Livestream Thời Trang"
+      ],
+      "missing_catalog_info": false,
+      "raw_hallucinated_ids": [],
+      "post_grounding_hallucinated_ids": [],
+      "is_correct": true,
+      "failure_reason": null,
+      "latency_ms": 1.06,
+      "tokens_used": 0,
+      "cost_usd": 0,
+      "model_name": "stub-keyword-v1",
+      "prompt_version": "v1"
+    },
+    {
+      "id": "EV-16",
+      "category": "in_catalog",
+      "industry": "Thời trang",
+      "target_product_type": "template",
+      "budget_vnd": null,
+      "expected_out_of_catalog": false,
+      "expected_product_ids": [
+        "a1b2c3d4-1007-4107-8107-1c4f9b012a07"
+      ],
+      "raw_suggested_product_ids": [
+        "a1b2c3d4-1007-4107-8107-1c4f9b012a07"
+      ],
+      "suggested_product_ids": [
+        "a1b2c3d4-1007-4107-8107-1c4f9b012a07"
+      ],
+      "suggested_product_names": [
+        "Template Landing Page Flash Sale & Livestream Thời Trang"
+      ],
+      "missing_catalog_info": false,
+      "raw_hallucinated_ids": [],
+      "post_grounding_hallucinated_ids": [],
+      "is_correct": true,
+      "failure_reason": null,
+      "latency_ms": 0.87,
+      "tokens_used": 0,
+      "cost_usd": 0,
+      "model_name": "stub-keyword-v1",
+      "prompt_version": "v1"
+    },
+    {
+      "id": "EV-17",
+      "category": "in_catalog",
+      "industry": "Thời trang",
+      "target_product_type": "prompt_pack",
+      "budget_vnd": 350000,
+      "expected_out_of_catalog": false,
+      "expected_product_ids": [
+        "d4e5f6a7-1010-4110-8110-4a5b6c7d8e10"
+      ],
+      "raw_suggested_product_ids": [
+        "d4e5f6a7-1010-4110-8110-4a5b6c7d8e10"
+      ],
+      "suggested_product_ids": [
+        "d4e5f6a7-1010-4110-8110-4a5b6c7d8e10"
+      ],
+      "suggested_product_names": [
+        "Prompt Pack Phối Đồ, Tư Vấn Size & Kịch Bản Live Thời Trang"
+      ],
+      "missing_catalog_info": false,
+      "raw_hallucinated_ids": [],
+      "post_grounding_hallucinated_ids": [],
+      "is_correct": true,
+      "failure_reason": null,
+      "latency_ms": 0.87,
+      "tokens_used": 0,
+      "cost_usd": 0,
+      "model_name": "stub-keyword-v1",
+      "prompt_version": "v1"
+    },
+    {
+      "id": "EV-18",
+      "category": "in_catalog",
+      "industry": "Thời trang",
+      "target_product_type": "prompt_pack",
+      "budget_vnd": 400000,
+      "expected_out_of_catalog": false,
+      "expected_product_ids": [
+        "d4e5f6a7-1010-4110-8110-4a5b6c7d8e10"
+      ],
+      "raw_suggested_product_ids": [
+        "d4e5f6a7-1010-4110-8110-4a5b6c7d8e10"
+      ],
+      "suggested_product_ids": [
+        "d4e5f6a7-1010-4110-8110-4a5b6c7d8e10"
+      ],
+      "suggested_product_names": [
+        "Prompt Pack Phối Đồ, Tư Vấn Size & Kịch Bản Live Thời Trang"
+      ],
+      "missing_catalog_info": false,
+      "raw_hallucinated_ids": [],
+      "post_grounding_hallucinated_ids": [],
+      "is_correct": true,
+      "failure_reason": null,
+      "latency_ms": 1.26,
+      "tokens_used": 0,
+      "cost_usd": 0,
+      "model_name": "stub-keyword-v1",
+      "prompt_version": "v1"
+    },
+    {
+      "id": "EV-19",
+      "category": "in_catalog",
+      "industry": "Thời trang",
+      "target_product_type": "prompt_pack",
+      "budget_vnd": null,
+      "expected_out_of_catalog": false,
+      "expected_product_ids": [
+        "d4e5f6a7-1010-4110-8110-4a5b6c7d8e10"
+      ],
+      "raw_suggested_product_ids": [
+        "d4e5f6a7-1010-4110-8110-4a5b6c7d8e10"
+      ],
+      "suggested_product_ids": [
+        "d4e5f6a7-1010-4110-8110-4a5b6c7d8e10"
+      ],
+      "suggested_product_names": [
+        "Prompt Pack Phối Đồ, Tư Vấn Size & Kịch Bản Live Thời Trang"
+      ],
+      "missing_catalog_info": false,
+      "raw_hallucinated_ids": [],
+      "post_grounding_hallucinated_ids": [],
+      "is_correct": true,
+      "failure_reason": null,
+      "latency_ms": 0.94,
+      "tokens_used": 0,
+      "cost_usd": 0,
+      "model_name": "stub-keyword-v1",
+      "prompt_version": "v1"
+    },
+    {
+      "id": "EV-20",
+      "category": "in_catalog",
+      "industry": "Thời trang",
+      "target_product_type": "template",
+      "budget_vnd": 950000,
+      "expected_out_of_catalog": false,
+      "expected_product_ids": [
+        "3d6b22e3-11a4-4d88-9c21-2e3f4a5b6c7d",
+        "d4e5f6a7-1010-4110-8110-4a5b6c7d8e10"
+      ],
+      "raw_suggested_product_ids": [
+        "3d6b22e3-11a4-4d88-9c21-2e3f4a5b6c7d",
+        "d4e5f6a7-1010-4110-8110-4a5b6c7d8e10"
+      ],
+      "suggested_product_ids": [
+        "3d6b22e3-11a4-4d88-9c21-2e3f4a5b6c7d",
+        "d4e5f6a7-1010-4110-8110-4a5b6c7d8e10"
+      ],
+      "suggested_product_names": [
+        "Template Lookbook Thời Trang Shop Nhỏ",
+        "Prompt Pack Phối Đồ, Tư Vấn Size & Kịch Bản Live Thời Trang"
+      ],
+      "missing_catalog_info": false,
+      "raw_hallucinated_ids": [],
+      "post_grounding_hallucinated_ids": [],
+      "is_correct": true,
+      "failure_reason": null,
+      "latency_ms": 1.16,
+      "tokens_used": 0,
+      "cost_usd": 0,
+      "model_name": "stub-keyword-v1",
+      "prompt_version": "v1"
+    },
+    {
+      "id": "EV-21",
+      "category": "in_catalog",
+      "industry": "Thời trang",
+      "target_product_type": "template",
+      "budget_vnd": 900000,
+      "expected_out_of_catalog": false,
+      "expected_product_ids": [
+        "a1b2c3d4-1007-4107-8107-1c4f9b012a07",
+        "d4e5f6a7-1010-4110-8110-4a5b6c7d8e10"
+      ],
+      "raw_suggested_product_ids": [
+        "d4e5f6a7-1010-4110-8110-4a5b6c7d8e10",
+        "a1b2c3d4-1007-4107-8107-1c4f9b012a07"
+      ],
+      "suggested_product_ids": [
+        "d4e5f6a7-1010-4110-8110-4a5b6c7d8e10",
+        "a1b2c3d4-1007-4107-8107-1c4f9b012a07"
+      ],
+      "suggested_product_names": [
+        "Prompt Pack Phối Đồ, Tư Vấn Size & Kịch Bản Live Thời Trang",
+        "Template Landing Page Flash Sale & Livestream Thời Trang"
+      ],
+      "missing_catalog_info": false,
+      "raw_hallucinated_ids": [],
+      "post_grounding_hallucinated_ids": [],
+      "is_correct": true,
+      "failure_reason": null,
+      "latency_ms": 2,
+      "tokens_used": 0,
+      "cost_usd": 0,
+      "model_name": "stub-keyword-v1",
+      "prompt_version": "v1"
+    },
+    {
+      "id": "EV-22",
+      "category": "in_catalog",
+      "industry": "F&B",
+      "target_product_type": "template",
+      "budget_vnd": 500000,
+      "expected_out_of_catalog": false,
+      "expected_product_ids": [
+        "4e7c33f4-22b5-4e99-ad32-3f4a5b6c7d8e"
+      ],
+      "raw_suggested_product_ids": [
+        "4e7c33f4-22b5-4e99-ad32-3f4a5b6c7d8e"
+      ],
+      "suggested_product_ids": [
+        "4e7c33f4-22b5-4e99-ad32-3f4a5b6c7d8e"
+      ],
+      "suggested_product_names": [
+        "Template Menu & Đặt Món Nhanh Quán F&B Nhỏ"
+      ],
+      "missing_catalog_info": false,
+      "raw_hallucinated_ids": [],
+      "post_grounding_hallucinated_ids": [],
+      "is_correct": true,
+      "failure_reason": null,
+      "latency_ms": 1.1,
+      "tokens_used": 0,
+      "cost_usd": 0,
+      "model_name": "stub-keyword-v1",
+      "prompt_version": "v1"
+    },
+    {
+      "id": "EV-23",
+      "category": "in_catalog",
+      "industry": "F&B",
+      "target_product_type": "template",
+      "budget_vnd": 480000,
+      "expected_out_of_catalog": false,
+      "expected_product_ids": [
+        "4e7c33f4-22b5-4e99-ad32-3f4a5b6c7d8e"
+      ],
+      "raw_suggested_product_ids": [
+        "4e7c33f4-22b5-4e99-ad32-3f4a5b6c7d8e"
+      ],
+      "suggested_product_ids": [
+        "4e7c33f4-22b5-4e99-ad32-3f4a5b6c7d8e"
+      ],
+      "suggested_product_names": [
+        "Template Menu & Đặt Món Nhanh Quán F&B Nhỏ"
+      ],
+      "missing_catalog_info": false,
+      "raw_hallucinated_ids": [],
+      "post_grounding_hallucinated_ids": [],
+      "is_correct": true,
+      "failure_reason": null,
+      "latency_ms": 0.97,
+      "tokens_used": 0,
+      "cost_usd": 0,
+      "model_name": "stub-keyword-v1",
+      "prompt_version": "v1"
+    },
+    {
+      "id": "EV-24",
+      "category": "in_catalog",
+      "industry": "F&B",
+      "target_product_type": "template",
+      "budget_vnd": null,
+      "expected_out_of_catalog": false,
+      "expected_product_ids": [
+        "4e7c33f4-22b5-4e99-ad32-3f4a5b6c7d8e"
+      ],
+      "raw_suggested_product_ids": [
+        "4e7c33f4-22b5-4e99-ad32-3f4a5b6c7d8e"
+      ],
+      "suggested_product_ids": [
+        "4e7c33f4-22b5-4e99-ad32-3f4a5b6c7d8e"
+      ],
+      "suggested_product_names": [
+        "Template Menu & Đặt Món Nhanh Quán F&B Nhỏ"
+      ],
+      "missing_catalog_info": false,
+      "raw_hallucinated_ids": [],
+      "post_grounding_hallucinated_ids": [],
+      "is_correct": true,
+      "failure_reason": null,
+      "latency_ms": 0.92,
+      "tokens_used": 0,
+      "cost_usd": 0,
+      "model_name": "stub-keyword-v1",
+      "prompt_version": "v1"
+    },
+    {
+      "id": "EV-25",
+      "category": "in_catalog",
+      "industry": "F&B",
+      "target_product_type": "template",
+      "budget_vnd": 550000,
+      "expected_out_of_catalog": false,
+      "expected_product_ids": [
+        "b2c3d4e5-1008-4108-8108-2e3f4a5b6c08"
+      ],
+      "raw_suggested_product_ids": [
+        "b2c3d4e5-1008-4108-8108-2e3f4a5b6c08"
+      ],
+      "suggested_product_ids": [
+        "b2c3d4e5-1008-4108-8108-2e3f4a5b6c08"
+      ],
+      "suggested_product_names": [
+        "Template Website Đặt Combo Tiệm Bánh & Quà Tặng F&B"
+      ],
+      "missing_catalog_info": false,
+      "raw_hallucinated_ids": [],
+      "post_grounding_hallucinated_ids": [],
+      "is_correct": true,
+      "failure_reason": null,
+      "latency_ms": 1.29,
+      "tokens_used": 0,
+      "cost_usd": 0,
+      "model_name": "stub-keyword-v1",
+      "prompt_version": "v1"
+    },
+    {
+      "id": "EV-26",
+      "category": "in_catalog",
+      "industry": "F&B",
+      "target_product_type": "template",
+      "budget_vnd": 600000,
+      "expected_out_of_catalog": false,
+      "expected_product_ids": [
+        "b2c3d4e5-1008-4108-8108-2e3f4a5b6c08"
+      ],
+      "raw_suggested_product_ids": [
+        "b2c3d4e5-1008-4108-8108-2e3f4a5b6c08"
+      ],
+      "suggested_product_ids": [
+        "b2c3d4e5-1008-4108-8108-2e3f4a5b6c08"
+      ],
+      "suggested_product_names": [
+        "Template Website Đặt Combo Tiệm Bánh & Quà Tặng F&B"
+      ],
+      "missing_catalog_info": false,
+      "raw_hallucinated_ids": [],
+      "post_grounding_hallucinated_ids": [],
+      "is_correct": true,
+      "failure_reason": null,
+      "latency_ms": 1.13,
+      "tokens_used": 0,
+      "cost_usd": 0,
+      "model_name": "stub-keyword-v1",
+      "prompt_version": "v1"
+    },
+    {
+      "id": "EV-27",
+      "category": "in_catalog",
+      "industry": "F&B",
+      "target_product_type": "template",
+      "budget_vnd": null,
+      "expected_out_of_catalog": false,
+      "expected_product_ids": [
+        "b2c3d4e5-1008-4108-8108-2e3f4a5b6c08"
+      ],
+      "raw_suggested_product_ids": [
+        "b2c3d4e5-1008-4108-8108-2e3f4a5b6c08",
+        "4e7c33f4-22b5-4e99-ad32-3f4a5b6c7d8e"
+      ],
+      "suggested_product_ids": [
+        "b2c3d4e5-1008-4108-8108-2e3f4a5b6c08",
+        "4e7c33f4-22b5-4e99-ad32-3f4a5b6c7d8e"
+      ],
+      "suggested_product_names": [
+        "Template Website Đặt Combo Tiệm Bánh & Quà Tặng F&B",
+        "Template Menu & Đặt Món Nhanh Quán F&B Nhỏ"
+      ],
+      "missing_catalog_info": false,
+      "raw_hallucinated_ids": [],
+      "post_grounding_hallucinated_ids": [],
+      "is_correct": true,
+      "failure_reason": null,
+      "latency_ms": 1.2,
+      "tokens_used": 0,
+      "cost_usd": 0,
+      "model_name": "stub-keyword-v1",
+      "prompt_version": "v1"
+    },
+    {
+      "id": "EV-28",
+      "category": "in_catalog",
+      "industry": "F&B",
+      "target_product_type": "prompt_pack",
+      "budget_vnd": 300000,
+      "expected_out_of_catalog": false,
+      "expected_product_ids": [
+        "e5f6a7b8-1011-4111-8111-5b6c7d8e9f11"
+      ],
+      "raw_suggested_product_ids": [
+        "e5f6a7b8-1011-4111-8111-5b6c7d8e9f11"
+      ],
+      "suggested_product_ids": [
+        "e5f6a7b8-1011-4111-8111-5b6c7d8e9f11"
+      ],
+      "suggested_product_names": [
+        "Prompt Pack Mô Tả Món Ăn & Kịch Bản Video Review F&B"
+      ],
+      "missing_catalog_info": false,
+      "raw_hallucinated_ids": [],
+      "post_grounding_hallucinated_ids": [],
+      "is_correct": true,
+      "failure_reason": null,
+      "latency_ms": 1.07,
+      "tokens_used": 0,
+      "cost_usd": 0,
+      "model_name": "stub-keyword-v1",
+      "prompt_version": "v1"
+    },
+    {
+      "id": "EV-29",
+      "category": "in_catalog",
+      "industry": "F&B",
+      "target_product_type": "prompt_pack",
+      "budget_vnd": null,
+      "expected_out_of_catalog": false,
+      "expected_product_ids": [
+        "e5f6a7b8-1011-4111-8111-5b6c7d8e9f11"
+      ],
+      "raw_suggested_product_ids": [
+        "e5f6a7b8-1011-4111-8111-5b6c7d8e9f11"
+      ],
+      "suggested_product_ids": [
+        "e5f6a7b8-1011-4111-8111-5b6c7d8e9f11"
+      ],
+      "suggested_product_names": [
+        "Prompt Pack Mô Tả Món Ăn & Kịch Bản Video Review F&B"
+      ],
+      "missing_catalog_info": false,
+      "raw_hallucinated_ids": [],
+      "post_grounding_hallucinated_ids": [],
+      "is_correct": true,
+      "failure_reason": null,
+      "latency_ms": 0.82,
+      "tokens_used": 0,
+      "cost_usd": 0,
+      "model_name": "stub-keyword-v1",
+      "prompt_version": "v1"
+    },
+    {
+      "id": "EV-30",
+      "category": "in_catalog",
+      "industry": "F&B",
+      "target_product_type": "template",
+      "budget_vnd": 750000,
+      "expected_out_of_catalog": false,
+      "expected_product_ids": [
+        "4e7c33f4-22b5-4e99-ad32-3f4a5b6c7d8e",
+        "e5f6a7b8-1011-4111-8111-5b6c7d8e9f11"
+      ],
+      "raw_suggested_product_ids": [
+        "e5f6a7b8-1011-4111-8111-5b6c7d8e9f11",
+        "4e7c33f4-22b5-4e99-ad32-3f4a5b6c7d8e"
+      ],
+      "suggested_product_ids": [
+        "e5f6a7b8-1011-4111-8111-5b6c7d8e9f11",
+        "4e7c33f4-22b5-4e99-ad32-3f4a5b6c7d8e"
+      ],
+      "suggested_product_names": [
+        "Prompt Pack Mô Tả Món Ăn & Kịch Bản Video Review F&B",
+        "Template Menu & Đặt Món Nhanh Quán F&B Nhỏ"
+      ],
+      "missing_catalog_info": false,
+      "raw_hallucinated_ids": [],
+      "post_grounding_hallucinated_ids": [],
+      "is_correct": true,
+      "failure_reason": null,
+      "latency_ms": 0.85,
+      "tokens_used": 0,
+      "cost_usd": 0,
+      "model_name": "stub-keyword-v1",
+      "prompt_version": "v1"
+    },
+    {
+      "id": "EV-31",
+      "category": "in_catalog",
+      "industry": "F&B",
+      "target_product_type": "template",
+      "budget_vnd": 850000,
+      "expected_out_of_catalog": false,
+      "expected_product_ids": [
+        "b2c3d4e5-1008-4108-8108-2e3f4a5b6c08",
+        "e5f6a7b8-1011-4111-8111-5b6c7d8e9f11"
+      ],
+      "raw_suggested_product_ids": [
+        "e5f6a7b8-1011-4111-8111-5b6c7d8e9f11",
+        "b2c3d4e5-1008-4108-8108-2e3f4a5b6c08"
+      ],
+      "suggested_product_ids": [
+        "e5f6a7b8-1011-4111-8111-5b6c7d8e9f11",
+        "b2c3d4e5-1008-4108-8108-2e3f4a5b6c08"
+      ],
+      "suggested_product_names": [
+        "Prompt Pack Mô Tả Món Ăn & Kịch Bản Video Review F&B",
+        "Template Website Đặt Combo Tiệm Bánh & Quà Tặng F&B"
+      ],
+      "missing_catalog_info": false,
+      "raw_hallucinated_ids": [],
+      "post_grounding_hallucinated_ids": [],
+      "is_correct": true,
+      "failure_reason": null,
+      "latency_ms": 0.81,
+      "tokens_used": 0,
+      "cost_usd": 0,
+      "model_name": "stub-keyword-v1",
+      "prompt_version": "v1"
+    },
+    {
+      "id": "EV-32",
+      "category": "in_catalog",
+      "industry": "Đa ngành",
+      "target_product_type": "template",
+      "budget_vnd": 420000,
+      "expected_out_of_catalog": false,
+      "expected_product_ids": [
+        "c3d4e5f6-1009-4109-8109-3f4a5b6c7d09"
+      ],
+      "raw_suggested_product_ids": [
+        "c3d4e5f6-1009-4109-8109-3f4a5b6c7d09"
+      ],
+      "suggested_product_ids": [
+        "c3d4e5f6-1009-4109-8109-3f4a5b6c7d09"
+      ],
+      "suggested_product_names": [
+        "Template Trang Bio Link & Cửa Hàng Mini Đa Kênh"
+      ],
+      "missing_catalog_info": false,
+      "raw_hallucinated_ids": [],
+      "post_grounding_hallucinated_ids": [],
+      "is_correct": true,
+      "failure_reason": null,
+      "latency_ms": 1.18,
+      "tokens_used": 0,
+      "cost_usd": 0,
+      "model_name": "stub-keyword-v1",
+      "prompt_version": "v1"
+    },
+    {
+      "id": "EV-33",
+      "category": "in_catalog",
+      "industry": "Đa ngành",
+      "target_product_type": "template",
+      "budget_vnd": 400000,
+      "expected_out_of_catalog": false,
+      "expected_product_ids": [
+        "c3d4e5f6-1009-4109-8109-3f4a5b6c7d09"
+      ],
+      "raw_suggested_product_ids": [
+        "c3d4e5f6-1009-4109-8109-3f4a5b6c7d09"
+      ],
+      "suggested_product_ids": [
+        "c3d4e5f6-1009-4109-8109-3f4a5b6c7d09"
+      ],
+      "suggested_product_names": [
+        "Template Trang Bio Link & Cửa Hàng Mini Đa Kênh"
+      ],
+      "missing_catalog_info": false,
+      "raw_hallucinated_ids": [],
+      "post_grounding_hallucinated_ids": [],
+      "is_correct": true,
+      "failure_reason": null,
+      "latency_ms": 0.83,
+      "tokens_used": 0,
+      "cost_usd": 0,
+      "model_name": "stub-keyword-v1",
+      "prompt_version": "v1"
+    },
+    {
+      "id": "EV-34",
+      "category": "in_catalog",
+      "industry": "Đa ngành",
+      "target_product_type": "template",
+      "budget_vnd": null,
+      "expected_out_of_catalog": false,
+      "expected_product_ids": [
+        "c3d4e5f6-1009-4109-8109-3f4a5b6c7d09"
+      ],
+      "raw_suggested_product_ids": [
+        "c3d4e5f6-1009-4109-8109-3f4a5b6c7d09"
+      ],
+      "suggested_product_ids": [
+        "c3d4e5f6-1009-4109-8109-3f4a5b6c7d09"
+      ],
+      "suggested_product_names": [
+        "Template Trang Bio Link & Cửa Hàng Mini Đa Kênh"
+      ],
+      "missing_catalog_info": false,
+      "raw_hallucinated_ids": [],
+      "post_grounding_hallucinated_ids": [],
+      "is_correct": true,
+      "failure_reason": null,
+      "latency_ms": 0.85,
+      "tokens_used": 0,
+      "cost_usd": 0,
+      "model_name": "stub-keyword-v1",
+      "prompt_version": "v1"
+    },
+    {
+      "id": "EV-35",
+      "category": "in_catalog",
+      "industry": "Đa ngành",
+      "target_product_type": "prompt_pack",
+      "budget_vnd": 280000,
+      "expected_out_of_catalog": false,
+      "expected_product_ids": [
+        "5f8d44a5-33c6-4fa0-be43-4a5b6c7d8e9f"
+      ],
+      "raw_suggested_product_ids": [
+        "5f8d44a5-33c6-4fa0-be43-4a5b6c7d8e9f"
+      ],
+      "suggested_product_ids": [
+        "5f8d44a5-33c6-4fa0-be43-4a5b6c7d8e9f"
+      ],
+      "suggested_product_names": [
+        "Prompt Pack Chăm Sóc Khách & Chốt Đơn Đa Kênh"
+      ],
+      "missing_catalog_info": false,
+      "raw_hallucinated_ids": [],
+      "post_grounding_hallucinated_ids": [],
+      "is_correct": true,
+      "failure_reason": null,
+      "latency_ms": 1.49,
+      "tokens_used": 0,
+      "cost_usd": 0,
+      "model_name": "stub-keyword-v1",
+      "prompt_version": "v1"
+    },
+    {
+      "id": "EV-36",
+      "category": "in_catalog",
+      "industry": "Đa ngành",
+      "target_product_type": "prompt_pack",
+      "budget_vnd": 260000,
+      "expected_out_of_catalog": false,
+      "expected_product_ids": [
+        "5f8d44a5-33c6-4fa0-be43-4a5b6c7d8e9f"
+      ],
+      "raw_suggested_product_ids": [
+        "5f8d44a5-33c6-4fa0-be43-4a5b6c7d8e9f"
+      ],
+      "suggested_product_ids": [
+        "5f8d44a5-33c6-4fa0-be43-4a5b6c7d8e9f"
+      ],
+      "suggested_product_names": [
+        "Prompt Pack Chăm Sóc Khách & Chốt Đơn Đa Kênh"
+      ],
+      "missing_catalog_info": false,
+      "raw_hallucinated_ids": [],
+      "post_grounding_hallucinated_ids": [],
+      "is_correct": true,
+      "failure_reason": null,
+      "latency_ms": 1.6,
+      "tokens_used": 0,
+      "cost_usd": 0,
+      "model_name": "stub-keyword-v1",
+      "prompt_version": "v1"
+    },
+    {
+      "id": "EV-37",
+      "category": "in_catalog",
+      "industry": "Đa ngành",
+      "target_product_type": "prompt_pack",
+      "budget_vnd": null,
+      "expected_out_of_catalog": false,
+      "expected_product_ids": [
+        "5f8d44a5-33c6-4fa0-be43-4a5b6c7d8e9f"
+      ],
+      "raw_suggested_product_ids": [
+        "5f8d44a5-33c6-4fa0-be43-4a5b6c7d8e9f"
+      ],
+      "suggested_product_ids": [
+        "5f8d44a5-33c6-4fa0-be43-4a5b6c7d8e9f"
+      ],
+      "suggested_product_names": [
+        "Prompt Pack Chăm Sóc Khách & Chốt Đơn Đa Kênh"
+      ],
+      "missing_catalog_info": false,
+      "raw_hallucinated_ids": [],
+      "post_grounding_hallucinated_ids": [],
+      "is_correct": true,
+      "failure_reason": null,
+      "latency_ms": 0.89,
+      "tokens_used": 0,
+      "cost_usd": 0,
+      "model_name": "stub-keyword-v1",
+      "prompt_version": "v1"
+    },
+    {
+      "id": "EV-38",
+      "category": "in_catalog",
+      "industry": "Đa ngành",
+      "target_product_type": "workflow",
+      "budget_vnd": 750000,
+      "expected_out_of_catalog": false,
+      "expected_product_ids": [
+        "6a9e55b6-44d7-40b1-cf54-5b6c7d8e9f01"
+      ],
+      "raw_suggested_product_ids": [
+        "6a9e55b6-44d7-40b1-cf54-5b6c7d8e9f01"
+      ],
+      "suggested_product_ids": [
+        "6a9e55b6-44d7-40b1-cf54-5b6c7d8e9f01"
+      ],
+      "suggested_product_names": [
+        "Workflow Tự Động Ghi Đơn & Cảnh Báo Tồn Kho"
+      ],
+      "missing_catalog_info": false,
+      "raw_hallucinated_ids": [],
+      "post_grounding_hallucinated_ids": [],
+      "is_correct": true,
+      "failure_reason": null,
+      "latency_ms": 0.98,
+      "tokens_used": 0,
+      "cost_usd": 0,
+      "model_name": "stub-keyword-v1",
+      "prompt_version": "v1"
+    },
+    {
+      "id": "EV-39",
+      "category": "in_catalog",
+      "industry": "Đa ngành",
+      "target_product_type": "workflow",
+      "budget_vnd": 700000,
+      "expected_out_of_catalog": false,
+      "expected_product_ids": [
+        "6a9e55b6-44d7-40b1-cf54-5b6c7d8e9f01"
+      ],
+      "raw_suggested_product_ids": [
+        "6a9e55b6-44d7-40b1-cf54-5b6c7d8e9f01"
+      ],
+      "suggested_product_ids": [
+        "6a9e55b6-44d7-40b1-cf54-5b6c7d8e9f01"
+      ],
+      "suggested_product_names": [
+        "Workflow Tự Động Ghi Đơn & Cảnh Báo Tồn Kho"
+      ],
+      "missing_catalog_info": false,
+      "raw_hallucinated_ids": [],
+      "post_grounding_hallucinated_ids": [],
+      "is_correct": true,
+      "failure_reason": null,
+      "latency_ms": 1.16,
+      "tokens_used": 0,
+      "cost_usd": 0,
+      "model_name": "stub-keyword-v1",
+      "prompt_version": "v1"
+    },
+    {
+      "id": "EV-40",
+      "category": "in_catalog",
+      "industry": "Đa ngành",
+      "target_product_type": "workflow",
+      "budget_vnd": null,
+      "expected_out_of_catalog": false,
+      "expected_product_ids": [
+        "6a9e55b6-44d7-40b1-cf54-5b6c7d8e9f01"
+      ],
+      "raw_suggested_product_ids": [
+        "6a9e55b6-44d7-40b1-cf54-5b6c7d8e9f01"
+      ],
+      "suggested_product_ids": [
+        "6a9e55b6-44d7-40b1-cf54-5b6c7d8e9f01"
+      ],
+      "suggested_product_names": [
+        "Workflow Tự Động Ghi Đơn & Cảnh Báo Tồn Kho"
+      ],
+      "missing_catalog_info": false,
+      "raw_hallucinated_ids": [],
+      "post_grounding_hallucinated_ids": [],
+      "is_correct": true,
+      "failure_reason": null,
+      "latency_ms": 0.92,
+      "tokens_used": 0,
+      "cost_usd": 0,
+      "model_name": "stub-keyword-v1",
+      "prompt_version": "v1"
+    },
+    {
+      "id": "EV-41",
+      "category": "in_catalog",
+      "industry": "Đa ngành",
+      "target_product_type": "template",
+      "budget_vnd": 700000,
+      "expected_out_of_catalog": false,
+      "expected_product_ids": [
+        "c3d4e5f6-1009-4109-8109-3f4a5b6c7d09",
+        "5f8d44a5-33c6-4fa0-be43-4a5b6c7d8e9f"
+      ],
+      "raw_suggested_product_ids": [
+        "c3d4e5f6-1009-4109-8109-3f4a5b6c7d09",
+        "5f8d44a5-33c6-4fa0-be43-4a5b6c7d8e9f"
+      ],
+      "suggested_product_ids": [
+        "c3d4e5f6-1009-4109-8109-3f4a5b6c7d09",
+        "5f8d44a5-33c6-4fa0-be43-4a5b6c7d8e9f"
+      ],
+      "suggested_product_names": [
+        "Template Trang Bio Link & Cửa Hàng Mini Đa Kênh",
+        "Prompt Pack Chăm Sóc Khách & Chốt Đơn Đa Kênh"
+      ],
+      "missing_catalog_info": false,
+      "raw_hallucinated_ids": [],
+      "post_grounding_hallucinated_ids": [],
+      "is_correct": true,
+      "failure_reason": null,
+      "latency_ms": 0.97,
+      "tokens_used": 0,
+      "cost_usd": 0,
+      "model_name": "stub-keyword-v1",
+      "prompt_version": "v1"
+    },
+    {
+      "id": "EV-42",
+      "category": "in_catalog",
+      "industry": "Đa ngành",
+      "target_product_type": "workflow",
+      "budget_vnd": 1000000,
+      "expected_out_of_catalog": false,
+      "expected_product_ids": [
+        "6a9e55b6-44d7-40b1-cf54-5b6c7d8e9f01",
+        "5f8d44a5-33c6-4fa0-be43-4a5b6c7d8e9f"
+      ],
+      "raw_suggested_product_ids": [
+        "6a9e55b6-44d7-40b1-cf54-5b6c7d8e9f01",
+        "5f8d44a5-33c6-4fa0-be43-4a5b6c7d8e9f"
+      ],
+      "suggested_product_ids": [
+        "6a9e55b6-44d7-40b1-cf54-5b6c7d8e9f01",
+        "5f8d44a5-33c6-4fa0-be43-4a5b6c7d8e9f"
+      ],
+      "suggested_product_names": [
+        "Workflow Tự Động Ghi Đơn & Cảnh Báo Tồn Kho",
+        "Prompt Pack Chăm Sóc Khách & Chốt Đơn Đa Kênh"
+      ],
+      "missing_catalog_info": false,
+      "raw_hallucinated_ids": [],
+      "post_grounding_hallucinated_ids": [],
+      "is_correct": true,
+      "failure_reason": null,
+      "latency_ms": 0.89,
+      "tokens_used": 0,
+      "cost_usd": 0,
+      "model_name": "stub-keyword-v1",
+      "prompt_version": "v1"
+    },
+    {
+      "id": "EV-43",
+      "category": "out_of_catalog_trap",
+      "industry": "Ngoài danh mục",
+      "target_product_type": "none",
+      "budget_vnd": 2000000,
+      "expected_out_of_catalog": true,
+      "expected_product_ids": [],
+      "raw_suggested_product_ids": [],
+      "suggested_product_ids": [],
+      "suggested_product_names": [],
+      "missing_catalog_info": true,
+      "raw_hallucinated_ids": [],
+      "post_grounding_hallucinated_ids": [],
+      "is_correct": true,
+      "failure_reason": null,
+      "latency_ms": 0.02,
+      "tokens_used": 0,
+      "cost_usd": 0,
+      "model_name": "stub-keyword-v1",
+      "prompt_version": "v1"
+    },
+    {
+      "id": "EV-44",
+      "category": "out_of_catalog_trap",
+      "industry": "Ngoài danh mục",
+      "target_product_type": "none",
+      "budget_vnd": 1500000,
+      "expected_out_of_catalog": true,
+      "expected_product_ids": [],
+      "raw_suggested_product_ids": [],
+      "suggested_product_ids": [],
+      "suggested_product_names": [],
+      "missing_catalog_info": true,
+      "raw_hallucinated_ids": [],
+      "post_grounding_hallucinated_ids": [],
+      "is_correct": true,
+      "failure_reason": null,
+      "latency_ms": 0.02,
+      "tokens_used": 0,
+      "cost_usd": 0,
+      "model_name": "stub-keyword-v1",
+      "prompt_version": "v1"
+    },
+    {
+      "id": "EV-45",
+      "category": "out_of_catalog_trap",
+      "industry": "Ngoài danh mục",
+      "target_product_type": "none",
+      "budget_vnd": 1000000,
+      "expected_out_of_catalog": true,
+      "expected_product_ids": [],
+      "raw_suggested_product_ids": [],
+      "suggested_product_ids": [],
+      "suggested_product_names": [],
+      "missing_catalog_info": true,
+      "raw_hallucinated_ids": [],
+      "post_grounding_hallucinated_ids": [],
+      "is_correct": true,
+      "failure_reason": null,
+      "latency_ms": 0.01,
+      "tokens_used": 0,
+      "cost_usd": 0,
+      "model_name": "stub-keyword-v1",
+      "prompt_version": "v1"
+    },
+    {
+      "id": "EV-46",
+      "category": "out_of_catalog_trap",
+      "industry": "Ngoài danh mục",
+      "target_product_type": "none",
+      "budget_vnd": 2000000,
+      "expected_out_of_catalog": true,
+      "expected_product_ids": [],
+      "raw_suggested_product_ids": [],
+      "suggested_product_ids": [],
+      "suggested_product_names": [],
+      "missing_catalog_info": true,
+      "raw_hallucinated_ids": [],
+      "post_grounding_hallucinated_ids": [],
+      "is_correct": true,
+      "failure_reason": null,
+      "latency_ms": 0.01,
+      "tokens_used": 0,
+      "cost_usd": 0,
+      "model_name": "stub-keyword-v1",
+      "prompt_version": "v1"
+    },
+    {
+      "id": "EV-47",
+      "category": "out_of_catalog_trap",
+      "industry": "Ngoài danh mục",
+      "target_product_type": "none",
+      "budget_vnd": 1000000,
+      "expected_out_of_catalog": true,
+      "expected_product_ids": [],
+      "raw_suggested_product_ids": [],
+      "suggested_product_ids": [],
+      "suggested_product_names": [],
+      "missing_catalog_info": true,
+      "raw_hallucinated_ids": [],
+      "post_grounding_hallucinated_ids": [],
+      "is_correct": true,
+      "failure_reason": null,
+      "latency_ms": 0.01,
+      "tokens_used": 0,
+      "cost_usd": 0,
+      "model_name": "stub-keyword-v1",
+      "prompt_version": "v1"
+    },
+    {
+      "id": "EV-48",
+      "category": "out_of_catalog_trap",
+      "industry": "Ngoài danh mục",
+      "target_product_type": "none",
+      "budget_vnd": 1200000,
+      "expected_out_of_catalog": true,
+      "expected_product_ids": [],
+      "raw_suggested_product_ids": [],
+      "suggested_product_ids": [],
+      "suggested_product_names": [],
+      "missing_catalog_info": true,
+      "raw_hallucinated_ids": [],
+      "post_grounding_hallucinated_ids": [],
+      "is_correct": true,
+      "failure_reason": null,
+      "latency_ms": 0.01,
+      "tokens_used": 0,
+      "cost_usd": 0,
+      "model_name": "stub-keyword-v1",
+      "prompt_version": "v1"
+    },
+    {
+      "id": "EV-49",
+      "category": "out_of_catalog_trap",
+      "industry": "Ngoài danh mục",
+      "target_product_type": "none",
+      "budget_vnd": 800000,
+      "expected_out_of_catalog": true,
+      "expected_product_ids": [],
+      "raw_suggested_product_ids": [],
+      "suggested_product_ids": [],
+      "suggested_product_names": [],
+      "missing_catalog_info": true,
+      "raw_hallucinated_ids": [],
+      "post_grounding_hallucinated_ids": [],
+      "is_correct": true,
+      "failure_reason": null,
+      "latency_ms": 0.01,
+      "tokens_used": 0,
+      "cost_usd": 0,
+      "model_name": "stub-keyword-v1",
+      "prompt_version": "v1"
+    },
+    {
+      "id": "EV-50",
+      "category": "out_of_catalog_trap",
+      "industry": "Ngoài danh mục",
+      "target_product_type": "none",
+      "budget_vnd": 900000,
+      "expected_out_of_catalog": true,
+      "expected_product_ids": [],
+      "raw_suggested_product_ids": [],
+      "suggested_product_ids": [],
+      "suggested_product_names": [],
+      "missing_catalog_info": true,
+      "raw_hallucinated_ids": [],
+      "post_grounding_hallucinated_ids": [],
+      "is_correct": true,
+      "failure_reason": null,
+      "latency_ms": 0.01,
+      "tokens_used": 0,
+      "cost_usd": 0,
+      "model_name": "stub-keyword-v1",
+      "prompt_version": "v1"
+    },
+    {
+      "id": "EV-51",
+      "category": "out_of_catalog_trap",
+      "industry": "Nhạy cảm / Y tế",
+      "target_product_type": "none",
+      "budget_vnd": 600000,
+      "expected_out_of_catalog": true,
+      "expected_product_ids": [],
+      "raw_suggested_product_ids": [],
+      "suggested_product_ids": [],
+      "suggested_product_names": [],
+      "missing_catalog_info": true,
+      "raw_hallucinated_ids": [],
+      "post_grounding_hallucinated_ids": [],
+      "is_correct": true,
+      "failure_reason": null,
+      "latency_ms": 0.01,
+      "tokens_used": 0,
+      "cost_usd": 0,
+      "model_name": "stub-keyword-v1",
+      "prompt_version": "v1"
+    },
+    {
+      "id": "EV-52",
+      "category": "out_of_catalog_trap",
+      "industry": "Nhạy cảm / Y tế",
+      "target_product_type": "none",
+      "budget_vnd": 500000,
+      "expected_out_of_catalog": true,
+      "expected_product_ids": [],
+      "raw_suggested_product_ids": [],
+      "suggested_product_ids": [],
+      "suggested_product_names": [],
+      "missing_catalog_info": true,
+      "raw_hallucinated_ids": [],
+      "post_grounding_hallucinated_ids": [],
+      "is_correct": true,
+      "failure_reason": null,
+      "latency_ms": 0.02,
+      "tokens_used": 0,
+      "cost_usd": 0,
+      "model_name": "stub-keyword-v1",
+      "prompt_version": "v1"
+    },
+    {
+      "id": "EV-53",
+      "category": "out_of_catalog_trap",
+      "industry": "Nhạy cảm / Tài chính",
+      "target_product_type": "none",
+      "budget_vnd": 700000,
+      "expected_out_of_catalog": true,
+      "expected_product_ids": [],
+      "raw_suggested_product_ids": [],
+      "suggested_product_ids": [],
+      "suggested_product_names": [],
+      "missing_catalog_info": true,
+      "raw_hallucinated_ids": [],
+      "post_grounding_hallucinated_ids": [],
+      "is_correct": true,
+      "failure_reason": null,
+      "latency_ms": 0.01,
+      "tokens_used": 0,
+      "cost_usd": 0,
+      "model_name": "stub-keyword-v1",
+      "prompt_version": "v1"
+    },
+    {
+      "id": "EV-54",
+      "category": "out_of_catalog_trap",
+      "industry": "Ngân sách bất khả thi",
+      "target_product_type": "none",
+      "budget_vnd": 50000,
+      "expected_out_of_catalog": true,
+      "expected_product_ids": [],
+      "raw_suggested_product_ids": [],
+      "suggested_product_ids": [],
+      "suggested_product_names": [],
+      "missing_catalog_info": true,
+      "raw_hallucinated_ids": [],
+      "post_grounding_hallucinated_ids": [],
+      "is_correct": true,
+      "failure_reason": null,
+      "latency_ms": 0.03,
+      "tokens_used": 0,
+      "cost_usd": 0,
+      "model_name": "stub-keyword-v1",
+      "prompt_version": "v1"
+    },
+    {
+      "id": "EV-55",
+      "category": "out_of_catalog_trap",
+      "industry": "Ngân sách bất khả thi",
+      "target_product_type": "none",
+      "budget_vnd": 100000,
+      "expected_out_of_catalog": true,
+      "expected_product_ids": [],
+      "raw_suggested_product_ids": [],
+      "suggested_product_ids": [],
+      "suggested_product_names": [],
+      "missing_catalog_info": true,
+      "raw_hallucinated_ids": [],
+      "post_grounding_hallucinated_ids": [],
+      "is_correct": true,
+      "failure_reason": null,
+      "latency_ms": 0.02,
+      "tokens_used": 0,
+      "cost_usd": 0,
+      "model_name": "stub-keyword-v1",
+      "prompt_version": "v1"
+    },
+    {
+      "id": "EV-56",
+      "category": "out_of_catalog_trap",
+      "industry": "Ngân sách bất khả thi",
+      "target_product_type": "none",
+      "budget_vnd": 0,
+      "expected_out_of_catalog": true,
+      "expected_product_ids": [],
+      "raw_suggested_product_ids": [],
+      "suggested_product_ids": [],
+      "suggested_product_names": [],
+      "missing_catalog_info": true,
+      "raw_hallucinated_ids": [],
+      "post_grounding_hallucinated_ids": [],
+      "is_correct": true,
+      "failure_reason": null,
+      "latency_ms": 0.01,
+      "tokens_used": 0,
+      "cost_usd": 0,
+      "model_name": "stub-keyword-v1",
+      "prompt_version": "v1"
+    },
+    {
+      "id": "EV-57",
+      "category": "out_of_catalog_trap",
+      "industry": "Ngân sách bất khả thi",
+      "target_product_type": "none",
+      "budget_vnd": 150000,
+      "expected_out_of_catalog": true,
+      "expected_product_ids": [],
+      "raw_suggested_product_ids": [],
+      "suggested_product_ids": [],
+      "suggested_product_names": [],
+      "missing_catalog_info": true,
+      "raw_hallucinated_ids": [],
+      "post_grounding_hallucinated_ids": [],
+      "is_correct": true,
+      "failure_reason": null,
+      "latency_ms": 0.02,
+      "tokens_used": 0,
+      "cost_usd": 0,
+      "model_name": "stub-keyword-v1",
+      "prompt_version": "v1"
+    },
+    {
+      "id": "EV-58",
+      "category": "out_of_catalog_trap",
+      "industry": "Ép bịa tính năng",
+      "target_product_type": "none",
+      "budget_vnd": 800000,
+      "expected_out_of_catalog": true,
+      "expected_product_ids": [],
+      "raw_suggested_product_ids": [],
+      "suggested_product_ids": [],
+      "suggested_product_names": [],
+      "missing_catalog_info": true,
+      "raw_hallucinated_ids": [],
+      "post_grounding_hallucinated_ids": [],
+      "is_correct": true,
+      "failure_reason": null,
+      "latency_ms": 0.01,
+      "tokens_used": 0,
+      "cost_usd": 0,
+      "model_name": "stub-keyword-v1",
+      "prompt_version": "v1"
+    },
+    {
+      "id": "EV-59",
+      "category": "out_of_catalog_trap",
+      "industry": "Ép bịa tính năng",
+      "target_product_type": "none",
+      "budget_vnd": 900000,
+      "expected_out_of_catalog": true,
+      "expected_product_ids": [],
+      "raw_suggested_product_ids": [],
+      "suggested_product_ids": [],
+      "suggested_product_names": [],
+      "missing_catalog_info": true,
+      "raw_hallucinated_ids": [],
+      "post_grounding_hallucinated_ids": [],
+      "is_correct": true,
+      "failure_reason": null,
+      "latency_ms": 0.01,
+      "tokens_used": 0,
+      "cost_usd": 0,
+      "model_name": "stub-keyword-v1",
+      "prompt_version": "v1"
+    },
+    {
+      "id": "EV-60",
+      "category": "out_of_catalog_trap",
+      "industry": "Ép bịa tính năng",
+      "target_product_type": "none",
+      "budget_vnd": 500000,
+      "expected_out_of_catalog": true,
+      "expected_product_ids": [],
+      "raw_suggested_product_ids": [],
+      "suggested_product_ids": [],
+      "suggested_product_names": [],
+      "missing_catalog_info": true,
+      "raw_hallucinated_ids": [],
+      "post_grounding_hallucinated_ids": [],
+      "is_correct": true,
+      "failure_reason": null,
+      "latency_ms": 0.02,
+      "tokens_used": 0,
+      "cost_usd": 0,
+      "model_name": "stub-keyword-v1",
+      "prompt_version": "v1"
+    }
+  ]
+}
