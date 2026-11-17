@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Demo — Flash Sale &amp; Gom Đơn Livestream</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: system-ui, -apple-system, "Segoe UI", sans-serif; background: #0f172a; color: #f8fafc; }
+    .demo-bar { background: #187f65; color: #fff; font-size: 12px; text-align: center; padding: 6px 12px; font-weight: 600; }
+    .wrap { max-width: 960px; margin: 0 auto; padding: 20px 16px 52px; }
+    .search { width: 100%; padding: 12px 14px; border-radius: 12px; border: 1px solid #334155; background: #1e293b; color: #fff; margin: 14px 0 20px; font-size: 15px; }
+    .list { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 14px; }
+    .item { background: #1e293b; border: 1px solid #334155; border-radius: 14px; padding: 16px; display: grid; gap: 10px; }
+    .code { display: inline-block; background: #e8830f; color: #fff; padding: 3px 9px; border-radius: 6px; font-weight: 800; font-size: 12px; width: fit-content; }
+    .btn { background: #48b594; color: #062119; border: 0; border-radius: 10px; padding: 10px; font-weight: 800; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <div class="demo-bar">Bản xem thử minh họa (HTML Demo) • Gom Đơn Mã Live Tức Thì</div>
+  <div class="wrap">
+    <h1 style="margin:0;font-size:24px;">Kho Mã Live Đang Mở Giá Săn Deal</h1>
+    <p style="color:#94a3b8;margin:6px 0 0;font-size:14px;">Khách gõ mã sản phẩm đọc trên livestream (#A01, #A02) để giữ size ngay.</p>
+    <input class="search" type="search" placeholder="Tìm nhanh theo mã live (#A01, #A02, #A03)..." oninput="filterCodes(this.value)" />
+    <div class="list" id="live-list">
+      <div class="item" data-code="#a01">
+        <span class="code">#A01 • LIVE</span>
+        <strong>Áo Thun Baby Tee Cotton 250gsm</strong>
+        <span style="color:#48b594;font-weight:800;font-size:18px;">149.000đ</span>
+        <button class="btn" onclick="this.textContent='Đã giữ mã #A01 ✓'">Giữ size S/M/L</button>
+      </div>
+      <div class="item" data-code="#a02">
+        <span class="code">#A02 • LIVE</span>
+        <strong>Quần Jeans Ống Rộng Wash Nhẹ</strong>
+        <span style="color:#48b594;font-weight:800;font-size:18px;">259.000đ</span>
+        <button class="btn" onclick="this.textContent='Đã giữ mã #A02 ✓'">Giữ size 26–30</button>
+      </div>
+      <div class="item" data-code="#a03">
+        <span class="code">#A03 • LIVE</span>
+        <strong>Áo Khoác Cardigan Len Mỏng</strong>
+        <span style="color:#48b594;font-weight:800;font-size:18px;">219.000đ</span>
+        <button class="btn" onclick="this.textContent='Đã giữ mã #A03 ✓'">Giữ Freesize</button>
+      </div>
+    </div>
+  </div>
+  <script>
+    function filterCodes(q) {
+      var val = q.trim().toLowerCase();
+      document.querySelectorAll('#live-list .item').forEach(function(el) {
+        var text = (el.getAttribute('data-code') + ' ' + el.textContent).toLowerCase();
+        el.style.display = !val || text.indexOf(val) !== -1 ? 'grid' : 'none';
+      });
+    }
+  </script>
+</body>
+</html>

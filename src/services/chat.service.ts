@@ -20,10 +20,10 @@ export function sendChatMessage(
 
 export function getChatSessions(
   params: {
-    assignment_id: string;
+    assignment_id?: string;
     visitor_id?: string;
     scenario_run_id?: string;
-  },
+  } = {},
   signal?: AbortSignal
 ): Promise<ApiResponse<ChatSessionsResponse>> {
   const qs = buildQueryString(params);

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Demo — Đặt Combo Tiệm Bánh &amp; Quà Tặng F&amp;B</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: system-ui, -apple-system, "Segoe UI", sans-serif; background: #fdf8f6; color: #292524; }
+    .demo-bar { background: #0f172a; color: #f8fafc; font-size: 12px; text-align: center; padding: 6px 12px; }
+    .wrap { max-width: 820px; margin: 0 auto; padding: 20px 16px 56px; }
+    .box { background: #fff; border: 1px solid #e7e5e4; border-radius: 16px; padding: 18px; margin-top: 16px; display: grid; gap: 12px; }
+    .slots { display: flex; flex-wrap: wrap; gap: 8px; }
+    .slot { border: 1px solid #d6d3d1; background: #fff; padding: 8px 12px; border-radius: 10px; cursor: pointer; font-weight: 600; }
+    .slot.active { background: #187f65; color: #fff; border-color: #187f65; }
+    textarea { width: 100%; padding: 10px; border: 1px solid #d6d3d1; border-radius: 10px; font: inherit; }
+    .submit { background: #187f65; color: #fff; border: 0; border-radius: 12px; padding: 12px; font-weight: 700; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <div class="demo-bar">Bản xem thử minh họa (HTML Demo) • Đặt Combo Pre-Order Theo Khung Giờ</div>
+  <div class="wrap">
+    <h1 style="margin:0;font-size:26px;">Bếp Bánh Mây • Set Quà Trà Chiều Thủ Công</h1>
+    <p style="color:#57534e;margin:6px 0 0;">Đặt trước hộp bánh nướng mới trong ngày, chọn khung giờ giao và ghi lời chúc lên thiệp.</p>
+    <div class="box">
+      <strong>1. Chọn set combo trong ngày</strong>
+      <div class="slots">
+        <button class="slot active" onclick="pick(this)">Hộp 6 Bánh Bông Lan Trứng Muối (215.000đ)</button>
+        <button class="slot" onclick="pick(this)">Set Trà Chiều 4 Vị + Trà Hoa (285.000đ)</button>
+      </div>
+      <strong>2. Chọn khung giờ nhận bánh</strong>
+      <div class="slots">
+        <button class="slot active" onclick="pick(this)">10:00 – 11:30</button>
+        <button class="slot" onclick="pick(this)">14:30 – 16:00</button>
+        <button class="slot" onclick="pick(this)">17:00 – 18:30</button>
+      </div>
+      <strong>3. Lời chúc viết thiệp miễn phí</strong>
+      <textarea rows="2" placeholder="Ví dụ: Chúc mừng sinh nhật chị Lan, luôn rạng rỡ và vui vẻ!"></textarea>
+      <button class="submit" onclick="this.textContent='Đã tạo phiếu đặt trước thành công ✓'">Xác nhận đặt trước</button>
+    </div>
+  </div>
+  <script>
+    function pick(btn) {
+      btn.parentElement.querySelectorAll('.slot').forEach(function(b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+    }
+  </script>
+</body>
+</html>

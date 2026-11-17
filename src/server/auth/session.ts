@@ -11,6 +11,7 @@ import {
   type AuthSessionCookiePayload,
   type ExperimentCookiePayload,
   type GuestOrdersCookiePayload,
+  clearCookie,
   readSignedCookie,
 } from './cookies';
 
@@ -69,6 +70,10 @@ export async function requireAdmin(): Promise<UserRecord> {
 
 export async function getExperimentCookieSession(): Promise<ExperimentCookiePayload | null> {
   return readSignedCookie<ExperimentCookiePayload>(EXPERIMENT_COOKIE_NAME);
+}
+
+export async function clearExperimentCookieSession(): Promise<void> {
+  await clearCookie(EXPERIMENT_COOKIE_NAME);
 }
 
 export async function getGuestOrdersCookieSession(): Promise<GuestOrdersCookiePayload | null> {

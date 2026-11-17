@@ -119,6 +119,31 @@ interface ScenariosJsonItem {
   is_active: boolean;
 }
 
+const DEFAULT_THUMBNAIL_BY_TYPE: Record<ProductType, string> = {
+  template: '/images/cat-template.webp',
+  prompt_pack: '/images/cat-prompt.webp',
+  workflow: '/images/cat-workflow.webp',
+};
+
+function cloneProductSpecs(specs: ProductSpecs): ProductSpecs {
+  return {
+    ...specs,
+    platforms: Array.isArray(specs.platforms) ? [...specs.platforms] : undefined,
+    deliverables: Array.isArray(specs.deliverables)
+      ? [...specs.deliverables]
+      : undefined,
+    tech_stack: Array.isArray(specs.tech_stack)
+      ? [...specs.tech_stack]
+      : undefined,
+    preview_highlights: Array.isArray(specs.preview_highlights)
+      ? [...specs.preview_highlights]
+      : undefined,
+    case_studies: Array.isArray(specs.case_studies)
+      ? specs.case_studies.map((cs) => ({ ...cs }))
+      : undefined,
+  };
+}
+
 export function createInitialDevStoreState(): DevStoreState {
   const now = '2026-11-01T08:00:00.000Z';
 
@@ -163,11 +188,16 @@ export function createInitialDevStoreState(): DevStoreState {
       product_type: item.product_type,
       industry: item.industry,
       price_vnd: item.price_vnd,
-      demo_url: item.demo_url,
-      thumbnail_url: item.thumbnail_url,
+      demo_url:
+        item.demo_url ??
+        (item.product_type === 'template'
+          ? `/demos/${item.slug}/index.html`
+          : null),
+      thumbnail_url:
+        item.thumbnail_url ?? DEFAULT_THUMBNAIL_BY_TYPE[item.product_type],
       source_type: item.source_type,
       license_note: item.license_note,
-      specs: item.specs,
+      specs: cloneProductSpecs(item.specs),
       is_active: item.is_active,
       is_simulated: item.is_simulated,
       deleted_at: null,

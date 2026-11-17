@@ -4,10 +4,40 @@ import { getStore } from "@/server/store";
 
 export const dynamic = "force-dynamic";
 
+const DEFAULT_BASE_URL = "http://localhost:3000";
+
+function normalizeHttpUrl(raw: string | undefined): string | null {
+  const trimmed = raw?.trim();
+  if (!trimmed) return null;
+
+  try {
+    const parsed = new URL(trimmed);
+    if (parsed.protocol !== "http:" && parsed.protocol !== "https:") {
+      return null;
+    }
+    return parsed.origin;
+  } catch {
+    return null;
+  }
+}
+
 function getBaseUrl(): string {
-  const raw = process.env.NEXT_PUBLIC_APP_URL?.trim();
-  if (!raw) return "http://localhost:3000";
-  return raw.replace(/\/+$/, "");
+  const explicit = normalizeHttpUrl(process.env.NEXT_PUBLIC_APP_URL);
+  if (explicit) return explicit;
+
+  const vercelProd = process.env.VERCEL_PROJECT_PRODUCTION_URL?.trim();
+  if (process.env.VERCEL_ENV === "production" && vercelProd) {
+    const normalized = normalizeHttpUrl(`https://${vercelProd}`);
+    if (normalized) return normalized;
+  }
+
+  const vercelUrl = process.env.VERCEL_URL?.trim();
+  if (vercelUrl) {
+    const normalized = normalizeHttpUrl(`https://${vercelUrl}`);
+    if (normalized) return normalized;
+  }
+
+  return DEFAULT_BASE_URL;
 }
 
 function parseValidDate(
@@ -54,19 +84,21 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   try {
     const store = getStore();
-    const { items } = await store.listProducts({
-      limit: 100,
-      page: 1,
-      sort: "newest",
-    });
+    const products = await store.listAllActiveProducts();
+    const seenSlugs = new Set<string>();
 
-    productRoutes = items
-      .filter(
-        (product) =>
-          product.is_active &&
-          product.deleted_at === null &&
-          Boolean(product.slug?.trim())
-      )
+    productRoutes = products
+      .filter((product) => {
+        const slug = product.slug?.trim();
+        if (!product.is_active || product.deleted_at !== null || !slug) {
+          return false;
+        }
+        if (seenSlugs.has(slug)) {
+          return false;
+        }
+        seenSlugs.add(slug);
+        return true;
+      })
       .map((product) => ({
         url: `${baseUrl}/products/${encodeURIComponent(product.slug.trim())}`,
         lastModified: parseValidDate(

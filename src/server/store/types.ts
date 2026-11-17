@@ -228,6 +228,12 @@ export interface AdminOrderQueryFilter {
   limit: number;
 }
 
+export interface AdminChatLogRawEntry {
+  session: ChatSessionRecord;
+  participant_code: string;
+  messages: ChatMessageRecord[];
+}
+
 export interface DataStore {
   readonly mode: 'dev_memory' | 'supabase';
 
@@ -438,6 +444,11 @@ export interface DataStore {
     created_at: string;
   }): Promise<EventRecord>;
 
+  listAdminChatLogs(params: {
+    include_simulated: boolean;
+    limit?: number;
+  }): Promise<AdminChatLogRawEntry[]>;
+
   getDashboardRawData(includeSimulated: boolean): Promise<{
     assignments: ExperimentAssignmentRecord[];
     scenarioRuns: ScenarioRunRecord[];
@@ -455,3 +466,5 @@ export interface DataStore {
     events: EventRecord[];
   }>;
 }
+
+export type StoreAdapter = DataStore;

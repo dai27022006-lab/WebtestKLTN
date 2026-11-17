@@ -4,6 +4,7 @@ import { conflictError } from '@/server/errors';
 
 import { createInitialDevStoreState, type DevStoreState } from './seed-data';
 import type {
+  AdminChatLogRawEntry,
   AdminOrderQueryFilter,
   ChatMessageRecord,
   ChatSessionRecord,
@@ -725,6 +726,44 @@ export class InMemoryDevStore implements DataStore {
     };
     getDevState().events.push(record);
     return record;
+  }
+
+  async listAdminChatLogs(params: {
+    include_simulated: boolean;
+    limit?: number;
+  }): Promise<AdminChatLogRawEntry[]> {
+    const state = getDevState();
+    const safeLimit = Math.min(Math.max(params.limit ?? 30, 1), 100);
+
+    const sessions = state.chatSessions
+      .filter((s) => {
+        if (s.deleted_at !== null) return false;
+        if (!params.include_simulated && s.is_simulated) return false;
+        return true;
+      })
+      .sort((a, b) => b.updated_at.localeCompare(a.updated_at))
+      .slice(0, safeLimit);
+
+    if (sessions.length === 0) return [];
+
+    const participantByAssignment = new Map(
+      state.assignments.map((a) => [a.id, a.participant_code])
+    );
+
+    return sessions.map((session) => ({
+      session,
+      participant_code:
+        participantByAssignment.get(session.assignment_id) ?? 'GUEST',
+      messages: state.chatMessages
+        .filter((m) => {
+          if (m.session_id !== session.id || m.deleted_at !== null) {
+            return false;
+          }
+          if (!params.include_simulated && m.is_simulated) return false;
+          return true;
+        })
+        .sort((a, b) => a.created_at.localeCompare(b.created_at)),
+    }));
   }
 
   async getDashboardRawData(includeSimulated: boolean) {

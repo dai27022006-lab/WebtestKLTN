@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 
 import {
@@ -9,7 +9,6 @@ import {
   Menu,
   Moon,
   ShoppingBag,
-  Sparkles,
   Sun,
   User,
   X,
@@ -22,28 +21,37 @@ import { useCart, useExperiment } from '@/state';
 const NAV_ITEMS = [
   { href: '/', label: 'Trang chủ' },
   { href: '/products', label: 'Sản phẩm' },
-  { href: '/experiment', label: 'Thí nghiệm F11' },
-  { href: '/admin/analytics', label: 'Phân tích Admin' },
+  { href: '/orders', label: 'Đơn hàng' },
   { href: '/#faqs', label: 'Hỏi đáp' },
 ];
 
+const DIALOG_LIGHT_DISMISS = {
+  closedby: 'any',
+} as unknown as React.DialogHTMLAttributes<HTMLDialogElement>;
+
 export function SiteHeader() {
   const pathname = usePathname();
+  const router = useRouter();
   const { theme, toggleTheme } = useTheme();
   const { user, logoutUser } = useAuth();
   const { cart } = useCart();
-  const { assignment, scenarioState, activeVariant } = useExperiment();
+  const { assignment, scenarioState, resetSession } = useExperiment();
 
   const [isScrolled, setIsScrolled] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [isCartPopping, setIsCartPopping] = useState(false);
+
   const mobileDialogRef = useRef<HTMLDialogElement | null>(null);
   const progressBarRef = useRef<HTMLDivElement | null>(null);
+  const prevCartCountRef = useRef<number>(0);
+  const cartHydratedRef = useRef<boolean>(false);
 
+  const isAdminRoute = pathname.startsWith('/admin');
   const isExperimentRoute = pathname === '/experiment';
 
   // Fixed header scroll state + fallback for browsers without CSS scroll-driven animation-timeline
   useEffect(() => {
-    if (typeof window === 'undefined') return;
+    if (typeof window === 'undefined' || isAdminRoute) return;
 
     const supportsScrollTimeline =
       typeof CSS !== 'undefined' &&
@@ -54,7 +62,7 @@ export function SiteHeader() {
     const syncScroll = () => {
       rafId = 0;
       const scrollY = window.scrollY || document.documentElement.scrollTop || 0;
-      setIsScrolled(scrollY >= 32);
+      setIsScrolled(scrollY >= 24);
 
       if (!supportsScrollTimeline && progressBarRef.current) {
         const maxScroll =
@@ -80,10 +88,41 @@ export function SiteHeader() {
       window.removeEventListener('scroll', onScroll);
       window.removeEventListener('resize', onScroll);
     };
+  }, [isAdminRoute]);
+
+  // Cart-pop micro-interaction when cart.item_count increases after initial load
+  useEffect(() => {
+    const settleTimer = setTimeout(() => {
+      cartHydratedRef.current = true;
+    }, 800);
+    return () => clearTimeout(settleTimer);
   }, []);
+
+  useEffect(() => {
+    if (!cartHydratedRef.current) {
+      if (cart.updated_at !== '') {
+        cartHydratedRef.current = true;
+        prevCartCountRef.current = cart.item_count;
+      }
+      return;
+    }
+
+    if (cart.item_count > prevCartCountRef.current) {
+      prevCartCountRef.current = cart.item_count;
+      const rafId = requestAnimationFrame(() => setIsCartPopping(true));
+      const resetTimer = setTimeout(() => setIsCartPopping(false), 380);
+      return () => {
+        cancelAnimationFrame(rafId);
+        clearTimeout(resetTimer);
+      };
+    }
+
+    prevCartCountRef.current = cart.item_count;
+  }, [cart.item_count, cart.updated_at]);
 
   // Native <dialog> light dismiss + sync aria-expanded state
   useEffect(() => {
+    if (isAdminRoute || isExperimentRoute) return;
     const dialog = mobileDialogRef.current;
     if (!dialog) return;
 
@@ -104,7 +143,7 @@ export function SiteHeader() {
       pressedOutside = isOutside(e);
     };
     const onUp = (e: PointerEvent) => {
-      if (pressedOutside && isOutside(e)) {
+      if (dialog.open && pressedOutside && isOutside(e)) {
         dialog.close();
       }
     };
@@ -118,7 +157,11 @@ export function SiteHeader() {
       dialog.removeEventListener('pointerdown', onDown);
       dialog.removeEventListener('pointerup', onUp);
     };
-  }, []);
+  }, [isAdminRoute, isExperimentRoute]);
+
+  if (isAdminRoute) {
+    return null;
+  }
 
   const openMobileMenu = () => {
     const dialog = mobileDialogRef.current;
@@ -134,11 +177,18 @@ export function SiteHeader() {
     setDrawerOpen(false);
   };
 
-  // Focus Mode Header when inside /experiment with an active assignment
-  if (isExperimentRoute && assignment) {
-    const stepLabel = scenarioState?.is_finished
-      ? 'Hoàn tất'
-      : `Lượt ${scenarioState?.step_order ?? 1}/${scenarioState?.total_steps ?? 2}`;
+  const handleExitSurvey = () => {
+    resetSession();
+    router.push('/');
+  };
+
+  // Focus Mode Header on /experiment (zero P-code or variant leak)
+  if (isExperimentRoute) {
+    const stepLabel = assignment
+      ? scenarioState?.is_finished
+        ? 'Hoàn tất khảo sát'
+        : `Nhiệm vụ ${scenarioState?.step_order ?? 1}/${scenarioState?.total_steps ?? 2}`
+      : 'Chuẩn bị khảo sát';
 
     return (
       <header className={`dg-header ${isScrolled ? 'fixed' : ''}`}>
@@ -156,19 +206,11 @@ export function SiteHeader() {
                 aria-label="Về trang chủ DreamTeam"
               >
                 <DreamTeamBrandMark size={28} />
-                <span className="brand-link__name">Thí nghiệm F11</span>
+                <span className="brand-link__name">
+                  Khảo sát Trải nghiệm Chọn Gói
+                </span>
               </Link>
-              <span className="badge type-mono">{assignment.participant_code}</span>
               <span className="badge badge--accent">{stepLabel}</span>
-              <span
-                className={`badge ${
-                  activeVariant === 'chatbot_on' ? 'badge--success' : 'badge--info'
-                }`}
-              >
-                {activeVariant === 'chatbot_on'
-                  ? 'Có trợ lý ảo'
-                  : 'Không trợ lý ảo'}
-              </span>
             </div>
 
             <div className="header-actions">
@@ -181,20 +223,19 @@ export function SiteHeader() {
                     ? 'Chuyển sang giao diện Tối'
                     : 'Chuyển sang giao diện Sáng'
                 }
-                title={
-                  theme === 'light'
-                    ? 'Chuyển sang giao diện Tối'
-                    : 'Chuyển sang giao diện Sáng'
-                }
               >
                 {theme === 'light' ? <Moon size={16} /> : <Sun size={16} />}
                 <span className="desktop-only">
                   {theme === 'light' ? 'Tối' : 'Sáng'}
                 </span>
               </button>
-              <Link href="/products" className="btn btn--secondary btn--sm">
-                Danh mục
-              </Link>
+              <button
+                type="button"
+                className="btn btn--secondary btn--sm"
+                onClick={handleExitSurvey}
+              >
+                Thoát khảo sát
+              </button>
             </div>
           </div>
         </div>
@@ -219,7 +260,7 @@ export function SiteHeader() {
             <DreamTeamBrandMark
               size={32}
               showWordmark
-              subtitle="Cửa hàng số & RAG"
+              subtitle="Công cụ số cho shop nhỏ"
             />
           </Link>
 
@@ -256,11 +297,6 @@ export function SiteHeader() {
                   ? 'Chuyển sang giao diện Tối'
                   : 'Chuyển sang giao diện Sáng'
               }
-              title={
-                theme === 'light'
-                  ? 'Chuyển sang giao diện Tối'
-                  : 'Chuyển sang giao diện Sáng'
-              }
             >
               {theme === 'light' ? <Moon size={16} /> : <Sun size={16} />}
             </button>
@@ -272,15 +308,35 @@ export function SiteHeader() {
             >
               <ShoppingBag size={16} />
               <span className="dg-cart-label">Giỏ hàng</span>
-              <span className="cart-badge">{cart.item_count}</span>
+              <span
+                className={`cart-badge ${isCartPopping ? 'is-popping' : ''}`}
+                onAnimationEnd={() => setIsCartPopping(false)}
+              >
+                {cart.item_count}
+              </span>
             </Link>
 
             {user ? (
               <div className="dg-desktop-only dg-user-cluster">
-                <Link href="/auth" className="dg-btn-outline dg-btn-sm">
+                <Link
+                  href="/auth"
+                  className="dg-btn-outline dg-btn-sm"
+                  aria-label={`Tài khoản: ${user.full_name ?? user.email}`}
+                  title={user.full_name ?? user.email}
+                >
                   <User size={15} />
-                  <span>{user.full_name ?? user.email}</span>
+                  <span className="dg-user-name">
+                    {user.full_name ?? user.email}
+                  </span>
                 </Link>
+                {user.role === 'admin' && (
+                  <Link
+                    href="/admin/analytics"
+                    className="btn btn--secondary btn--sm"
+                  >
+                    Quản trị
+                  </Link>
+                )}
                 <button
                   type="button"
                   className="btn btn--ghost btn--sm"
@@ -300,11 +356,10 @@ export function SiteHeader() {
             )}
 
             <Link
-              href="/experiment"
+              href="/products"
               className="dg-btn-purchase dg-btn-sm dg-desktop-only"
             >
-              <Sparkles size={15} />
-              <span>Thử F11</span>
+              <span>{user ? 'Gói giải pháp' : 'Khám phá gói số'}</span>
             </Link>
 
             <button
@@ -326,10 +381,15 @@ export function SiteHeader() {
         ref={mobileDialogRef}
         className="nav-dialog"
         aria-labelledby="mobile-nav-title"
+        {...DIALOG_LIGHT_DISMISS}
       >
         <div className="nav-dialog__head">
           <div id="mobile-nav-title">
-            <DreamTeamBrandMark size={28} showWordmark />
+            <DreamTeamBrandMark
+              size={28}
+              showWordmark
+              subtitle="Công cụ số cho shop nhỏ"
+            />
           </div>
           <button
             type="button"
@@ -344,40 +404,32 @@ export function SiteHeader() {
 
         <nav className="nav-dialog__links" aria-label="Menu di động">
           <Link href="/" className="nav-dialog__link" onClick={closeMobileMenu}>
-            <span>Trang chủ DreamTeam</span>
-            <span className="type-caption">/</span>
+            <span>Trang chủ</span>
+            <ArrowRight size={15} />
           </Link>
           <Link
             href="/products"
             className="nav-dialog__link"
             onClick={closeMobileMenu}
           >
-            <span>Danh mục gói số (F2)</span>
+            <span>Sản phẩm</span>
             <ArrowRight size={15} />
           </Link>
           <Link
-            href="/experiment"
+            href="/orders"
             className="nav-dialog__link"
             onClick={closeMobileMenu}
           >
-            <span>Thí nghiệm A/B (F11)</span>
-            <span className="badge badge--accent">~5 phút</span>
+            <span>Đơn hàng</span>
+            <ArrowRight size={15} />
           </Link>
           <Link
             href="/cart"
             className="nav-dialog__link"
             onClick={closeMobileMenu}
           >
-            <span>Giỏ hàng &amp; Sandbox</span>
+            <span>Giỏ hàng</span>
             <span className="cart-badge">{cart.item_count}</span>
-          </Link>
-          <Link
-            href="/admin/analytics"
-            className="nav-dialog__link"
-            onClick={closeMobileMenu}
-          >
-            <span>Phân tích Admin (F10)</span>
-            <ArrowRight size={15} />
           </Link>
           <Link
             href="/#faqs"
@@ -395,10 +447,20 @@ export function SiteHeader() {
             <span>
               {user
                 ? `Tài khoản: ${user.full_name ?? user.email}`
-                : 'Đăng nhập / Demo (F1)'}
+                : 'Đăng nhập / Đăng ký'}
             </span>
             <ArrowRight size={15} />
           </Link>
+          {user?.role === 'admin' && (
+            <Link
+              href="/admin/analytics"
+              className="nav-dialog__link"
+              onClick={closeMobileMenu}
+            >
+              <span>Quản trị cửa hàng</span>
+              <ArrowRight size={15} />
+            </Link>
+          )}
         </nav>
 
         <div className="nav-dialog__foot">
@@ -410,8 +472,8 @@ export function SiteHeader() {
             {theme === 'light' ? <Moon size={16} /> : <Sun size={16} />}
             <span>
               {theme === 'light'
-                ? 'Chuyển sang Dark Mode'
-                : 'Chuyển sang Light Mode'}
+                ? 'Chuyển sang Giao diện Tối'
+                : 'Chuyển sang Giao diện Sáng'}
             </span>
           </button>
 

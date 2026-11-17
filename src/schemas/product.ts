@@ -20,6 +20,14 @@ export const productSourceTypeSchema = z.enum([
 
 export const productSortSchema = z.enum(['price_asc', 'price_desc', 'newest']);
 
+export const productCaseStudySchema = z.object({
+  shop_name: nonEmptyTrimmedString(100, 'Tên shop'),
+  shop_type: nonEmptyTrimmedString(100, 'Loại hình shop'),
+  rating: z.number().min(1).max(5),
+  quote: nonEmptyTrimmedString(500, 'Nhận xét'),
+  outcome: nonEmptyTrimmedString(200, 'Kết quả thực tế'),
+});
+
 export const productSpecsSchema = z
   .object({
     target_shop_size: z.string().trim().max(100).optional(),
@@ -28,6 +36,8 @@ export const productSpecsSchema = z
     tech_stack: z.array(z.string().trim().max(60)).max(20).optional(),
     setup_time_minutes: z.number().int().min(0).max(10000).optional(),
     guide_summary: z.string().trim().max(1000).optional(),
+    case_studies: z.array(productCaseStudySchema).max(10).optional(),
+    preview_highlights: z.array(z.string().trim().max(200)).max(12).optional(),
   })
   .catchall(z.unknown());
 

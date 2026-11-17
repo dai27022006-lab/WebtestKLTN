@@ -4,6 +4,7 @@ import type {
   CompleteScenarioResponse,
   ExperimentAssignmentDto,
   ExperimentConsentRequest,
+  ExperimentExitResponse,
   ScenarioNextResponse,
 } from '@/types/api';
 
@@ -44,4 +45,14 @@ export function completeScenario(
       signal,
     }
   );
+}
+
+export function exitExperimentSession(
+  signal?: AbortSignal
+): Promise<ApiResponse<ExperimentExitResponse>> {
+  return apiRequest<ExperimentExitResponse>('/api/experiments/exit', {
+    method: 'POST',
+    keepalive: true,
+    signal,
+  });
 }

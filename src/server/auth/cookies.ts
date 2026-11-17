@@ -94,5 +94,8 @@ export async function writeSignedCookie<T>(
 
 export async function clearCookie(name: string): Promise<void> {
   const store = await cookies();
-  store.set(name, '', getDefaultCookieOptions(0));
+  store.set(name, '', {
+    ...getDefaultCookieOptions(0),
+    expires: new Date(0),
+  });
 }

@@ -4,6 +4,7 @@ import { getSupabaseAdminClient } from '@/lib/db/supabase-admin';
 import { AppError, conflictError } from '@/server/errors';
 
 import type {
+  AdminChatLogRawEntry,
   AdminOrderQueryFilter,
   ChatMessageRecord,
   ChatSessionRecord,
@@ -248,7 +249,33 @@ export class SupabaseDataStore implements DataStore {
       .insert(input)
       .select('*')
       .single();
-    return assertData(res, 'createProduct') as ProductRecord;
+    const created = assertData(res, 'createProduct') as ProductRecord;
+
+    const fileRes = await this.client
+      .from('product_files')
+      .insert({
+        product_id: created.id,
+        file_name: `${created.slug}-v1.0.0.json`,
+        storage_bucket: 'product-deliverables',
+        storage_path: `deliverables/${created.slug}/bundle-v1.0.0.json`,
+        file_size_bytes: 16384,
+        mime_type: 'application/json',
+        version: '1.0.0',
+        is_primary: true,
+      })
+      .select('*')
+      .single();
+
+    if (fileRes.error || !fileRes.data) {
+      await this.client
+        .from('products')
+        .delete()
+        .eq('id', created.id)
+        .then(() => undefined, () => undefined);
+    }
+    assertData(fileRes, 'createProductFile');
+
+    return created;
   }
 
   async updateProduct(
@@ -863,6 +890,97 @@ export class SupabaseDataStore implements DataStore {
       .select('*')
       .single();
     return assertData(res, 'createEvent') as EventRecord;
+  }
+
+  async listAdminChatLogs(params: {
+    include_simulated: boolean;
+    limit?: number;
+  }): Promise<AdminChatLogRawEntry[]> {
+    const safeLimit = Math.min(Math.max(params.limit ?? 30, 1), 100);
+    let sessionsQ = this.client
+      .from('chat_sessions')
+      .select('*')
+      .is('deleted_at', null)
+      .order('updated_at', { ascending: false })
+      .limit(safeLimit);
+
+    if (!params.include_simulated) {
+      sessionsQ = sessionsQ.eq('is_simulated', false);
+    }
+
+    const { data: sessionsData, error: sessionsError } = await sessionsQ;
+    if (sessionsError) {
+      throw new AppError(
+        'INTERNAL_ERROR',
+        'Không thể tải danh sách phiên hội thoại.',
+        500
+      );
+    }
+
+    const sessions = (sessionsData ?? []) as ChatSessionRecord[];
+    if (sessions.length === 0) return [];
+
+    const sessionIds = sessions.map((s) => s.id);
+    const assignmentIds = Array.from(
+      new Set(sessions.map((s) => s.assignment_id).filter(Boolean))
+    );
+
+    let msgsQ = this.client
+      .from('chat_messages')
+      .select('*')
+      .in('session_id', sessionIds)
+      .is('deleted_at', null)
+      .order('created_at', { ascending: true });
+
+    if (!params.include_simulated) {
+      msgsQ = msgsQ.eq('is_simulated', false);
+    }
+
+    const assignPromise =
+      assignmentIds.length > 0
+        ? this.client
+            .from('experiment_assignments')
+            .select('id, participant_code')
+            .in('id', assignmentIds)
+        : Promise.resolve({ data: [], error: null });
+
+    const [msgsRes, assignRes] = await Promise.all([msgsQ, assignPromise]);
+    if (msgsRes.error || assignRes.error) {
+      throw new AppError(
+        'INTERNAL_ERROR',
+        'Không thể tải chi tiết nhật ký hội thoại chatbot.',
+        500
+      );
+    }
+
+    const participantByAssignment = new Map<string, string>();
+    for (const row of (assignRes.data ?? []) as Array<{
+      id: string;
+      participant_code: string;
+    }>) {
+      participantByAssignment.set(row.id, row.participant_code);
+    }
+
+    const messagesBySession = new Map<string, ChatMessageRecord[]>();
+    for (const msg of (msgsRes.data ?? []) as ChatMessageRecord[]) {
+      const normalized: ChatMessageRecord = {
+        ...msg,
+        cost_usd: msg.cost_usd !== null ? Number(msg.cost_usd) : null,
+      };
+      const list = messagesBySession.get(msg.session_id);
+      if (list) {
+        list.push(normalized);
+      } else {
+        messagesBySession.set(msg.session_id, [normalized]);
+      }
+    }
+
+    return sessions.map((session) => ({
+      session,
+      participant_code:
+        participantByAssignment.get(session.assignment_id) ?? 'GUEST',
+      messages: messagesBySession.get(session.id) ?? [],
+    }));
   }
 
   async getDashboardRawData(includeSimulated: boolean) {

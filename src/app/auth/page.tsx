@@ -115,24 +115,29 @@ export default function AuthPage() {
           </div>
 
           <div className="callout callout--info" style={{ marginBottom: '20px' }}>
-            <strong style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+            <strong
+              style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+            >
               <Timer size={15} />
-              <span>Tham gia thí nghiệm F11 không cần tạo tài khoản</span>
+              <span>Trải nghiệm mua sắm &amp; khảo sát không cần tạo tài khoản</span>
             </strong>
             <span>
-              Người tham gia khảo sát A/B chỉ cần xác nhận đồng ý ẩn danh là có
-              thể làm bài ngay.{' '}
+              Bạn có thể xem mẫu, thêm vào giỏ hoặc tham gia đánh giá trải nghiệm
+              ngay mà không cần đăng ký.{' '}
               <Link
                 href="/experiment"
                 style={{ textDecoration: 'underline', fontWeight: 700 }}
               >
-                Mở trang Thí nghiệm F11 →
+                Tham gia khảo sát trải nghiệm →
               </Link>
             </span>
           </div>
 
           {user ? (
-            <div className="surface-card dg-panel" style={{ display: 'grid', gap: '14px' }}>
+            <div
+              className="surface-card dg-panel"
+              style={{ display: 'grid', gap: '14px' }}
+            >
               <span className="type-eyebrow">Phiên đăng nhập hiện tại</span>
               <h1 className="type-h2" style={{ margin: 0 }}>
                 {user.full_name ?? user.email}
@@ -140,20 +145,34 @@ export default function AuthPage() {
               <div className="chip-row">
                 <span className="badge type-mono">{user.email}</span>
                 <span className="badge badge--accent">
-                  Vai trò: {user.role === 'admin' ? 'Quản trị viên' : 'Khách hàng'}
+                  Vai trò:{' '}
+                  {user.role === 'admin' ? 'Quản trị viên' : 'Chủ shop / Khách'}
                 </span>
                 {user.shop_category && (
                   <span className="badge">Ngành: {user.shop_category}</span>
                 )}
               </div>
 
-              <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', paddingTop: '8px' }}>
+              <div
+                style={{
+                  display: 'flex',
+                  gap: '10px',
+                  flexWrap: 'wrap',
+                  paddingTop: '8px',
+                }}
+              >
                 {user.role === 'admin' && (
-                  <Link href="/admin/analytics" className="dg-btn-purchase dg-btn-sm">
-                    <span>Mở Dashboard Admin</span>
+                  <Link
+                    href="/admin/analytics"
+                    className="dg-btn-purchase dg-btn-sm"
+                  >
+                    <span>Khu vực Quản trị</span>
                     <ArrowRight size={14} />
                   </Link>
                 )}
+                <Link href="/orders" className="btn btn--secondary">
+                  Thư viện đơn hàng
+                </Link>
                 <Link href="/products" className="btn btn--secondary">
                   Xem danh mục
                 </Link>
@@ -167,15 +186,20 @@ export default function AuthPage() {
               </div>
             </div>
           ) : (
-            <div className="surface-card dg-panel" style={{ display: 'grid', gap: '20px' }}>
+            <div
+              className="surface-card dg-panel"
+              style={{ display: 'grid', gap: '20px' }}
+            >
               <div>
                 <h1 className="type-h2" style={{ margin: 0 }}>
-                  {tab === 'login' ? 'Chào mừng trở lại' : 'Tạo tài khoản DreamTeam'}
+                  {tab === 'login'
+                    ? 'Chào mừng trở lại'
+                    : 'Tạo tài khoản DreamTeam'}
                 </h1>
                 <p className="type-body-sm" style={{ margin: '6px 0 0' }}>
                   {tab === 'login'
-                    ? 'Đăng nhập để theo dõi đơn Sandbox hoặc mở Dashboard Admin (F10).'
-                    : 'Lưu lịch sử đơn tải file và hồ sơ shop nhỏ của bạn.'}
+                    ? 'Đăng nhập để quản lý thư viện đơn hàng đã mua hoặc mở khu vực quản trị cửa hàng.'
+                    : 'Lưu lịch sử đơn tải file và thông tin ngành hàng của shop.'}
                 </p>
               </div>
 
@@ -230,7 +254,7 @@ export default function AuthPage() {
                         autoComplete="name"
                         value={fullName}
                         onChange={(e) => setFullName(e.target.value)}
-                        placeholder="Ví dụ: Nguyễn Lan Anh"
+                        placeholder="Ví dụ: Tiệm Mỹ Phẩm An Nhiên"
                       />
                     </div>
                     <span className="field__error">
@@ -253,7 +277,7 @@ export default function AuthPage() {
                       autoComplete="email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      placeholder="demo@digitalstore.local"
+                      placeholder="ban@shopcuaban.vn"
                     />
                   </div>
                   <span className="field__error">
@@ -362,24 +386,29 @@ export default function AuthPage() {
             </div>
           )}
 
-          {/* Dev Store Demo Accounts Box */}
-          <div className="surface-card dg-panel" style={{ display: 'grid', gap: '12px', marginTop: '16px' }}>
-            <span className="type-eyebrow">Tài khoản Demo (Dev Store)</span>
+          {/* Demo Accounts Box */}
+          <div
+            className="surface-card dg-panel"
+            style={{ display: 'grid', gap: '12px', marginTop: '16px' }}
+          >
+            <span className="type-eyebrow">Tài khoản dùng thử</span>
             <p className="type-body-sm" style={{ margin: 0 }}>
-              Hai tài khoản <code className="type-mono">.local</code> điền nhanh bên dưới dùng
-              được ngay trên <strong>Local Dev Store</strong> (xem số liệu A/B tại{' '}
-              <code className="type-mono">/admin/analytics</code>), hoặc trên{' '}
-              <strong>Supabase</strong> sau khi chạy{' '}
-              <code className="type-mono" style={{ overflowWrap: 'anywhere' }}>
-                node scripts/seed-supabase-demo-users.mjs
-              </code>
-              .
+              Tài khoản dùng thử cho chủ shop / quản trị viên giúp bạn kiểm thử
+              nhanh luồng đơn hàng và trang quản trị.
             </p>
 
             <div style={{ display: 'grid', gap: '8px' }}>
               <div className="dg-demo-acc-row">
-                <div className="type-caption type-mono">
-                  demo@digitalstore.local / Demo1234!
+                <div>
+                  <div
+                    className="type-caption"
+                    style={{ fontWeight: 700, color: 'var(--ink)' }}
+                  >
+                    Chủ shop dùng thử
+                  </div>
+                  <div className="type-caption type-mono">
+                    demo@digitalstore.local / Demo1234!
+                  </div>
                 </div>
                 <button
                   type="button"
@@ -393,8 +422,16 @@ export default function AuthPage() {
               </div>
 
               <div className="dg-demo-acc-row">
-                <div className="type-caption type-mono">
-                  admin@digitalstore.local / Admin1234!
+                <div>
+                  <div
+                    className="type-caption"
+                    style={{ fontWeight: 700, color: 'var(--ink)' }}
+                  >
+                    Quản trị viên dùng thử
+                  </div>
+                  <div className="type-caption type-mono">
+                    admin@digitalstore.local / Admin1234!
+                  </div>
                 </div>
                 <button
                   type="button"
@@ -409,21 +446,19 @@ export default function AuthPage() {
             </div>
 
             <p className="type-caption" style={{ margin: 0 }}>
-              Nếu đăng ký mới công khai trên Supabase, hãy dùng email thật (ví dụ{' '}
-              <code className="type-mono">@gmail.com</code> — Supabase Auth từ chối tên miền{' '}
-              <code className="type-mono">.local</code> khi tự đăng ký), rồi có thể nâng quyền
-              Admin bằng script hoặc SQL{' '}
-              <code className="type-mono" style={{ overflowWrap: 'anywhere' }}>
-                UPDATE public.users SET role = &apos;admin&apos;
-              </code>
-              .
+              Nếu muốn tạo tài khoản riêng ở tab Đăng ký, hãy sử dụng địa chỉ
+              email cá nhân hợp lệ (ví dụ <code className="type-mono">@gmail.com</code>)
+              để lưu trọn vẹn thư viện đơn hàng đã mua.
             </p>
           </div>
         </div>
       </div>
 
       {/* Right Column: Emerald Brand Panel (Hidden on <= 991px) */}
-      <aside className="dg-auth-brand-col dg-dark-band" aria-label="Thông tin nền tảng DreamTeam">
+      <aside
+        className="dg-auth-brand-col dg-dark-band"
+        aria-label="Thông tin nền tảng DreamTeam"
+      >
         <div className="dg-auth-brand-pattern" aria-hidden="true" />
         <div className="dg-auth-brand-inner">
           <span className="dg-cta-dark-badge">
@@ -433,50 +468,60 @@ export default function AuthPage() {
 
           <h2>Mọi công cụ số tinh gọn cho chủ shop bán hàng đa kênh</h2>
           <p className="dg-auth-brand-lead">
-            Kết hợp Template Website chuẩn mobile, Prompt Pack thực chiến và
-            Trợ lý ảo RAG đối chiếu 100% cơ sở dữ liệu thật.
+            Kết hợp Template Website chuẩn di động 375px, bộ Prompt Pack thực
+            chiến và Trợ lý tư vấn chọn gói từ kho sản phẩm thực tế.
           </p>
 
           <ul className="dg-auth-benefits">
             <li>
               <CheckCircle2 size={18} />
               <span>
-                Template &amp; Prompt tối ưu cho Shopee, TikTok Shop, Facebook
+                Template &amp; Prompt tối ưu sẵn cho Shopee, TikTok Shop,
+                Facebook với hướng dẫn cài đặt 15–30 phút
               </span>
             </li>
             <li>
               <CheckCircle2 size={18} />
               <span>
-                Minh bạch bản quyền 3 cấp (original / adapted / licensed)
+                Minh bạch bản quyền 3 cấp rõ ràng (Thiết kế gốc, Điều chỉnh có
+                nguồn, Bản quyền hợp lệ)
               </span>
             </li>
             <li>
               <CheckCircle2 size={18} />
               <span>
-                Bàn giao file số qua token có thời hạn sau thanh toán Sandbox
+                Đặt hàng thử nghiệm không trừ tiền thật và mở kho link tải riêng
+                tư thời hạn 7 ngày ngay lập tức
               </span>
             </li>
           </ul>
 
-          {/* Real F11 Scenario Preview Card (No fake testimonial!) */}
+          {/* Pilot Case Study Card (Clearly labeled) */}
           <div className="dg-auth-scenario-card">
             <div className="dg-auth-scenario-head">
-              <span className="badge badge--accent type-mono">Kịch bản mẫu SC-01</span>
-              <span className="type-caption" style={{ color: 'rgba(255,255,255,0.72)' }}>
-                Within-subject AB/BA
+              <span className="badge badge--accent">
+                Case Study mẫu thử nghiệm
+              </span>
+              <span
+                className="type-caption"
+                style={{ color: 'rgba(255,255,255,0.78)' }}
+              >
+                Từ đợt chạy thử nghiệm mẫu
               </span>
             </div>
             <p className="dg-auth-scenario-text">
-              &ldquo;Bạn vận hành shop mỹ phẩm 2 người trên TikTok Shop, ngân sách
-              dưới 1.000.000đ. Hãy chọn gói landing page tối ưu 375px và tuân
-              thủ chính sách không cam kết trị liệu.&rdquo;
+              &ldquo;Tiệm Dưỡng Da An Nhiên (shop mỹ phẩm 2 nhân sự) chọn mẫu
+              Landing Page chuẩn 375px hiển thị rõ số công bố sản phẩm và bảng
+              thành phần dịu nhẹ — tự hoàn thiện trang bán hàng trong 25 phút và
+              tăng 32% lượt bấm sang giỏ TikTok Shop.&rdquo;
             </p>
             <div className="dg-auth-scenario-foot">
               <span>
-                <ShieldCheck size={14} /> Grounding 100% ID thật
+                <ShieldCheck size={14} /> Từ đợt chạy thử nghiệm mẫu • Quy mô 2
+                người
               </span>
-              <Link href="/experiment">
-                <span>Thử ngay F11</span>
+              <Link href="/products?industry=M%E1%BB%B9%20ph%E1%BA%A9m">
+                <span>Xem gói Mỹ phẩm</span>
                 <ArrowRight size={13} />
               </Link>
             </div>

@@ -1,3 +1,4 @@
+import { randomUUID } from 'node:crypto';
 import type { z } from 'zod';
 
 import { runChatbotStub } from '@/lib/ai/chatbot-stub';
@@ -113,10 +114,107 @@ async function resolveCurrentVariant(params: {
   return resolveActiveVariantForStep(params.assignmentVariant, nextStep);
 }
 
+function groundStubOutput(
+  stubResult: ReturnType<typeof runChatbotStub>,
+  catalogMap: Map<string, ProductRecord>
+): {
+  groundedRetrievedIds: string[];
+  groundedSuggestedIds: string[];
+  groundedReasonMap: Map<string, string>;
+  suggestedProducts: SuggestedProductCardDto[];
+} {
+  // Strict Server-Side Grounding: verify every product ID exists & is active in DB
+  const groundedReasonMap = new Map<string, string>();
+  const groundedSuggestedIds: string[] = [];
+  const suggestedProducts: SuggestedProductCardDto[] = [];
+
+  for (const suggestion of stubResult.suggested_products) {
+    const product = catalogMap.get(suggestion.product_id);
+    if (!product || !product.is_active || product.deleted_at !== null) {
+      continue;
+    }
+    if (!groundedReasonMap.has(product.id)) {
+      groundedReasonMap.set(product.id, suggestion.reason);
+      groundedSuggestedIds.push(product.id);
+      suggestedProducts.push(
+        toSuggestedProductCard(product, suggestion.reason)
+      );
+    }
+  }
+
+  const groundedRetrievedIds = stubResult.retrieved_product_ids.filter((id) => {
+    const product = catalogMap.get(id);
+    return Boolean(product && product.is_active && product.deleted_at === null);
+  });
+
+  return {
+    groundedRetrievedIds,
+    groundedSuggestedIds,
+    groundedReasonMap,
+    suggestedProducts,
+  };
+}
+
 export async function sendChatMessage(
   input: SendChatParsed
 ): Promise<SendChatMessageResponse> {
   const store = getStore();
+
+  // Storefront mode: free customer consultation without F11 consent or experiment DB clutter
+  if (!input.assignment_id) {
+    const sessionId = input.session_id ?? randomUUID();
+    const userCreatedAt = new Date().toISOString();
+
+    const activeCatalog = await store.listAllActiveProducts();
+    const catalogMap = new Map(activeCatalog.map((p) => [p.id, p]));
+
+    const stubResult = runChatbotStub({
+      message: input.message,
+      catalogProducts: activeCatalog,
+    });
+
+    const {
+      groundedRetrievedIds,
+      groundedSuggestedIds,
+      suggestedProducts,
+    } = groundStubOutput(stubResult, catalogMap);
+
+    return {
+      session_id: sessionId,
+      user_message: {
+        id: randomUUID(),
+        session_id: sessionId,
+        role: 'user',
+        content: input.message,
+        prompt_version: null,
+        model_name: null,
+        retrieved_product_ids: [],
+        suggested_product_ids: [],
+        suggested_products: [],
+        latency_ms: null,
+        tokens_used: null,
+        cost_usd: null,
+        created_at: userCreatedAt,
+      },
+      assistant_message: {
+        id: randomUUID(),
+        session_id: sessionId,
+        role: 'assistant',
+        content: stubResult.reply,
+        prompt_version: stubResult.prompt_version,
+        model_name: stubResult.model_name,
+        retrieved_product_ids: groundedRetrievedIds,
+        suggested_product_ids: groundedSuggestedIds,
+        suggested_products: suggestedProducts,
+        latency_ms: stubResult.latency_ms,
+        tokens_used: stubResult.tokens_used,
+        cost_usd: stubResult.cost_usd,
+        created_at: new Date().toISOString(),
+      },
+    };
+  }
+
+  // Experiment mode (/experiment): enforce consent, cookie integrity, active variant & DB persistence
   const assignment = await store.findAssignmentById(input.assignment_id);
   if (!assignment) {
     throw notFoundError(
@@ -125,7 +223,8 @@ export async function sendChatMessage(
     );
   }
 
-  if (assignment.visitor_id !== input.visitor_id) {
+  const visitorId = input.visitor_id ?? '';
+  if (!visitorId || assignment.visitor_id !== visitorId) {
     throw forbiddenError('Thông tin visitor_id không khớp với phiên thí nghiệm.');
   }
 
@@ -175,7 +274,7 @@ export async function sendChatMessage(
       assignment_id: assignment.id,
       scenario_run_id: input.scenario_run_id ?? null,
       user_id: user?.id ?? assignment.user_id,
-      visitor_id: input.visitor_id,
+      visitor_id: visitorId,
       title: input.message.slice(0, 60),
       is_simulated: input.is_simulated || assignment.is_simulated,
     });
@@ -206,23 +305,11 @@ export async function sendChatMessage(
     shopProfile: assignment.shop_profile,
   });
 
-  // Strict Server-Side Grounding: verify every product ID exists & is active in DB
-  const groundedReasonMap = new Map<string, string>();
-  const groundedSuggestedIds: string[] = [];
-  for (const suggestion of stubResult.suggested_products) {
-    const product = catalogMap.get(suggestion.product_id);
-    if (!product || !product.is_active || product.deleted_at !== null) {
-      continue;
-    }
-    if (!groundedReasonMap.has(product.id)) {
-      groundedReasonMap.set(product.id, suggestion.reason);
-      groundedSuggestedIds.push(product.id);
-    }
-  }
-
-  const groundedRetrievedIds = stubResult.retrieved_product_ids.filter((id) =>
-    catalogMap.has(id)
-  );
+  const {
+    groundedRetrievedIds,
+    groundedSuggestedIds,
+    groundedReasonMap,
+  } = groundStubOutput(stubResult, catalogMap);
 
   const assistantMsgRecord = await store.createChatMessage({
     session_id: session.id,
@@ -252,6 +339,10 @@ export async function sendChatMessage(
 export async function listChatSessions(
   query: ChatSessionsQueryParsed
 ): Promise<ChatSessionsResponse> {
+  if (!query.assignment_id) {
+    return { sessions: [] };
+  }
+
   const store = getStore();
   const assignment = await store.findAssignmentById(query.assignment_id);
   if (!assignment) {

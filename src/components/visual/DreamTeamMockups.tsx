@@ -10,7 +10,6 @@ import {
 } from 'react';
 
 import {
-  BarChart3,
   CheckCircle2,
   Download,
   Layers,
@@ -21,8 +20,9 @@ import {
   Play,
   ShieldCheck,
   ShoppingBag,
+  Smartphone,
   Sparkles,
-  Timer,
+  User,
   Zap,
 } from '@/components/icons/DreamIcons';
 import { DreamTeamBrandMark } from '@/components/visual/DreamTeamBrandMark';
@@ -47,8 +47,8 @@ interface HeroPreviewTab {
   chartAreaPath: string;
   chartDots: [{ cx: number; cy: number }, { cx: number; cy: number }];
   kpis: [HeroKpiTile, HeroKpiTile, HeroKpiTile, HeroKpiTile];
-  ragCopy: string;
-  ragTip: string;
+  advisorCopy: string;
+  advisorTip: string;
 }
 
 const HERO_AUTO_TOUR_MS = 4200;
@@ -56,11 +56,11 @@ const HERO_AUTO_TOUR_MS = 4200;
 const HERO_PREVIEW_TABS: HeroPreviewTab[] = [
   {
     id: 'template',
-    label: 'Template Web',
-    url: 'dreamteam.vn/store-advisor',
+    label: 'Giao diện Web',
+    url: 'dreamteam.vn/products/template',
     highlightTitle: 'Landing Page Mỹ Phẩm TikTok Shop',
-    highlightMeta: '375px Mobile First • Cài đặt ~30 phút',
-    chartTitle: 'Tăng trưởng chuyển đổi mobile',
+    highlightMeta: 'Chuẩn Mobile 375px • Cài đặt ~30 phút',
+    chartTitle: 'Tỷ lệ bấm mua trên di động',
     chartLinePath:
       'M4 58 C 36 52, 54 42, 82 40 C 110 38, 128 24, 158 20 C 180 17, 198 11, 216 8',
     chartAreaPath:
@@ -75,16 +75,16 @@ const HERO_PREVIEW_TABS: HeroPreviewTab[] = [
       { label: 'Tối ưu', value: '375px' },
       { label: 'Mức giá', value: '450k–650k' },
     ],
-    ragCopy: 'Khớp ngân sách & kênh TikTok Shop / Shopee.',
-    ragTip: 'Grounding DB: #2c5a98b1 • 490.000đ',
+    advisorCopy: 'Phù hợp ngân sách & kênh bán TikTok Shop, Shopee.',
+    advisorTip: 'Gợi ý nổi bật • 490.000đ',
   },
   {
     id: 'prompt_pack',
-    label: 'Prompt Pack',
-    url: 'dreamteam.vn/prompts-chot-don',
+    label: 'Bộ Prompt AI',
+    url: 'dreamteam.vn/products/prompt-pack',
     highlightTitle: '60 Prompt Kịch Bản & Mô Tả Chuẩn Sàn',
     highlightMeta: 'Tránh từ cấm • Notion + PDF tải ngay',
-    chartTitle: 'Tăng tốc lên nội dung sàn TMĐT',
+    chartTitle: 'Tốc độ lên bài bán hàng mỗi ngày',
     chartLinePath:
       'M4 60 C 26 54, 42 34, 68 28 C 96 22, 114 19, 142 16 C 168 13, 192 10, 216 8',
     chartAreaPath:
@@ -99,16 +99,16 @@ const HERO_PREVIEW_TABS: HeroPreviewTab[] = [
       { label: 'Thư viện', value: '60+ câu' },
       { label: 'Mức giá', value: '250k–350k' },
     ],
-    ragCopy: 'Soạn mô tả & kịch bản live đúng chuẩn sàn.',
-    ragTip: 'Grounding DB: #7a9c11d2 • 290.000đ',
+    advisorCopy: 'Soạn mô tả & kịch bản live đúng quy chuẩn sàn TMĐT.',
+    advisorTip: 'Gợi ý nổi bật • 290.000đ',
   },
   {
     id: 'workflow',
-    label: 'Workflow',
-    url: 'dreamteam.vn/workflow-dong-bo',
+    label: 'Luồng Tự Động',
+    url: 'dreamteam.vn/products/workflow',
     highlightTitle: 'Đồng Bộ Đơn Hàng Về Sheets & Zalo',
     highlightMeta: 'Nhập JSON 1 chạm • Cảnh báo tồn kho',
-    chartTitle: 'Tự động hóa đơn đa kênh',
+    chartTitle: 'Hiệu suất xử lý đơn đa kênh',
     chartLinePath:
       'M4 54 C 34 52, 62 49, 92 46 C 120 43, 130 33, 152 26 C 174 19, 194 12, 216 8',
     chartAreaPath:
@@ -123,8 +123,8 @@ const HERO_PREVIEW_TABS: HeroPreviewTab[] = [
       { label: 'Kết nối', value: 'Sheets+Zalo' },
       { label: 'Mức giá', value: '640k–690k' },
     ],
-    ragCopy: 'Gom đơn Shopee, TikTok, FB tránh sót đơn.',
-    ragTip: 'Grounding DB: #6a9e55b6 • 690.000đ',
+    advisorCopy: 'Gom đơn Shopee, TikTok, Facebook tránh sót đơn giờ cao điểm.',
+    advisorTip: 'Gợi ý nổi bật • 690.000đ',
   },
 ];
 
@@ -303,10 +303,10 @@ export function HeroVisualStack({
               <span className="yellow" />
               <span className="green" />
             </div>
-            <div className="dg-browser-url">dreamteam.vn/experiment</div>
+            <div className="dg-browser-url">dreamteam.vn/products/xem-thu</div>
           </div>
           <div className="dg-mini-back-body">
-            <div className="dg-mini-back-pill">Thí nghiệm AB/BA • F11</div>
+            <div className="dg-mini-back-pill">Xem thử 375px • Live</div>
             <div className="dg-mini-back-bars">
               <span style={{ width: '82%' }} />
               <span style={{ width: '64%' }} />
@@ -327,10 +327,12 @@ export function HeroVisualStack({
               <span className="yellow" />
               <span className="green" />
             </div>
-            <div className="dg-browser-url">dreamteam.vn/admin/analytics</div>
+            <div className="dg-browser-url">dreamteam.vn/tro-ly-tu-van</div>
           </div>
           <div className="dg-mini-back-body">
-            <div className="dg-mini-back-pill">Đo lường 14 Events • F10</div>
+            <div className="dg-mini-back-pill">
+              Phù hợp ngân sách &amp; kênh bán
+            </div>
             <div className="dg-mini-back-kpis">
               <div />
               <div />
@@ -374,9 +376,7 @@ export function HeroVisualStack({
             </div>
           </div>
 
-          {/* Crisp DreamTeam Mini-App Interface */}
           <div className="dg-dt-app-shell">
-            {/* Dark Emerald Sidebar */}
             <aside className="dg-dt-sidebar" aria-label="Xem nhanh danh mục">
               <div className="dg-dt-sidebar-brand">
                 <DreamTeamBrandMark size={20} inverted />
@@ -411,32 +411,30 @@ export function HeroVisualStack({
               <div className="dg-dt-sidebar-foot">
                 <div className="dg-dt-sidebar-chip">
                   <MessageSquare size={12} />
-                  <span>Trợ lý RAG F7</span>
+                  <span>Trợ lý tư vấn</span>
                 </div>
                 <div className="dg-dt-sidebar-chip">
-                  <Timer size={12} />
-                  <span>Đo A/B F11</span>
+                  <Smartphone size={12} />
+                  <span>Xem thử 375px</span>
                 </div>
               </div>
             </aside>
 
-            {/* Main Light Workspace */}
             <div className="dg-dt-workspace">
               <div key={activeTab.id} className="dg-dt-ws-body">
                 <div className="dg-dt-ws-head">
                   <div>
                     <span className="dg-dt-ws-eyebrow">
-                      Cửa hàng số chủ shop 1–3 người
+                      Giải pháp cho shop 1–3 người
                     </span>
                     <strong>{activeTab.highlightTitle}</strong>
                   </div>
                   <span className="dg-dt-ws-badge">
                     <ShieldCheck size={12} />
-                    <span>100% DB</span>
+                    <span>Bản quyền rõ</span>
                   </span>
                 </div>
 
-                {/* 4 Mini KPI Tiles */}
                 <div className="dg-dt-kpi-strip">
                   {activeTab.kpis.map((kpi) => (
                     <div key={kpi.label} className="dg-dt-kpi-box">
@@ -446,7 +444,6 @@ export function HeroVisualStack({
                   ))}
                 </div>
 
-                {/* Dynamic Preview + SVG Growth Line Chart */}
                 <div className="dg-dt-ws-grid">
                   <div className="dg-dt-chart-card">
                     <div className="dg-dt-chart-head">
@@ -507,12 +504,27 @@ export function HeroVisualStack({
                   </div>
 
                   <div className="dg-dt-rag-card">
+                    <div className="dg-hero-workspace-card">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src="/images/hero-workspace.webp"
+                        alt="Góc bàn làm việc gọn gàng của chủ shop kinh doanh trực tuyến theo tông màu xanh ngọc và xám slate"
+                        width={1280}
+                        height={720}
+                        fetchPriority="high"
+                        className="dg-hero-workspace-img"
+                      />
+                      <div className="dg-hero-workspace-caption">
+                        <span>Bối cảnh shop nhỏ</span>
+                        <span>1–3 người</span>
+                      </div>
+                    </div>
                     <div className="dg-dt-rag-head">
                       <Sparkles size={13} />
-                      <span>Gợi ý Trợ lý RAG</span>
+                      <span>Phù hợp ngân sách &amp; kênh bán</span>
                     </div>
-                    <p className="dg-dt-rag-copy">{activeTab.ragCopy}</p>
-                    <div className="dg-dt-rag-pill">{activeTab.ragTip}</div>
+                    <p className="dg-dt-rag-copy">{activeTab.advisorCopy}</p>
+                    <div className="dg-dt-rag-pill">{activeTab.advisorTip}</div>
                   </div>
                 </div>
               </div>
@@ -527,10 +539,10 @@ export function HeroVisualStack({
 export type InnerScreenKey =
   | 'catalog'
   | 'detail'
-  | 'experiment'
+  | 'cart'
   | 'checkout'
   | 'orders'
-  | 'analytics';
+  | 'auth';
 
 export function InnerPageVisual({ screen }: { screen: InnerScreenKey }) {
   return (
@@ -544,10 +556,10 @@ export function InnerPageVisual({ screen }: { screen: InnerScreenKey }) {
         <span className="dg-inner-mock-route">
           {screen === 'catalog' && '/products'}
           {screen === 'detail' && '/products/[slug]'}
-          {screen === 'experiment' && '/experiment'}
-          {screen === 'checkout' && '/cart • /checkout'}
+          {screen === 'cart' && '/cart'}
+          {screen === 'checkout' && '/checkout'}
           {screen === 'orders' && '/orders/[id]'}
-          {screen === 'analytics' && '/admin/analytics • /auth'}
+          {screen === 'auth' && '/auth'}
         </span>
       </div>
 
@@ -556,9 +568,9 @@ export function InnerPageVisual({ screen }: { screen: InnerScreenKey }) {
           <div className="dg-mock-layout">
             <div className="dg-mock-pills">
               <span className="is-active">Tất cả</span>
-              <span>Template</span>
-              <span>Prompt</span>
-              <span>Workflow</span>
+              <span>Giao diện Web</span>
+              <span>Prompt AI</span>
+              <span>Luồng Tự Động</span>
             </div>
             <div className="dg-mock-cards-3">
               <div className="dg-mock-card">
@@ -594,29 +606,28 @@ export function InnerPageVisual({ screen }: { screen: InnerScreenKey }) {
               </div>
             </div>
             <div className="dg-mock-dock">
-              <span className="dg-mock-badge-sm">original</span>
+              <span className="dg-mock-badge-sm">Thiết kế gốc</span>
               <span className="dg-mock-price-line">490.000đ</span>
               <span className="dg-mock-cta-bar" />
             </div>
           </div>
         )}
 
-        {screen === 'experiment' && (
+        {screen === 'cart' && (
           <div className="dg-mock-layout">
             <div className="dg-mock-ab-banner">
-              <span>AB/BA • P-018</span>
-              <span>02:14</span>
+              <span>2 gói đã chọn</span>
+              <span>780.000đ</span>
             </div>
-            <div className="dg-mock-card" style={{ padding: '10px' }}>
-              <span className="dg-mock-line w-85" />
+            <div className="dg-mock-grant-row">
+              <ShoppingBag size={14} />
               <span className="dg-mock-line w-70" />
+              <span className="dg-mock-badge-sm">490.000đ</span>
             </div>
-            <div className="dg-mock-likert">
-              <span>1</span>
-              <span>2</span>
-              <span>3</span>
-              <span className="is-active">4</span>
-              <span>5</span>
+            <div className="dg-mock-grant-row">
+              <Sparkles size={14} />
+              <span className="dg-mock-line w-60" />
+              <span className="dg-mock-badge-sm">290.000đ</span>
             </div>
           </div>
         )}
@@ -624,9 +635,9 @@ export function InnerPageVisual({ screen }: { screen: InnerScreenKey }) {
         {screen === 'checkout' && (
           <div className="dg-mock-layout">
             <div className="dg-mock-steps">
-              <span className="is-done">1. Giỏ</span>
-              <span className="is-active">2. Sandbox</span>
-              <span>3. File</span>
+              <span className="is-done">1. Giỏ hàng</span>
+              <span className="is-active">2. Xác nhận</span>
+              <span>3. Nhận file</span>
             </div>
             <div className="dg-mock-split">
               <div className="dg-mock-card" style={{ padding: '10px' }}>
@@ -634,7 +645,7 @@ export function InnerPageVisual({ screen }: { screen: InnerScreenKey }) {
                 <span className="dg-mock-line w-55" />
               </div>
               <div className="dg-mock-dock">
-                <span className="dg-mock-badge-sm">Paid</span>
+                <span className="dg-mock-badge-sm">Thử nghiệm</span>
                 <span className="dg-mock-cta-bar" />
               </div>
             </div>
@@ -644,36 +655,37 @@ export function InnerPageVisual({ screen }: { screen: InnerScreenKey }) {
         {screen === 'orders' && (
           <div className="dg-mock-layout">
             <div className="dg-mock-ab-banner">
-              <span>ORD-202611-001</span>
-              <span className="is-paid">PAID</span>
+              <span>DT-202611-001</span>
+              <span className="is-paid">Hoàn tất</span>
             </div>
             <div className="dg-mock-grant-row">
               <Download size={14} />
               <span className="dg-mock-line w-70" />
-              <span className="dg-mock-badge-sm">5/5 lượt</span>
+              <span className="dg-mock-badge-sm">5 lượt tải</span>
             </div>
             <div className="dg-mock-grant-row">
               <ShieldCheck size={14} />
               <span className="dg-mock-line w-60" />
-              <span className="dg-mock-badge-sm">7 ngày</span>
+              <span className="dg-mock-badge-sm">Hạn 7 ngày</span>
             </div>
           </div>
         )}
 
-        {screen === 'analytics' && (
+        {screen === 'auth' && (
           <div className="dg-mock-layout">
-            <div className="dg-mock-kpis-4">
-              <div />
-              <div />
-              <div />
-              <div />
+            <div className="dg-mock-ab-banner">
+              <span>Tài khoản chủ shop</span>
+              <span>Đồng bộ đơn</span>
             </div>
-            <div className="dg-mock-table-rows">
-              <span>
-                <BarChart3 size={12} /> chatbot_on vs chatbot_off
-              </span>
-              <span className="dg-mock-line w-85" />
+            <div className="dg-mock-grant-row">
+              <User size={14} />
               <span className="dg-mock-line w-75" />
+              <span className="dg-mock-badge-sm">Đơn đã mua</span>
+            </div>
+            <div className="dg-mock-grant-row">
+              <Lock size={14} />
+              <span className="dg-mock-line w-60" />
+              <span className="dg-mock-badge-sm">Bảo mật</span>
             </div>
           </div>
         )}
@@ -692,34 +704,32 @@ export function CtaPreviewMockup() {
             <span className="yellow" />
             <span className="green" />
           </div>
-          <div className="dg-browser-url">dreamteam.vn/experiment</div>
+          <div className="dg-browser-url">dreamteam.vn/products/my-pham</div>
           <span className="dg-hero-live-pill">
             <span className="dg-dot" />
-            F11
+            375px
           </span>
         </div>
 
         <div className="dg-cta-mock-body">
           <div className="dg-cta-mock-row">
-            <span className="dg-cta-mock-tag">SC-01 • Mỹ phẩm</span>
-            <span className="dg-cta-mock-timer">01:48</span>
+            <span className="dg-cta-mock-tag">Mỹ phẩm • TikTok Shop</span>
+            <span className="dg-cta-mock-timer">~30 phút</span>
           </div>
           <p className="dg-cta-mock-title">
-            So sánh tốc độ &amp; độ tự tin khi chọn gói có Trợ lý RAG
+            Xem thử trực tiếp trên Desktop 1280px &amp; Mobile 375px trước khi tải
           </p>
-          <div className="dg-cta-mock-likert">
-            {[1, 2, 3, 4, 5].map((n) => (
-              <span key={n} className={n === 5 ? 'is-active' : undefined}>
-                {n}
-              </span>
-            ))}
+          <div className="dg-mock-toggle-row">
+            <span className="is-active">Desktop 1280px</span>
+            <span>Mobile 375px</span>
+            <span>Bản quyền rõ</span>
           </div>
           <div className="dg-cta-mock-footer">
             <span>
-              <CheckCircle2 size={13} /> Đo Likert 1–5
+              <CheckCircle2 size={13} /> Xem thử 375px
             </span>
             <span>
-              <ShoppingBag size={13} /> Ý định Sandbox
+              <ShoppingBag size={13} /> Nhận file tức thì
             </span>
           </div>
         </div>
@@ -727,7 +737,7 @@ export function CtaPreviewMockup() {
 
       <div className="dg-cta-dark-chip chip-a">
         <Layers size={14} />
-        <span>Within-subject AB/BA • Miễn tạo tài khoản</span>
+        <span>Xem thử 375px • Nhận file tức thì</span>
       </div>
     </div>
   );

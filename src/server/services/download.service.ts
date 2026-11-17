@@ -135,7 +135,7 @@ export async function buildDeliverablePayload(token: string) {
         order_code: record.order.order_code,
         downloaded_at: new Date().toISOString(),
         specs: record.product.specs,
-        note: 'Tệp bàn giao mẫu (Placeholder Dev Deliverable) phục vụ kiểm thử luồng giao hàng số F6.',
+        note: 'Tài liệu bàn giao đóng gói tự động cho đơn hàng DreamTeam.',
       },
       null,
       2

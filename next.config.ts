@@ -1,6 +1,6 @@
 import type { NextConfig } from "next";
 
-const securityHeaders = [
+const defaultSecurityHeaders = [
   {
     key: "X-Content-Type-Options",
     value: "nosniff",
@@ -8,6 +8,25 @@ const securityHeaders = [
   {
     key: "X-Frame-Options",
     value: "DENY",
+  },
+  {
+    key: "Referrer-Policy",
+    value: "strict-origin-when-cross-origin",
+  },
+];
+
+const demoSecurityHeaders = [
+  {
+    key: "X-Content-Type-Options",
+    value: "nosniff",
+  },
+  {
+    key: "X-Frame-Options",
+    value: "SAMEORIGIN",
+  },
+  {
+    key: "Content-Security-Policy",
+    value: "frame-ancestors 'self'",
   },
   {
     key: "Referrer-Policy",
@@ -24,7 +43,11 @@ const nextConfig: NextConfig = {
     return [
       {
         source: "/(.*)",
-        headers: securityHeaders,
+        headers: defaultSecurityHeaders,
+      },
+      {
+        source: "/demos/:path*",
+        headers: demoSecurityHeaders,
       },
     ];
   },

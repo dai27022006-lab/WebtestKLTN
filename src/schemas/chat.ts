@@ -1,20 +1,40 @@
 import { z } from 'zod';
 
-import { nonEmptyTrimmedString, uuidSchema, visitorIdSchema } from './common';
+import {
+  booleanFlagQuerySchema,
+  nonEmptyTrimmedString,
+  uuidSchema,
+  visitorIdSchema,
+} from './common';
 
-export const sendChatMessageSchema = z.object({
-  session_id: uuidSchema.optional(),
-  assignment_id: uuidSchema,
-  visitor_id: visitorIdSchema,
-  scenario_run_id: uuidSchema.optional(),
-  message: nonEmptyTrimmedString(1500, 'Nội dung tin nhắn'),
-  is_simulated: z.boolean().default(false),
-});
+export const sendChatMessageSchema = z
+  .object({
+    session_id: uuidSchema.optional(),
+    assignment_id: uuidSchema.optional(),
+    visitor_id: visitorIdSchema.optional(),
+    scenario_run_id: uuidSchema.optional(),
+    message: nonEmptyTrimmedString(1500, 'Nội dung tin nhắn'),
+    is_simulated: z.boolean().default(false),
+  })
+  .superRefine((data, ctx) => {
+    if (data.assignment_id && !data.visitor_id) {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['visitor_id'],
+        message: 'visitor_id là bắt buộc khi chat trong phiên thí nghiệm.',
+      });
+    }
+  });
 
 export const chatSessionsQuerySchema = z.object({
-  assignment_id: uuidSchema,
+  assignment_id: uuidSchema.optional(),
   visitor_id: visitorIdSchema.optional(),
   scenario_run_id: uuidSchema.optional(),
+});
+
+export const adminChatLogsQuerySchema = z.object({
+  include_simulated: booleanFlagQuerySchema.default(false),
+  limit: z.coerce.number().int().min(1).max(100).default(30),
 });
 
 /**
@@ -35,6 +55,7 @@ export const llmAdvisorStructuredOutputSchema = z.object({
 
 export type SendChatMessageInput = z.input<typeof sendChatMessageSchema>;
 export type ChatSessionsQueryInput = z.infer<typeof chatSessionsQuerySchema>;
+export type AdminChatLogsQueryInput = z.infer<typeof adminChatLogsQuerySchema>;
 export type LlmAdvisorStructuredOutput = z.infer<
   typeof llmAdvisorStructuredOutputSchema
 >;

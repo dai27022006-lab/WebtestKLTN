@@ -1,4 +1,6 @@
 import type {
+  AdminChatLogItemDto,
+  AdminChatLogQuery,
   AdminCreateProductRequest,
   AdminDashboardSummaryDto,
   AdminExportJsonResponse,
@@ -66,6 +68,20 @@ export function adminListOrders(
     limit: query.limit,
   });
   return apiRequest<OrderDto[]>(`/api/admin/orders${qs}`, {
+    method: 'GET',
+    signal,
+  });
+}
+
+export function adminListChatLogs(
+  query: AdminChatLogQuery = {},
+  signal?: AbortSignal
+): Promise<ApiResponse<AdminChatLogItemDto[]>> {
+  const qs = buildQueryString({
+    include_simulated: query.include_simulated ?? false,
+    limit: query.limit,
+  });
+  return apiRequest<AdminChatLogItemDto[]>(`/api/admin/chat-logs${qs}`, {
     method: 'GET',
     signal,
   });

@@ -18,6 +18,7 @@ import {
 } from '@/components/shared/formatters';
 import { EditorialEmptyIllustration } from '@/components/visual/EditorialEmptyIllustration';
 import { ProductPlaceholderFrame } from '@/components/visual/ProductPlaceholderFrame';
+import { useSpecularSpotlight } from '@/motion/useSpecularSpotlight';
 import { listProducts } from '@/services';
 import { useCart, useExperiment } from '@/state';
 import type {
@@ -51,11 +52,41 @@ function parseInitialProductType(val: string | null): '' | ProductType {
   return '';
 }
 
+function CatalogThumbnail({ product }: { product: ProductSummaryDto }) {
+  const [imgFailed, setImgFailed] = useState(false);
+
+  if (!product.thumbnail_url || imgFailed) {
+    return (
+      <ProductPlaceholderFrame
+        productType={product.product_type}
+        industry={product.industry}
+        sourceType={product.source_type}
+        aspect="16/10"
+        slug={product.slug}
+      />
+    );
+  }
+
+  return (
+    /* eslint-disable-next-line @next/next/no-img-element */
+    <img
+      src={product.thumbnail_url}
+      alt={`${product.name} (${PRODUCT_TYPE_LABELS[product.product_type]})`}
+      width={960}
+      height={600}
+      loading="lazy"
+      decoding="async"
+      className="dg-showcase-thumb-img"
+      onError={() => setImgFailed(true)}
+    />
+  );
+}
+
 function ProductsCatalogContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { addItem } = useCart();
-  const { scenarioState, track } = useExperiment();
+  const { assignment, scenarioState, track } = useExperiment();
 
   const initialQuery = searchParams.get('q') ?? '';
   const initialType = parseInitialProductType(searchParams.get('product_type'));
@@ -83,8 +114,14 @@ function ProductsCatalogContent() {
   const [addedProductId, setAddedProductId] = useState<string | null>(null);
   const [addingId, setAddingId] = useState<string | null>(null);
 
+  const spotlightGridRef = useSpecularSpotlight<HTMLDivElement>({
+    disabled: isLoading || products.length === 0,
+  });
+
   const hasOpenScenario = Boolean(
-    scenarioState?.scenario_run_id && !scenarioState.is_finished
+    assignment?.consent_given &&
+      scenarioState?.scenario_run_id &&
+      !scenarioState.is_finished
   );
   const lastSearchTrackedRef = useRef<string>('');
 
@@ -203,23 +240,33 @@ function ProductsCatalogContent() {
   };
 
   const hasActiveFilter = Boolean(
-    debouncedQuery || productType || industry !== 'Tất cả' || maxPrice || sort !== 'newest'
+    debouncedQuery ||
+      productType ||
+      industry !== 'Tất cả' ||
+      maxPrice ||
+      sort !== 'newest'
   );
 
   return (
     <section className="section section--compact">
       <div className="container">
-        {/* Compact Utility Header (Page Grammar 6: Gallery / Catalog) */}
         <div className="section-header" style={{ marginBottom: '24px' }}>
           <div className="section-header__copy">
-            <span className="type-eyebrow">Kho Sản Phẩm Số DreamTeam (F2)</span>
+            <span className="type-eyebrow">Kho Sản Phẩm Số DreamTeam</span>
             <h1 className="type-h1">Tìm kiếm &amp; Lọc theo nhu cầu shop</h1>
             <p className="type-body-sm">
               Lọc theo loại sản phẩm, ngành hàng và ngân sách tối đa để chọn đúng
-              gói tối ưu cho shop 1–3 người.
+              gói công cụ tối ưu cho cửa hàng 1–3 người.
             </p>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '10px',
+              flexWrap: 'wrap',
+            }}
+          >
             {meta && (
               <span className="badge badge--accent type-mono">
                 <Filter size={12} />
@@ -238,7 +285,7 @@ function ProductsCatalogContent() {
           </div>
         </div>
 
-        {/* DreamsCore Pill Tabs + Sticky Filter Ribbon */}
+        {/* Filter Ribbon */}
         <div className="catalog-toolbar dg-panel">
           <div
             className="dg-fw-tabs dg-fw-tabs--inline"
@@ -382,16 +429,19 @@ function ProductsCatalogContent() {
         {isLoading ? (
           <div className="dg-showcase-grid">
             {Array.from({ length: 6 }).map((_, idx) => (
-              <div
-                key={idx}
-                className="dg-panel dg-showcase-skeleton"
-              >
+              <div key={idx} className="dg-panel dg-showcase-skeleton">
                 <div
                   className="skeleton-box"
                   style={{ width: '100%', aspectRatio: '16 / 10' }}
                 />
-                <div className="skeleton-box" style={{ height: '24px', width: '75%' }} />
-                <div className="skeleton-box" style={{ height: '42px', width: '100%' }} />
+                <div
+                  className="skeleton-box"
+                  style={{ height: '24px', width: '75%' }}
+                />
+                <div
+                  className="skeleton-box"
+                  style={{ height: '42px', width: '100%' }}
+                />
               </div>
             ))}
           </div>
@@ -424,23 +474,17 @@ function ProductsCatalogContent() {
           </div>
         ) : (
           <>
-            <div className="dg-showcase-grid">
+            <div ref={spotlightGridRef} className="dg-showcase-grid">
               {products.map((product) => {
                 const sourceMeta = SOURCE_TYPE_META[product.source_type];
                 const isAdded = addedProductId === product.id;
                 return (
                   <article
                     key={product.id}
-                    className="dg-showcase-card dg-panel"
+                    className="dg-showcase-card dg-panel dg-spotlight-card"
                   >
                     <div className="dg-showcase-img-wrap">
-                      <ProductPlaceholderFrame
-                        productType={product.product_type}
-                        industry={product.industry}
-                        sourceType={product.source_type}
-                        aspect="16/10"
-                        slug={product.slug}
-                      />
+                      <CatalogThumbnail product={product} />
                       <div className="dg-showcase-overlay">
                         <Link
                           href={`/products/${product.slug}`}
@@ -463,7 +507,14 @@ function ProductsCatalogContent() {
                         </span>
                       </div>
 
-                      <h2 className="text-line-clip" style={{ fontSize: '1.08rem', fontWeight: 700, margin: '0 0 8px' }}>
+                      <h2
+                        className="text-line-clip"
+                        style={{
+                          fontSize: '1.08rem',
+                          fontWeight: 700,
+                          margin: '0 0 8px',
+                        }}
+                      >
                         <Link href={`/products/${product.slug}`}>
                           {product.name}
                         </Link>
@@ -471,12 +522,16 @@ function ProductsCatalogContent() {
                       <p>{product.short_description}</p>
 
                       <div className="dg-showcase-footer">
-                        <span
-                          className="type-price dg-showcase-price"
-                        >
+                        <span className="type-price dg-showcase-price">
                           {formatVnd(product.price_vnd)}
                         </span>
-                        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                        <div
+                          style={{
+                            display: 'flex',
+                            gap: '8px',
+                            flexWrap: 'wrap',
+                          }}
+                        >
                           <Link
                             href={`/products/${product.slug}`}
                             className="btn btn--secondary btn--sm"
@@ -519,7 +574,7 @@ function ProductsCatalogContent() {
                             )
                           }
                         >
-                          <span>Chọn gói này cho kịch bản F11</span>
+                          <span>Chọn gói này cho nhiệm vụ</span>
                           <ArrowRight size={14} />
                         </button>
                       )}

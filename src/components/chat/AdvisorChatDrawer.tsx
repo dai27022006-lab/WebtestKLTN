@@ -1,10 +1,10 @@
 'use client';
 
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 import {
-  AlertTriangle,
   ArrowRight,
   MessageSquare,
   ShieldCheck,
@@ -26,10 +26,21 @@ const QUICK_PROMPTS = [
   'Cần gói prompt trả lời inbox và chốt đơn đa kênh chi phí thấp.',
 ];
 
-export function AdvisorChatDrawer() {
-  const { visitorId, assignment, scenarioState, activeVariant, track } =
-    useExperiment();
+interface AdvisorChatDrawerInnerProps {
+  isSurveyActive: boolean;
+  assignmentId?: string;
+  visitorId: string;
+  currentRunId?: string;
+  track: ReturnType<typeof useExperiment>['track'];
+}
 
+function AdvisorChatDrawerInner({
+  isSurveyActive,
+  assignmentId,
+  visitorId,
+  currentRunId,
+  track,
+}: AdvisorChatDrawerInnerProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [sessionId, setSessionId] = useState<string | undefined>(undefined);
   const [messages, setMessages] = useState<ChatMessageDto[]>([]);
@@ -41,16 +52,12 @@ export function AdvisorChatDrawer() {
   const openedTrackedRunRef = useRef<string | null>(null);
   const streamEndRef = useRef<HTMLDivElement | null>(null);
 
-  const isChatEnabled = activeVariant === 'chatbot_on';
-  const drawerOpen = isChatEnabled && isOpen;
-  const currentRunId = scenarioState?.scenario_run_id ?? undefined;
-
   const loadHistory = useCallback(async () => {
-    if (!assignment || !visitorId) return;
+    if (!isSurveyActive || !assignmentId || !visitorId) return;
     setIsLoadingHistory(true);
     setErrorMsg(null);
     const res = await getChatSessions({
-      assignment_id: assignment.assignment_id,
+      assignment_id: assignmentId,
       visitor_id: visitorId,
       scenario_run_id: currentRunId,
     });
@@ -69,13 +76,13 @@ export function AdvisorChatDrawer() {
       setSessionId(undefined);
       setMessages([]);
     }
-  }, [assignment, visitorId, currentRunId]);
+  }, [isSurveyActive, assignmentId, visitorId, currentRunId]);
 
   const handleOpen = useCallback(() => {
     setIsOpen(true);
-    if (!assignment) return;
+    if (!isSurveyActive || !assignmentId) return;
 
-    const trackKey = `${assignment.assignment_id}:${currentRunId ?? 'free'}`;
+    const trackKey = `${assignmentId}:${currentRunId ?? 'free'}`;
     if (openedTrackedRunRef.current !== trackKey) {
       openedTrackedRunRef.current = trackKey;
       void track('chat_opened', {
@@ -83,11 +90,9 @@ export function AdvisorChatDrawer() {
       });
     }
     void loadHistory();
-  }, [assignment, currentRunId, loadHistory, sessionId, track]);
+  }, [isSurveyActive, assignmentId, currentRunId, loadHistory, sessionId, track]);
 
   useEffect(() => {
-    if (!isChatEnabled) return;
-
     const onOpenEvent = () => {
       handleOpen();
     };
@@ -95,21 +100,20 @@ export function AdvisorChatDrawer() {
     return () => {
       window.removeEventListener('dsa:open-chat', onOpenEvent);
     };
-  }, [isChatEnabled, handleOpen]);
+  }, [handleOpen]);
 
   useEffect(() => {
-    if (drawerOpen) {
-      const prefersReducedMotion =
-        typeof window !== 'undefined' &&
-        window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      streamEndRef.current?.scrollIntoView({
-        behavior: prefersReducedMotion ? 'auto' : 'smooth',
-      });
-    }
-  }, [messages.length, drawerOpen]);
+    if (!isOpen) return;
+    const prefersReducedMotion =
+      typeof window !== 'undefined' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    streamEndRef.current?.scrollIntoView({
+      behavior: prefersReducedMotion ? 'auto' : 'smooth',
+    });
+  }, [messages.length, isOpen]);
 
   useEffect(() => {
-    if (!drawerOpen) return;
+    if (!isOpen) return;
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         setIsOpen(false);
@@ -117,30 +121,11 @@ export function AdvisorChatDrawer() {
     };
     window.addEventListener('keydown', onKeyDown);
     return () => window.removeEventListener('keydown', onKeyDown);
-  }, [drawerOpen]);
-
-  if (!isChatEnabled) {
-    return null;
-  }
-
-  const latestAssistantModel = [...messages]
-    .reverse()
-    .find((m) => m.role === 'assistant')?.model_name;
-  const isStubMode =
-    !latestAssistantModel ||
-    latestAssistantModel.toLowerCase().includes('stub') ||
-    latestAssistantModel.toLowerCase().includes('mock');
+  }, [isOpen]);
 
   const handleSend = async (textOverride?: string) => {
     const trimmed = (textOverride ?? inputText).trim();
     if (!trimmed || isSending) return;
-
-    if (!assignment || !visitorId) {
-      setErrorMsg(
-        'Vui lòng xác nhận đồng ý tham gia tại trang Thí nghiệm F11 trước khi chat.'
-      );
-      return;
-    }
 
     setErrorMsg(null);
     setIsSending(true);
@@ -148,18 +133,27 @@ export function AdvisorChatDrawer() {
       setInputText('');
     }
 
-    void track('chat_message_sent', {
-      session_id: sessionId ?? null,
-      properties: { length: trimmed.length },
-    });
+    if (isSurveyActive && assignmentId) {
+      void track('chat_message_sent', {
+        session_id: sessionId ?? null,
+        properties: { length: trimmed.length },
+      });
+    }
 
-    const res = await sendChatMessage({
-      session_id: sessionId,
-      assignment_id: assignment.assignment_id,
-      visitor_id: visitorId,
-      scenario_run_id: currentRunId,
-      message: trimmed,
-    });
+    const res = await sendChatMessage(
+      isSurveyActive && assignmentId && visitorId
+        ? {
+            session_id: sessionId,
+            assignment_id: assignmentId,
+            visitor_id: visitorId,
+            scenario_run_id: currentRunId,
+            message: trimmed,
+          }
+        : {
+            session_id: sessionId,
+            message: trimmed,
+          }
+    );
 
     setIsSending(false);
 
@@ -175,7 +169,11 @@ export function AdvisorChatDrawer() {
       res.data.assistant_message,
     ]);
 
-    if (res.data.assistant_message.suggested_products.length > 0) {
+    if (
+      isSurveyActive &&
+      assignmentId &&
+      res.data.assistant_message.suggested_products.length > 0
+    ) {
       void track('product_suggested', {
         session_id: res.data.session_id,
         properties: {
@@ -187,22 +185,22 @@ export function AdvisorChatDrawer() {
 
   return (
     <>
-      {!drawerOpen && (
+      {!isOpen && (
         <button
           type="button"
           className="chat-fab"
           onClick={handleOpen}
-          aria-label="Mở Trợ lý ảo tư vấn gói sản phẩm"
+          aria-label="Mở Trợ lý tư vấn gói sản phẩm"
         >
           <Sparkles size={17} />
           <span>Trợ lý tư vấn</span>
         </button>
       )}
 
-      {drawerOpen && (
+      {isOpen && (
         <aside
           className="chat-drawer"
-          aria-label="Trợ lý ảo tư vấn sản phẩm số"
+          aria-label="Trợ lý Tư vấn DreamTeam"
         >
           <div className="chat-drawer__head">
             <div
@@ -222,7 +220,7 @@ export function AdvisorChatDrawer() {
                     Trợ lý Tư vấn DreamTeam
                   </strong>
                   <div className="type-caption">
-                    Grounding 100% ID sản phẩm thật trong danh mục
+                    Gợi ý sản phẩm phù hợp theo ngành hàng &amp; ngân sách
                   </div>
                 </div>
               </div>
@@ -230,23 +228,16 @@ export function AdvisorChatDrawer() {
                 type="button"
                 className="icon-btn"
                 onClick={() => setIsOpen(false)}
-                aria-label="Đóng khung trợ lý ảo"
+                aria-label="Đóng khung trợ lý tư vấn"
               >
                 <X size={18} />
               </button>
             </div>
 
-            {isStubMode ? (
-              <span className="badge badge--warning">
-                <AlertTriangle size={12} />
-                <span>Chế độ Stub — Dữ liệu thử nghiệm (Chưa gắn Gemini Key)</span>
-              </span>
-            ) : (
-              <span className="badge badge--success">
-                <ShieldCheck size={12} />
-                <span>Gemini RAG ({latestAssistantModel}) • 100% Grounding DB</span>
-              </span>
-            )}
+            <span className="badge badge--success">
+              <ShieldCheck size={12} />
+              <span>Trực tuyến • Tư vấn từ kho sản phẩm</span>
+            </span>
           </div>
 
           <div className="chat-drawer__messages">
@@ -259,9 +250,9 @@ export function AdvisorChatDrawer() {
             {messages.length === 0 && !isLoadingHistory && (
               <div style={{ display: 'grid', gap: '12px' }}>
                 <div className="chat-bubble chat-bubble--assistant">
-                  Chào bạn! Mình là Trợ lý DreamTeam hỗ trợ chủ shop nhỏ. Hãy cho
-                  mình biết ngành hàng, kênh bán và ngân sách dự kiến để mình lọc
-                  đúng gói phù hợp nhất trong danh mục.
+                  Chào bạn! Mình là Trợ lý DreamTeam hỗ trợ chủ shop nhỏ. Hãy
+                  cho mình biết ngành hàng, kênh bán và ngân sách dự kiến để
+                  mình lọc đúng gói phù hợp nhất trong cửa hàng.
                 </div>
 
                 <div style={{ display: 'grid', gap: '6px' }}>
@@ -315,10 +306,12 @@ export function AdvisorChatDrawer() {
                       className="chat-suggestion-card"
                       style={{ width: '92%' }}
                       onClick={() => {
-                        void track('suggestion_clicked', {
-                          product_id: product.id,
-                          session_id: msg.session_id,
-                        });
+                        if (isSurveyActive && assignmentId) {
+                          void track('suggestion_clicked', {
+                            product_id: product.id,
+                            session_id: msg.session_id,
+                          });
+                        }
                       }}
                     >
                       <div
@@ -329,11 +322,38 @@ export function AdvisorChatDrawer() {
                           alignItems: 'center',
                         }}
                       >
-                        <ProductPlaceholderFrame
-                          productType={product.product_type}
-                          industry={product.industry}
-                          compact
-                        />
+                        {product.thumbnail_url ? (
+                          <div
+                            style={{
+                              width: '76px',
+                              aspectRatio: '16 / 10',
+                              borderRadius: 'var(--radius-xs)',
+                              overflow: 'hidden',
+                              border: '1px solid var(--border-hairline)',
+                              backgroundColor: 'var(--bg-surface-subtle)',
+                            }}
+                          >
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img
+                              src={product.thumbnail_url}
+                              alt={`Ảnh minh họa ${product.name}`}
+                              width={76}
+                              height={48}
+                              loading="lazy"
+                              style={{
+                                width: '100%',
+                                height: '100%',
+                                objectFit: 'cover',
+                              }}
+                            />
+                          </div>
+                        ) : (
+                          <ProductPlaceholderFrame
+                            productType={product.product_type}
+                            industry={product.industry}
+                            compact
+                          />
+                        )}
                         <div style={{ display: 'grid', gap: '4px', minWidth: 0 }}>
                           <span className="type-caption">
                             {PRODUCT_TYPE_LABELS[product.product_type]} •{' '}
@@ -363,7 +383,7 @@ export function AdvisorChatDrawer() {
 
             {isSending && (
               <div className="chat-bubble chat-bubble--assistant">
-                Đang tra cứu danh mục sản phẩm...
+                Đang tra cứu sản phẩm phù hợp...
               </div>
             )}
 
@@ -417,5 +437,49 @@ export function AdvisorChatDrawer() {
         </aside>
       )}
     </>
+  );
+}
+
+export function AdvisorChatDrawer() {
+  const pathname = usePathname();
+  const {
+    visitorId,
+    assignment,
+    scenarioState,
+    activeVariant,
+    isScenarioSynced,
+    track,
+  } = useExperiment();
+
+  const isAdminRoute = pathname.startsWith('/admin');
+  const isSurveyActive = Boolean(
+    assignment?.consent_given &&
+      scenarioState?.scenario_run_id &&
+      !scenarioState.is_finished
+  );
+  const isSyncingSurvey = Boolean(assignment && !isScenarioSynced);
+
+  // Hide chat completely on /admin/* and during an active survey turn without assistant
+  if (
+    isAdminRoute ||
+    isSyncingSurvey ||
+    (isSurveyActive && activeVariant === 'chatbot_off')
+  ) {
+    return null;
+  }
+
+  const contextKey = isSurveyActive
+    ? `${assignment?.assignment_id ?? ''}:${scenarioState?.scenario_run_id ?? ''}`
+    : 'storefront';
+
+  return (
+    <AdvisorChatDrawerInner
+      key={contextKey}
+      isSurveyActive={isSurveyActive}
+      assignmentId={assignment?.assignment_id}
+      visitorId={visitorId}
+      currentRunId={scenarioState?.scenario_run_id ?? undefined}
+      track={track}
+    />
   );
 }

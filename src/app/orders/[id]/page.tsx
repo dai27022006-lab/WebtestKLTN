@@ -6,6 +6,7 @@ import { useCallback, useEffect, useState } from 'react';
 
 import {
   CheckCircle2,
+  ChevronLeft,
   Download,
   Lock,
   ShoppingBag,
@@ -156,8 +157,12 @@ export default function OrderDetailPage() {
           <div className="callout callout--danger" role="alert">
             <strong>Không thể tải đơn hàng</strong>
             <span>{errorMessage ?? 'Đơn hàng không tồn tại.'}</span>
-            <div style={{ marginTop: '8px' }}>
-              <Link href="/cart" className="btn btn--secondary btn--sm">
+            <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', marginTop: '8px' }}>
+              <Link href="/orders" className="btn btn--secondary btn--sm">
+                <ChevronLeft size={14} />
+                <span>Thư viện đơn hàng đã mua</span>
+              </Link>
+              <Link href="/cart" className="btn btn--ghost btn--sm">
                 Quay lại Giỏ hàng
               </Link>
             </div>
@@ -174,8 +179,11 @@ export default function OrderDetailPage() {
 
   return (
     <section className="section section--compact">
-      <div className="container container--narrow" style={{ display: 'grid', gap: '24px' }}>
-        <div className="stepper" aria-label="Tiến trình giao dịch Sandbox">
+      <div
+        className="container container--narrow"
+        style={{ display: 'grid', gap: '24px' }}
+      >
+        <div className="stepper" aria-label="Tiến trình đặt hàng thử nghiệm">
           <div className="stepper__item stepper__item--done">
             <span className="badge badge--success">
               <ShoppingBag size={12} /> 1
@@ -186,18 +194,21 @@ export default function OrderDetailPage() {
             <span className="badge badge--success">
               <Lock size={12} /> 2
             </span>
-            <span>Thanh toán Sandbox</span>
+            <span>Xác nhận đơn thử nghiệm</span>
           </div>
           <div className="stepper__item stepper__item--active">
             <span className="badge badge--accent">
               <Download size={12} /> 3
             </span>
-            <span>Nhận file qua token</span>
+            <span>Nhận file ngay</span>
           </div>
         </div>
 
         {/* Order Header */}
-        <div className="surface-card dg-panel" style={{ display: 'grid', gap: '16px' }}>
+        <div
+          className="surface-card dg-panel"
+          style={{ display: 'grid', gap: '16px' }}
+        >
           <div
             style={{
               display: 'flex',
@@ -208,7 +219,9 @@ export default function OrderDetailPage() {
             }}
           >
             <div>
-              <span className="type-eyebrow">Đơn hàng giao hàng số (F6)</span>
+              <span className="type-eyebrow">
+                Chi tiết đơn hàng &amp; Bàn giao sản phẩm
+              </span>
               <h1 className="type-h2 type-mono" style={{ margin: '4px 0 0' }}>
                 {order.order_code}
               </h1>
@@ -229,7 +242,7 @@ export default function OrderDetailPage() {
             }}
           >
             <div>
-              <div className="type-caption">Tổng giá trị Sandbox</div>
+              <div className="type-caption">Tổng giá trị đơn</div>
               <strong
                 className="type-price"
                 style={{ fontSize: '1.25rem', color: 'var(--accent)' }}
@@ -244,39 +257,48 @@ export default function OrderDetailPage() {
               </span>
             </div>
             <div>
-              <div className="type-caption">Thời điểm thanh toán</div>
+              <div className="type-caption">Thời điểm xác nhận</div>
               <span className="type-body-sm">
                 {formatDateTimeVi(order.paid_at)}
               </span>
             </div>
           </div>
 
+          <p className="type-caption" style={{ margin: 0 }}>
+            Hệ thống đang chạy chế độ đặt hàng thử nghiệm (Sandbox) — bạn có
+            thể kiểm tra quy trình tạo đơn và nhận file ngay mà không bị trừ
+            tiền thật.
+          </p>
+
           {order.status !== 'paid' && (
             <div className="callout callout--warning">
-              <strong>Đơn hàng chưa ở trạng thái Đã thanh toán</strong>
+              <strong>Đơn hàng chưa hoàn tất xác nhận thanh toán</strong>
               <span>
-                Link tải file chỉ được phát hành khi đơn đạt trạng thái{' '}
-                <code className="type-mono">paid</code>.
+                Kho link tải file an toàn sẽ được mở khóa ngay khi đơn hàng hoàn
+                tất bước xác nhận đơn thử nghiệm.
               </span>
               <div>
                 <Link href="/checkout" className="dg-btn-purchase dg-btn-sm">
-                  Quay lại Thanh toán Sandbox
+                  Quay lại Xác nhận đơn thử nghiệm
                 </Link>
               </div>
             </div>
           )}
         </div>
 
-        {/* Download Grants */}
+        {/* Secure Download Links */}
         {order.status === 'paid' && (
-          <div className="surface-card dg-panel" style={{ display: 'grid', gap: '16px' }}>
+          <div
+            className="surface-card dg-panel"
+            style={{ display: 'grid', gap: '16px' }}
+          >
             <h2 className="type-h3" style={{ margin: 0 }}>
-              Kho tải gói sản phẩm đã cấp quyền
+              Kho link tải an toàn (hạn 7 ngày)
             </h2>
 
             {!order.download_grants || order.download_grants.length === 0 ? (
               <p className="type-body-sm" style={{ margin: 0 }}>
-                Chưa có bản ghi cấp quyền tải xuống nào cho đơn hàng này.
+                Chưa có liên kết tải xuống nào được phát hành cho đơn hàng này.
               </p>
             ) : (
               <div style={{ display: 'grid', gap: '14px' }}>
@@ -333,7 +355,7 @@ export default function OrderDetailPage() {
                           <Download size={14} />
                           <span>
                             {state?.isLoading
-                              ? 'Đang cấp link...'
+                              ? 'Đang chuẩn bị file...'
                               : isExpired
                                 ? 'Link đã hết hạn'
                                 : isExhausted
@@ -369,7 +391,8 @@ export default function OrderDetailPage() {
                             className="type-body-sm"
                             style={{ cursor: 'pointer', fontWeight: 600 }}
                           >
-                            Xem nội dung bàn giao JSON ({state.lastAccess?.file_name})
+                            Xem nhanh nội dung gói tài nguyên (
+                            {state.lastAccess?.file_name})
                           </summary>
                           <pre
                             className="type-mono"
@@ -397,11 +420,12 @@ export default function OrderDetailPage() {
         )}
 
         <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
-          <Link href="/products" className="btn btn--secondary">
-            Tiếp tục xem sản phẩm
+          <Link href="/orders" className="btn btn--secondary">
+            <ChevronLeft size={15} />
+            <span>Thư viện đơn hàng đã mua</span>
           </Link>
-          <Link href="/experiment" className="btn btn--ghost">
-            Về trang Thí nghiệm F11
+          <Link href="/products" className="dg-btn-purchase">
+            <span>Tiếp tục xem sản phẩm</span>
           </Link>
         </div>
       </div>

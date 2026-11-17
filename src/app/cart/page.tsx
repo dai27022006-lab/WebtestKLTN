@@ -20,7 +20,47 @@ import { EditorialEmptyIllustration } from '@/components/visual/EditorialEmptyIl
 import { ProductPlaceholderFrame } from '@/components/visual/ProductPlaceholderFrame';
 import { listOrders } from '@/services';
 import { useCart, useExperiment } from '@/state';
-import type { OrderDto } from '@/types/api';
+import type { CartItemDto, OrderDto } from '@/types/api';
+
+function CartItemThumb({ item }: { item: CartItemDto }) {
+  const [imgFailed, setImgFailed] = useState(false);
+
+  if (!item.thumbnail_url || imgFailed) {
+    return (
+      <ProductPlaceholderFrame
+        productType={item.product_type}
+        industry="Shop nhỏ"
+        compact
+        aspect="16/10"
+      />
+    );
+  }
+
+  return (
+    <div
+      style={{
+        width: '100%',
+        aspectRatio: '16 / 10',
+        borderRadius: 'var(--radius-sm)',
+        overflow: 'hidden',
+        border: '1px solid var(--border-hairline)',
+        backgroundColor: 'var(--bg-surface-sunken)',
+      }}
+    >
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={item.thumbnail_url}
+        alt={`${item.name} (${PRODUCT_TYPE_LABELS[item.product_type]})`}
+        width={480}
+        height={300}
+        loading="lazy"
+        decoding="async"
+        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+        onError={() => setImgFailed(true)}
+      />
+    </div>
+  );
+}
 
 export default function CartPage() {
   const { cart, isLoading, errorMessage, removeItem, clearAll } = useCart();
@@ -44,7 +84,7 @@ export default function CartPage() {
   return (
     <section className="section section--compact">
       <div className="container">
-        <div className="stepper" aria-label="Tiến trình giao dịch Sandbox">
+        <div className="stepper" aria-label="Tiến trình đặt hàng thử nghiệm">
           <div className="stepper__item stepper__item--active">
             <span className="badge badge--accent">
               <ShoppingBag size={12} /> 1
@@ -55,20 +95,25 @@ export default function CartPage() {
             <span className="badge">
               <Lock size={12} /> 2
             </span>
-            <span>Thanh toán Sandbox</span>
+            <span>Xác nhận đơn thử nghiệm</span>
           </div>
           <div className="stepper__item">
             <span className="badge">
               <Download size={12} /> 3
             </span>
-            <span>Nhận file qua token</span>
+            <span>Nhận file ngay</span>
           </div>
         </div>
 
         <div className="section-header" style={{ marginBottom: '24px' }}>
           <div className="section-header__copy">
-            <span className="type-eyebrow">Giỏ hàng của bạn (F4)</span>
-            <h1 className="type-h1">Kiểm tra danh sách gói đã chọn</h1>
+            <span className="type-eyebrow">Giỏ hàng của bạn</span>
+            <h1 className="type-h1">Kiểm tra các gói giải pháp đã chọn</h1>
+            <p className="type-body-sm">
+              Hệ thống đang chạy chế độ đặt hàng thử nghiệm (Sandbox) — bạn có
+              thể kiểm tra quy trình tạo đơn và nhận file ngay mà không bị trừ
+              tiền thật.
+            </p>
           </div>
           {cart.items.length > 0 && (
             <button
@@ -108,14 +153,19 @@ export default function CartPage() {
             <h2 className="type-h3" style={{ margin: 0 }}>
               Giỏ hàng hiện chưa có gói sản phẩm nào
             </h2>
-            <p className="type-body-sm" style={{ margin: 0, maxWidth: '42ch' }}>
-              Khám phá danh mục template, prompt pack hoặc workflow để thêm vào
-              giỏ và kiểm thử luồng thanh toán Sandbox.
+            <p className="type-body-sm" style={{ margin: 0, maxWidth: '46ch' }}>
+              Khám phá danh mục Template Website, Prompt Pack AI hoặc Workflow tự
+              động để thêm vào giỏ và trải nghiệm quy trình nhận file tức thì.
             </p>
-            <Link href="/products" className="dg-btn-purchase">
-              <span>Xem danh mục sản phẩm</span>
-              <ArrowRight size={15} />
-            </Link>
+            <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+              <Link href="/products" className="dg-btn-purchase">
+                <span>Xem danh mục sản phẩm</span>
+                <ArrowRight size={15} />
+              </Link>
+              <Link href="/orders" className="btn btn--secondary">
+                Thư viện đơn hàng đã mua
+              </Link>
+            </div>
           </div>
         ) : (
           <div className="two-col-ops">
@@ -125,14 +175,13 @@ export default function CartPage() {
                   key={item.product_id}
                   className="surface-card dg-panel cart-item-card"
                 >
-                  <ProductPlaceholderFrame
-                    productType={item.product_type}
-                    industry="Shop nhỏ"
-                    compact
-                  />
+                  <CartItemThumb item={item} />
 
                   <div style={{ display: 'grid', gap: '4px', minWidth: 0 }}>
-                    <span className="type-caption" style={{ color: 'var(--accent)', fontWeight: 700 }}>
+                    <span
+                      className="type-caption"
+                      style={{ color: 'var(--accent)', fontWeight: 700 }}
+                    >
                       {PRODUCT_TYPE_LABELS[item.product_type]}
                     </span>
                     <Link href={`/products/${item.slug}`}>
@@ -149,7 +198,10 @@ export default function CartPage() {
                   </div>
 
                   <div className="cart-item-card__meta">
-                    <strong className="type-price" style={{ color: 'var(--accent)' }}>
+                    <strong
+                      className="type-price"
+                      style={{ color: 'var(--accent)' }}
+                    >
                       {formatVnd(item.line_total_vnd)}
                     </strong>
                     <button
@@ -165,9 +217,12 @@ export default function CartPage() {
               ))}
             </div>
 
-            <aside className="surface-card dg-panel" style={{ display: 'grid', gap: '16px' }}>
+            <aside
+              className="surface-card dg-panel"
+              style={{ display: 'grid', gap: '16px' }}
+            >
               <h2 className="type-h3" style={{ margin: 0 }}>
-                Tóm tắt tạm tính (Từ Server)
+                Tóm tắt đơn hàng
               </h2>
 
               <div
@@ -195,14 +250,14 @@ export default function CartPage() {
                 className="dg-btn-purchase btn--block"
                 style={{ justifyContent: 'center' }}
               >
-                <span>Tiến hành Thanh toán Sandbox</span>
+                <span>Tiếp tục xác nhận đơn thử nghiệm</span>
                 <ArrowRight size={16} />
               </Link>
 
               <p className="type-caption" style={{ margin: 0 }}>
-                Giá đơn hàng được đối chiếu trực tiếp từ bảng{' '}
-                <code className="type-mono">products</code> ở server khi tạo
-                đơn, không thu tiền thật.
+                Hệ thống đang chạy chế độ đặt hàng thử nghiệm (Sandbox) — bạn
+                có thể kiểm tra quy trình tạo đơn và nhận file ngay mà không bị
+                trừ tiền thật.
               </p>
             </aside>
           </div>
@@ -210,18 +265,36 @@ export default function CartPage() {
 
         {recentOrders.length > 0 && (
           <div style={{ display: 'grid', gap: '14px', marginTop: '40px' }}>
-            <h2 className="type-h3" style={{ margin: 0 }}>
-              Đơn hàng Sandbox gần đây của bạn
-            </h2>
-            <div className="data-table-wrap dg-panel">
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                gap: '12px',
+                flexWrap: 'wrap',
+              }}
+            >
+              <h2 className="type-h3" style={{ margin: 0 }}>
+                Đơn hàng gần đây của bạn
+              </h2>
+              <Link href="/orders" className="btn btn--secondary btn--sm">
+                Xem tất cả đơn hàng
+              </Link>
+            </div>
+            <div
+              tabIndex={0}
+              role="region"
+              aria-label="Danh sách đơn hàng gần đây"
+              className="data-table-wrap dg-panel"
+            >
               <table className="data-table">
                 <thead>
                   <tr>
-                    <th>Mã đơn</th>
-                    <th>Trạng thái</th>
-                    <th>Tổng tiền</th>
-                    <th>Thời gian tạo</th>
-                    <th>Chi tiết</th>
+                    <th scope="col">Mã đơn</th>
+                    <th scope="col">Trạng thái</th>
+                    <th scope="col">Tổng tiền</th>
+                    <th scope="col">Thời gian tạo</th>
+                    <th scope="col">Chi tiết</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -246,7 +319,7 @@ export default function CartPage() {
                             href={`/orders/${order.id}`}
                             className="btn btn--secondary btn--sm"
                           >
-                            Mở đơn / Tải file
+                            Xem đơn &amp; Tải file
                           </Link>
                         </td>
                       </tr>

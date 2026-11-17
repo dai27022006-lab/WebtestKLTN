@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
-  "updated_at": "2026-11-16T08:00:00.000Z",
-  "notes": "Danh mục 12 sản phẩm số gốc Tháng 1 theo RULES.md Mục 18: 6 Template Website + 4 Prompt Pack + 2 Workflow mẫu, phủ đều 4 ngành (Mỹ phẩm, Thời trang, F&B, Đa ngành) và đủ 3 loại bản quyền (original, adapted, licensed).",
+  "updated_at": "2026-11-17T10:00:00.000Z",
+  "notes": "Danh mục 12 sản phẩm số gốc Tháng 1 theo RULES.md Mục 18: 6 Template Website + 4 Prompt Pack + 2 Workflow mẫu, phủ đều 4 ngành (Mỹ phẩm, Thời trang, F&B, Đa ngành) và đủ 3 loại bản quyền (original, adapted, licensed). Đã bổ sung demo_url (/demos/<slug>/index.html), thumbnail_url (.webp), specs.preview_highlights và specs.case_studies.",
   "products": [
     {
       "id": "2c5a98b1-90c4-4f88-a2b3-1c4f9b012a10",
@@ -13,8 +13,8 @@
       "product_type": "template",
       "industry": "Mỹ phẩm",
       "price_vnd": 490000,
-      "demo_url": "/products/landing-page-my-pham-tiktok-shop",
-      "thumbnail_url": null,
+      "demo_url": "/demos/landing-page-my-pham-tiktok-shop/index.html",
+      "thumbnail_url": "/images/cat-template.webp",
       "source_type": "original",
       "license_note": "Sản phẩm gốc do nhóm nghiên cứu tự thiết kế 100%, cấp quyền sử dụng thương mại cho 1 shop.",
       "specs": {
@@ -27,7 +27,28 @@
         ],
         "tech_stack": ["HTML5", "CSS3", "Next.js"],
         "setup_time_minutes": 30,
-        "guide_summary": "Thay logo, bảng thành phần, giá bán và link sản phẩm TikTok Shop để chạy ngay."
+        "guide_summary": "Thay logo, bảng thành phần, giá bán và link sản phẩm TikTok Shop để chạy ngay.",
+        "preview_highlights": [
+          "Bố cục Hero chuẩn mobile 375px hiển thị rõ số công bố CBMP và bảng thành phần dịu nhẹ.",
+          "2 nút CTA chốt đơn tức thì chuyển hướng sang giỏ hàng TikTok Shop và Shopee Mall.",
+          "Khối trình bày kết cấu sản phẩm & hướng dẫn sử dụng an toàn, tránh từ ngữ cam kết trị liệu."
+        ],
+        "case_studies": [
+          {
+            "shop_name": "Tiệm Dưỡng Da An Nhiên",
+            "shop_type": "Shop mỹ phẩm 2 nhân sự (TP.HCM)",
+            "rating": 5,
+            "quote": "Trước đây gắn link Bio bị loãng khách, từ ngày đưa khách qua landing page này để xem rõ số công bố và thành phần, tỷ lệ bấm sang giỏ TikTok Shop tăng rõ mà không bị quét từ cấm.",
+            "outcome": "Tăng 32% lượt bấm sang giỏ hàng TikTok Shop sau 2 tuần"
+          },
+          {
+            "shop_name": "Mộc Skincare Đà Nẵng",
+            "shop_type": "Cửa hàng chăm sóc da cá nhân (1 người)",
+            "rating": 4.9,
+            "quote": "Mình không rành code nhưng chỉ mất khoảng 25 phút thay ảnh lọ serum và giá bán theo hướng dẫn là chạy được ngay trên điện thoại.",
+            "outcome": "Tự xuất bản trang bán hàng trong 25 phút, giảm câu hỏi lặp lại về thành phần"
+          }
+        ]
       },
       "deliverable_file": {
         "file_name": "landing-page-my-pham-tiktok-shop-v1.0.0.json",
@@ -51,7 +72,7 @@
       "industry": "Mỹ phẩm",
       "price_vnd": 290000,
       "demo_url": null,
-      "thumbnail_url": null,
+      "thumbnail_url": "/images/cat-prompt.webp",
       "source_type": "original",
       "license_note": "Bộ prompt biên soạn gốc bởi nhóm nội dung, dùng không giới hạn cho các kênh của 1 shop.",
       "specs": {
@@ -64,7 +85,28 @@
         ],
         "tech_stack": ["Notion", "Markdown", "PDF"],
         "setup_time_minutes": 15,
-        "guide_summary": "Điền tên sản phẩm, thành phần chính và tệp da khách hàng vào khung mẫu để tạo mô tả chuẩn."
+        "guide_summary": "Điền tên sản phẩm, thành phần chính và tệp da khách hàng vào khung mẫu để tạo mô tả chuẩn.",
+        "preview_highlights": [
+          "60 prompt chia theo 4 nhóm: mô tả Shopee/TikTok Shop, kịch bản video 30s, trả lời comment loại da.",
+          "Đi kèm checklist từ khóa nhạy cảm cần tránh trên sàn TMĐT ngành mỹ phẩm.",
+          "Khung điền biến số 3 bước, sao chép dùng ngay trên Notion hoặc PDF."
+        ],
+        "case_studies": [
+          {
+            "shop_name": "Lành Beauty Corner",
+            "shop_type": "Shop mỹ phẩm thiên nhiên (2 người, Hà Nội)",
+            "rating": 5,
+            "quote": "Nhờ checklist từ cấm đi kèm mà đội mình viết lại toàn bộ mô tả 18 mã kem chống nắng và sữa rửa mặt sạch sẽ, không còn bị sàn cảnh báo nội dung.",
+            "outcome": "Rút ngắn thời gian viết mô tả mỗi sản phẩm mới từ 45 phút xuống còn 10 phút"
+          },
+          {
+            "shop_name": "Bông Skincare Shop",
+            "shop_type": "Chủ shop bán lẻ Shopee & TikTok (1 người)",
+            "rating": 4.8,
+            "quote": "Bộ kịch bản video 30 giây quay bằng điện thoại rất vừa sức người mới, đọc theo khung có sẵn nên quay 1 buổi được cả tuần.",
+            "outcome": "Hoàn thành đều 5 clip giới thiệu sản phẩm/tuần không cần thuê viết kịch bản"
+          }
+        ]
       },
       "deliverable_file": {
         "file_name": "prompt-pack-mo-ta-my-pham-v1.0.0.json",
@@ -88,7 +130,7 @@
       "industry": "Mỹ phẩm",
       "price_vnd": 640000,
       "demo_url": null,
-      "thumbnail_url": null,
+      "thumbnail_url": "/images/cat-workflow.webp",
       "source_type": "adapted",
       "license_note": "Chuyển thể từ cấu trúc luồng nhắc lịch mở trên n8n, Việt hóa và thiết kế lại bảng theo dõi chu kỳ dùng hết sản phẩm mỹ phẩm cho shop nhỏ.",
       "specs": {
@@ -101,7 +143,28 @@
         ],
         "tech_stack": ["n8n / Make", "Google Sheets", "Telegram Bot"],
         "setup_time_minutes": 40,
-        "guide_summary": "Kết nối Google Sheets đơn hàng với bot Telegram để nhận danh sách khách cần nhắc chăm sóc mỗi sáng."
+        "guide_summary": "Kết nối Google Sheets đơn hàng với bot Telegram để nhận danh sách khách cần nhắc chăm sóc mỗi sáng.",
+        "preview_highlights": [
+          "File JSON n8n/Make nhập 1 chạm, tự động tính chu kỳ dùng hết sản phẩm 30–45 ngày.",
+          "Đồng bộ từ Google Sheets đơn hàng sang thông báo Telegram nhắc lịch mỗi sáng.",
+          "Kèm 10 mẫu tin nhắn chăm sóc dịu nhẹ qua Zalo giúp giữ chân khách cũ."
+        ],
+        "case_studies": [
+          {
+            "shop_name": "Cỏ Mềm Mini Store",
+            "shop_type": "Shop dưỡng da gia đình (3 nhân sự, Cần Thơ)",
+            "rating": 5,
+            "quote": "Shop nhỏ chưa đủ kinh phí mua CRM đắt tiền, dùng Google Sheets nối Telegram này mỗi sáng tự báo danh sách 5–7 khách sắp hết toner để nhắn hỏi thăm rất gọn.",
+            "outcome": "Tiết kiệm 45 phút dò sổ tay mỗi ngày và giữ nhịp chăm sóc khách quay lại"
+          },
+          {
+            "shop_name": "Hương Thảo Cosmetics",
+            "shop_type": "Cửa hàng mỹ phẩm online (2 nhân sự, Bình Dương)",
+            "rating": 4.9,
+            "quote": "10 mẫu tin nhắn Zalo viết tự nhiên, không bị cảm giác spam quảng cáo nên khách cũ phản hồi lại rất thoải mái.",
+            "outcome": "28% khách được nhắc chu kỳ 35 ngày quay lại đặt tiếp chai thứ hai"
+          }
+        ]
       },
       "deliverable_file": {
         "file_name": "workflow-nhac-mua-lai-my-pham-zalo-v1.0.0.json",
@@ -124,8 +187,8 @@
       "product_type": "template",
       "industry": "Thời trang",
       "price_vnd": 590000,
-      "demo_url": "/products/template-lookbook-thoi-trang-local",
-      "thumbnail_url": null,
+      "demo_url": "/demos/template-lookbook-thoi-trang-local/index.html",
+      "thumbnail_url": "/images/cat-template.webp",
       "source_type": "original",
       "license_note": "Mã nguồn thiết kế gốc bởi nhóm tác giả, hỗ trợ tùy biến màu sắc theo nhận diện shop.",
       "specs": {
@@ -138,7 +201,28 @@
         ],
         "tech_stack": ["HTML5", "CSS3", "TypeScript"],
         "setup_time_minutes": 40,
-        "guide_summary": "Cập nhật bộ ảnh lookbook theo mùa và thông số size S/M/L để khách tự đối chiếu trước khi đặt."
+        "guide_summary": "Cập nhật bộ ảnh lookbook theo mùa và thông số size S/M/L để khách tự đối chiếu trước khi đặt.",
+        "preview_highlights": [
+          "Trưng bày bộ sưu tập theo từng set phối sẵn với ảnh dọc tỷ lệ chuẩn lookbook.",
+          "Tích hợp công cụ gợi ý size S/M/L/XL theo chiều cao & cân nặng ngay trên trang.",
+          "Form giữ đơn nhanh nối trực tiếp sang Shopee hoặc tin nhắn Instagram."
+        ],
+        "case_studies": [
+          {
+            "shop_name": "Studio Bắc Nam",
+            "shop_type": "Shop thời trang nữ local (3 người, TP.HCM)",
+            "rating": 5,
+            "quote": "Khách Instagram hay hỏi lặp lại cao 1m60 nặng 52kg mặc size gì. Từ khi gắn trang lookbook có bảng tính size tự động, tin nhắn hỏi size giảm hẳn mà đơn đổi trả cũng ít đi.",
+            "outcome": "Giảm 40% tỷ lệ đổi size nhầm và rút ngắn thời gian chốt inbox"
+          },
+          {
+            "shop_name": "Tiệm Vải Cô Ba",
+            "shop_type": "Shop đồ linen thủ công (2 người, Hội An)",
+            "rating": 4.8,
+            "quote": "Giao diện sáng, nhìn sang như tạp chí nhưng tải rất nhẹ trên điện thoại, hợp với khách xem link từ story Facebook.",
+            "outcome": "Tăng số đơn đặt trọn bộ áo + quần phối sẵn thêm 22%"
+          }
+        ]
       },
       "deliverable_file": {
         "file_name": "template-lookbook-thoi-trang-local-v1.0.0.json",
@@ -161,8 +245,8 @@
       "product_type": "template",
       "industry": "Thời trang",
       "price_vnd": 550000,
-      "demo_url": "/products/template-landing-livestream-thoi-trang",
-      "thumbnail_url": null,
+      "demo_url": "/demos/template-landing-livestream-thoi-trang/index.html",
+      "thumbnail_url": "/images/cat-template.webp",
       "source_type": "adapted",
       "license_note": "Chuyển thể từ khung layout bán hàng mở nội bộ, tối ưu lại luồng gom đơn theo mã live cho shop thời trang Việt Nam.",
       "specs": {
@@ -175,7 +259,28 @@
         ],
         "tech_stack": ["HTML5", "CSS3", "Next.js"],
         "setup_time_minutes": 30,
-        "guide_summary": "Nhập danh sách mã hàng live vào file cấu hình JSON để ghim link trang gom đơn lên bình luận."
+        "guide_summary": "Nhập danh sách mã hàng live vào file cấu hình JSON để ghim link trang gom đơn lên bình luận.",
+        "preview_highlights": [
+          "Thanh tìm kiếm tức thì theo mã đọc trên livestream (#A01, #A02, #A03).",
+          "Bộ đếm khung giờ Flash Sale và nút giữ size/màu trực quan trên di động.",
+          "Cập nhật danh sách mã hàng live dễ dàng qua file cấu hình JSON trước giờ lên sóng."
+        ],
+        "case_studies": [
+          {
+            "shop_name": "Xưởng Gấu Local Brand",
+            "shop_type": "Shop bán livestream TikTok 2 người (Hà Nội)",
+            "rating": 5,
+            "quote": "Khi live có lúc vài trăm người xem, đọc bình luận không xuể. Ghim link trang mã live lên để khách tự gõ #A05 chọn size giúp đỡ sót đơn hẳn.",
+            "outcome": "Giảm tình trạng sót bình luận giữ đơn trong khung giờ cao điểm xuống dưới 5%"
+          },
+          {
+            "shop_name": "Kho Sỉ Lẻ Mint",
+            "shop_type": "Shop xả kho thời trang cuối tuần (3 người, TP.HCM)",
+            "rating": 4.9,
+            "quote": "Trước mỗi phiên live mình chỉ mất 20 phút nhập lại mã hàng và giá ưu đãi vào danh sách là dùng lại được cho cả tháng.",
+            "outcome": "Chuẩn bị xong trang gom đơn chỉ trong 20 phút trước mỗi phiên live"
+          }
+        ]
       },
       "deliverable_file": {
         "file_name": "template-landing-livestream-thoi-trang-v1.0.0.json",
@@ -199,7 +304,7 @@
       "industry": "Thời trang",
       "price_vnd": 320000,
       "demo_url": null,
-      "thumbnail_url": null,
+      "thumbnail_url": "/images/cat-prompt.webp",
       "source_type": "original",
       "license_note": "Biên soạn gốc bởi nhóm nội dung, cấp quyền sử dụng lâu dài cho mọi kênh bán hàng của 1 thương hiệu thời trang.",
       "specs": {
@@ -212,7 +317,28 @@
         ],
         "tech_stack": ["Notion", "Markdown", "PDF"],
         "setup_time_minutes": 15,
-        "guide_summary": "Chọn nhóm prompt tương ứng (đăng bài mới hoặc rep inbox chọn size) rồi điền thông số chất liệu, form dáng."
+        "guide_summary": "Chọn nhóm prompt tương ứng (đăng bài mới hoặc rep inbox chọn size) rồi điền thông số chất liệu, form dáng.",
+        "preview_highlights": [
+          "55 prompt chia 4 nhóm: Caption Lookbook, Tư vấn size theo số đo, Gợi ý mix-match, Kịch bản Live 60s.",
+          "Bảng mẫu xử lý câu hỏi chất liệu vải, độ co giãn và chính sách đổi trả.",
+          "Checklist chuẩn bị kịch bản nói chuyện trước khi bật livestream 30 phút."
+        ],
+        "case_studies": [
+          {
+            "shop_name": "Nắng Boutique",
+            "shop_type": "Shop quần áo nữ Instagram (1 người, Hải Phòng)",
+            "rating": 4.9,
+            "quote": "Mình vừa nhập hàng vừa tự rep tin nhắn nên hay bí từ khi viết caption buổi tối. Bộ prompt gợi ý phối đồ giúp bài đăng tự nhiên hơn hẳn.",
+            "outcome": "Tiết kiệm khoảng 5 giờ mỗi tuần cho việc viết caption và trả lời inbox"
+          },
+          {
+            "shop_name": "Tủ Đồ Minimal",
+            "shop_type": "Shop unisex nhỏ (2 nhân sự, Đà Nẵng)",
+            "rating": 5,
+            "quote": "Nhóm prompt tư vấn size theo dáng người giúp bạn nhân viên mới trả lời khách tự tin và nhất quán như chủ shop.",
+            "outcome": "Nhân viên mới làm quen kịch bản tư vấn chỉ sau 1 ngày"
+          }
+        ]
       },
       "deliverable_file": {
         "file_name": "prompt-pack-phoi-do-livestream-thoi-trang-v1.0.0.json",
@@ -235,8 +361,8 @@
       "product_type": "template",
       "industry": "F&B",
       "price_vnd": 450000,
-      "demo_url": "/products/template-menu-dat-mon-fnb-mini",
-      "thumbnail_url": null,
+      "demo_url": "/demos/template-menu-dat-mon-fnb-mini/index.html",
+      "thumbnail_url": "/images/cat-template.webp",
       "source_type": "adapted",
       "license_note": "Chuyển thể và tối ưu lại từ cấu trúc giao diện mở nội bộ, cấp phép sử dụng cho 1 chi nhánh.",
       "specs": {
@@ -249,7 +375,28 @@
         ],
         "tech_stack": ["HTML5", "CSS3", "JavaScript"],
         "setup_time_minutes": 25,
-        "guide_summary": "Điền danh sách món, giá topping và link Zalo OA/số Zalo quán rồi in mã QR đặt tại bàn."
+        "guide_summary": "Điền danh sách món, giá topping và link Zalo OA/số Zalo quán rồi in mã QR đặt tại bàn.",
+        "preview_highlights": [
+          "Menu điện tử quét mã QR hiển thị rõ phân nhóm đồ uống, món ăn kèm giá và ảnh.",
+          "Giỏ chọn món mini hỗ trợ chọn size, topping, mức đường/đá trực tiếp trên điện thoại.",
+          "Xuất tóm tắt đơn thành đoạn văn bản gọn gàng gửi 1 chạm qua Zalo/Messenger."
+        ],
+        "case_studies": [
+          {
+            "shop_name": "Trà Sữa Nhà Gạo",
+            "shop_type": "Quán đồ uống take-away (2 người, Thủ Đức)",
+            "rating": 5,
+            "quote": "Khách đặt qua Zalo trước hay nhắn lắt nhắt từng dòng dễ thiếu topping. Giờ gửi link menu để khách bấm chọn xong copy gửi qua một tin nhắn rất rõ ràng.",
+            "outcome": "Hạn chế nhầm lẫn độ ngọt/đá và topping trong giờ cao điểm trưa"
+          },
+          {
+            "shop_name": "Bếp Cà Phê Sân Vườn",
+            "shop_type": "Quán cà phê nhỏ 12 bàn (3 nhân sự, Biên Hòa)",
+            "rating": 4.8,
+            "quote": "In mã QR đặt trên bàn bằng mẫu kèm theo, khách tự xem menu và gọi thêm món không cần chờ in lại thực đơn giấy mỗi khi đổi món.",
+            "outcome": "Không tốn chi phí in lại menu giấy khi cập nhật món theo mùa"
+          }
+        ]
       },
       "deliverable_file": {
         "file_name": "template-menu-dat-mon-fnb-mini-v1.0.0.json",
@@ -272,8 +419,8 @@
       "product_type": "template",
       "industry": "F&B",
       "price_vnd": 520000,
-      "demo_url": "/products/template-dat-combo-tiem-banh-fnb",
-      "thumbnail_url": null,
+      "demo_url": "/demos/template-dat-combo-tiem-banh-fnb/index.html",
+      "thumbnail_url": "/images/cat-template.webp",
       "source_type": "licensed",
       "license_note": "Sử dụng bộ UI kit và biểu tượng ẩm thực theo giấy phép thương mại mở rộng hợp lệ, luồng đặt combo và nội dung tiếng Việt do nhóm biên tập độc lập.",
       "specs": {
@@ -286,7 +433,28 @@
         ],
         "tech_stack": ["HTML5", "CSS3", "TypeScript"],
         "setup_time_minutes": 35,
-        "guide_summary": "Cài đặt khung giờ bếp giao hàng trong ngày và danh sách combo để khách đặt trước không bị trùng lịch."
+        "guide_summary": "Cài đặt khung giờ bếp giao hàng trong ngày và danh sách combo để khách đặt trước không bị trùng lịch.",
+        "preview_highlights": [
+          "Luồng đặt trước (Pre-order) cho hộp bánh, set trà chiều có chọn khung giờ giao nhận.",
+          "Ô ghi chú lời chúc trên thiệp tặng và cảnh báo dị ứng thành phần (hạt, sữa).",
+          "Tóm tắt combo và khung giờ xác nhận gửi thẳng về Zalo/Messenger của tiệm."
+        ],
+        "case_studies": [
+          {
+            "shop_name": "Bếp Bánh Mì Hoa Cúc",
+            "shop_type": "Tiệm bánh online làm tại nhà (2 người, Hà Nội)",
+            "rating": 5,
+            "quote": "Dịp lễ 20/10 và 8/3 khách đặt hộp quà rất dồn. Có khung chọn giờ giao nhận theo ca sáng/chiều giúp bếp sắp lịch nướng bánh không bị vỡ đơn.",
+            "outcome": "Quản lý trơn tru hơn 45 hộp bánh đặt trước dịp lễ không trễ giờ giao"
+          },
+          {
+            "shop_name": "Tiệm Trà Chiều Mây",
+            "shop_type": "Cửa hàng set bánh & trà (3 nhân sự, Đà Lạt)",
+            "rating": 4.9,
+            "quote": "Mục ghi sẵn lời chúc thiệp tặng trên form giúp tiệm đỡ phải hỏi lại từng khách trên Messenger, ghi chú nào cũng lưu rõ ràng.",
+            "outcome": "Rút ngắn thời gian xác nhận mỗi đơn quà tặng từ 8 phút xuống 2 phút"
+          }
+        ]
       },
       "deliverable_file": {
         "file_name": "template-dat-combo-tiem-banh-fnb-v1.0.0.json",
@@ -310,7 +478,7 @@
       "industry": "F&B",
       "price_vnd": 260000,
       "demo_url": null,
-      "thumbnail_url": null,
+      "thumbnail_url": "/images/cat-prompt.webp",
       "source_type": "original",
       "license_note": "Bộ prompt biên soạn gốc bởi nhóm nội dung, dùng không giới hạn cho các kênh bán hàng của 1 quán F&B.",
       "specs": {
@@ -323,7 +491,28 @@
         ],
         "tech_stack": ["Notion", "Markdown", "PDF"],
         "setup_time_minutes": 10,
-        "guide_summary": "Nhập tên món, nguyên liệu đặc trưng và mức giá combo để tạo ngay mô tả chuẩn app giao đồ ăn."
+        "guide_summary": "Nhập tên món, nguyên liệu đặc trưng và mức giá combo để tạo ngay mô tả chuẩn app giao đồ ăn.",
+        "preview_highlights": [
+          "50 prompt viết mô tả món ăn gợi vị giác chuẩn ShopeeFood, GrabFood và Zalo.",
+          "15 kịch bản video quay cảnh pha chế/ra món 20–30 giây tại quầy bằng điện thoại.",
+          "20 mẫu phản hồi đánh giá 1–5 sao lịch sự giúp giữ điểm uy tín quán."
+        ],
+        "case_studies": [
+          {
+            "shop_name": "Bún Trộn Cô Tư",
+            "shop_type": "Quán ăn gia đình bán app giao đồ ăn (3 người, Q.3 TP.HCM)",
+            "rating": 4.9,
+            "quote": "Viết lại tên món và mô tả combo trưa trên ShopeeFood theo prompt thấy hấp dẫn và rõ ràng hơn, khách hay đặt thêm phần topping kèm theo.",
+            "outcome": "Giá trị trung bình mỗi đơn app giao hàng tăng nhẹ nhờ mô tả combo rõ ràng"
+          },
+          {
+            "shop_name": "Tiệm Trà Trái Cây Vườn Xanh",
+            "shop_type": "Quán đồ uống online (2 người, Huế)",
+            "rating": 5,
+            "quote": "Mình hay lúng túng khi khách góp ý 3 sao về thời gian giao hàng. Bộ mẫu trả lời đánh giá giúp phản hồi khéo léo, giữ thiện cảm với khách.",
+            "outcome": "Phản hồi 100% đánh giá mới trong ngày với giọng văn đồng nhất"
+          }
+        ]
       },
       "deliverable_file": {
         "file_name": "prompt-pack-mo-ta-mon-fnb-review-v1.0.0.json",
@@ -346,8 +535,8 @@
       "product_type": "template",
       "industry": "Đa ngành",
       "price_vnd": 390000,
-      "demo_url": "/products/template-bio-link-cua-hang-mini-da-kenh",
-      "thumbnail_url": null,
+      "demo_url": "/demos/template-bio-link-cua-hang-mini-da-kenh/index.html",
+      "thumbnail_url": "/images/cat-template.webp",
       "source_type": "licensed",
       "license_note": "Sử dụng bộ icon và font cấp phép thương mại hợp lệ; cấu trúc trang Bio Link & cửa hàng mini được nhóm đóng gói chuẩn hóa cho shop Việt Nam.",
       "specs": {
@@ -360,7 +549,28 @@
         ],
         "tech_stack": ["HTML5", "CSS3", "JavaScript"],
         "setup_time_minutes": 20,
-        "guide_summary": "Gắn URL gian hàng Shopee, TikTok Shop và Zalo OA vào file cấu hình rồi gắn link trang lên bio."
+        "guide_summary": "Gắn URL gian hàng Shopee, TikTok Shop và Zalo OA vào file cấu hình rồi gắn link trang lên bio.",
+        "preview_highlights": [
+          "Trang đích duy nhất gom link Shopee, TikTok Shop, Zalo OA và 8–12 sản phẩm chủ lực.",
+          "Hộp sao chép nhanh mã giảm giá từng sàn ngay trên giao diện mobile.",
+          "Tải trang siêu nhẹ trên mạng 4G, xuất bản miễn phí lên Vercel/Netlify trong 20 phút."
+        ],
+        "case_studies": [
+          {
+            "shop_name": "Kho Gia Dụng Tiện Lợi",
+            "shop_type": "Shop bán đa kênh (2 người, Bắc Ninh)",
+            "rating": 5,
+            "quote": "Shop mình bán cả Shopee, TikTok lẫn Zalo nhưng mỗi nền tảng chỉ gắn được 1 link tiểu sử. Trang Bio mini này giúp khách quen sàn nào bấm sang sàn đó rất tiện.",
+            "outcome": "Gom toàn bộ 10 sản phẩm bán chạy vào 1 link bio tải dưới 1 giây"
+          },
+          {
+            "shop_name": "Tạp Hóa Nhỏ Nhà Bơ",
+            "shop_type": "Cửa hàng đồ mẹ & bé, gia dụng (1 người, TP.HCM)",
+            "rating": 4.8,
+            "quote": "Nút sao chép voucher đặt ngay trên đầu trang nên khách từ TikTok bấm qua Shopee lấy mã rất nhanh.",
+            "outcome": "Thiết lập xong toàn bộ link gian hàng và voucher trong 20 phút"
+          }
+        ]
       },
       "deliverable_file": {
         "file_name": "template-bio-link-cua-hang-mini-da-kenh-v1.0.0.json",
@@ -384,7 +594,7 @@
       "industry": "Đa ngành",
       "price_vnd": 250000,
       "demo_url": null,
-      "thumbnail_url": null,
+      "thumbnail_url": "/images/cat-prompt.webp",
       "source_type": "original",
       "license_note": "Tài liệu biên soạn gốc bởi nhóm đề tài, kèm file Notion và PDF tải về.",
       "specs": {
@@ -397,7 +607,28 @@
         ],
         "tech_stack": ["Notion", "Markdown", "PDF"],
         "setup_time_minutes": 10,
-        "guide_summary": "Sao chép các mẫu Quick Reply vào bộ trả lời nhanh của Shopee/Facebook/Zalo để dùng ngay."
+        "guide_summary": "Sao chép các mẫu Quick Reply vào bộ trả lời nhanh của Shopee/Facebook/Zalo để dùng ngay.",
+        "preview_highlights": [
+          "50 mẫu prompt trả lời khách theo tình huống thực tế: hỏi giá, phí ship, kiểm hàng, đổi trả.",
+          "Bộ mẫu Quick Reply rút gọn để dán thẳng vào tin nhắn nhanh Shopee/Facebook/Zalo.",
+          "Kịch bản nhắn tin xin đánh giá 5 sao tự nhiên sau khi giao hàng thành công."
+        ],
+        "case_studies": [
+          {
+            "shop_name": "Phụ Kiện Điện Thoại An Phát",
+            "shop_type": "Shop bán phụ kiện đa sàn (2 người, TP.HCM)",
+            "rating": 4.9,
+            "quote": "Mình copy bộ Quick Reply vào mục trả lời nhanh của Shopee và Fanpage, giờ cao điểm tối một mình vẫn xử lý kịp vài chục tin nhắn.",
+            "outcome": "Giảm thời gian phản hồi trung bình xuống dưới 3 phút trong khung giờ tối"
+          },
+          {
+            "shop_name": "Góc Đồ Bếp Xinh",
+            "shop_type": "Shop đồ gia dụng nhỏ (1 người, Hải Phòng)",
+            "rating": 4.8,
+            "quote": "Mấy mẫu xử lý khi khách chê phí ship cao viết rất khéo, gợi ý khách ghép thêm món nhỏ để được miễn phí vận chuyển hiệu quả hơn hẳn.",
+            "outcome": "Cải thiện tỷ lệ khách đồng ý ghép đơn đủ điều kiện freeship"
+          }
+        ]
       },
       "deliverable_file": {
         "file_name": "prompt-pack-chot-don-da-kenh-v1.0.0.json",
@@ -421,7 +652,7 @@
       "industry": "Đa ngành",
       "price_vnd": 690000,
       "demo_url": null,
-      "thumbnail_url": null,
+      "thumbnail_url": "/images/cat-workflow.webp",
       "source_type": "original",
       "license_note": "Template workflow JSON do nhóm tự xây dựng, kèm hướng dẫn thiết lập từng bước.",
       "specs": {
@@ -434,7 +665,28 @@
         ],
         "tech_stack": ["n8n / Make", "Google Sheets", "Telegram Bot"],
         "setup_time_minutes": 45,
-        "guide_summary": "Import file JSON vào n8n/Make, chọn Google Sheets mẫu và dán Bot Token Telegram để chạy tự động."
+        "guide_summary": "Import file JSON vào n8n/Make, chọn Google Sheets mẫu và dán Bot Token Telegram để chạy tự động.",
+        "preview_highlights": [
+          "File JSON workflow n8n/Make tự động ghi nhận đơn mới từ Webhook về Google Sheets.",
+          "Bảng tính mẫu tự động tính doanh thu theo ngày và trừ tồn kho theo mã SKU.",
+          "Gửi thông báo ngay về Telegram khi có đơn mới hoặc mặt hàng sắp chạm ngưỡng hết kho."
+        ],
+        "case_studies": [
+          {
+            "shop_name": "Kho Phụ Kiện Bàn Làm Việc",
+            "shop_type": "Shop đồ công nghệ nhỏ (3 người, Hà Nội)",
+            "rating": 5,
+            "quote": "Trước đây cuối ngày mới cộng sổ đơn nên hay bị bán lố mấy mã ít hàng. Từ khi gắn cảnh báo Telegram khi tồn kho dưới 5 cái, không còn bị báo hết hàng cho khách sau khi đã chốt.",
+            "outcome": "Loại bỏ hoàn toàn lỗi hết hàng đột xuất và tiết kiệm 1 giờ tổng kết sổ mỗi tối"
+          },
+          {
+            "shop_name": "Tiệm Nến Thơm Mùa Hè",
+            "shop_type": "Xưởng thủ công nhỏ (2 người, Đà Nẵng)",
+            "rating": 4.9,
+            "quote": "Không cần mua phần mềm bán hàng hàng tháng, chỉ dùng Google Sheets miễn phí kết hợp workflow này là theo dõi đủ doanh thu và nguyên liệu.",
+            "outcome": "Vận hành tự động trên Google Sheets với chi phí duy trì 0 đồng mỗi tháng"
+          }
+        ]
       },
       "deliverable_file": {
         "file_name": "workflow-dong-bo-don-hang-google-sheet-v1.0.0.json",

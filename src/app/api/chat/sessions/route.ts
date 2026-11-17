@@ -12,7 +12,7 @@ export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
     const rawQuery = {
-      assignment_id: searchParams.get('assignment_id') || '',
+      assignment_id: searchParams.get('assignment_id') || undefined,
       visitor_id: searchParams.get('visitor_id') || undefined,
       scenario_run_id: searchParams.get('scenario_run_id') || undefined,
     };

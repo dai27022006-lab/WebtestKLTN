@@ -6,12 +6,14 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react';
 
 import type { EventName, EventVariant } from '@/lib/tracking/events';
 import {
   completeScenario,
+  exitExperimentSession,
   getNextScenario,
   submitExperimentConsent,
   trackEventSafe,
@@ -106,11 +108,13 @@ export function ExperimentProvider({
   const [isScenarioSynced, setIsScenarioSynced] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const sessionVersionRef = useRef(0);
 
   useEffect(() => {
     let active = true;
+    const mountSessionVersion = sessionVersionRef.current;
     void Promise.resolve().then(async () => {
-      if (!active) return;
+      if (!active || mountSessionVersion !== sessionVersionRef.current) return;
       const vid = readStoredVisitorId();
       const storedAssignment = readStoredAssignment();
       setVisitorId(vid);
@@ -122,7 +126,9 @@ export function ExperimentProvider({
       setAssignment(storedAssignment);
       try {
         const nextRes = await getNextScenario(storedAssignment.assignment_id);
-        if (!active) return;
+        if (!active || mountSessionVersion !== sessionVersionRef.current) {
+          return;
+        }
         if (nextRes.ok) {
           setScenarioState(nextRes.data);
           const syncedAssignment: ExperimentAssignmentDto = {
@@ -133,7 +139,7 @@ export function ExperimentProvider({
           writeStoredAssignment(syncedAssignment);
         }
       } finally {
-        if (active) {
+        if (active && mountSessionVersion === sessionVersionRef.current) {
           setIsScenarioSynced(true);
         }
       }
@@ -156,10 +162,14 @@ export function ExperimentProvider({
         setIsScenarioSynced(true);
         return null;
       }
+      const callVersion = sessionVersionRef.current;
       setIsLoading(true);
       setErrorMessage(null);
       try {
         const res = await getNextScenario(targetId);
+        if (callVersion !== sessionVersionRef.current) {
+          return null;
+        }
         if (!res.ok) {
           setErrorMessage(res.error.message);
           return null;
@@ -182,8 +192,10 @@ export function ExperimentProvider({
         }
         return res.data;
       } finally {
-        setIsLoading(false);
-        setIsScenarioSynced(true);
+        if (callVersion === sessionVersionRef.current) {
+          setIsLoading(false);
+          setIsScenarioSynced(true);
+        }
       }
     },
     [assignment]
@@ -194,6 +206,7 @@ export function ExperimentProvider({
       const vid = visitorId || readStoredVisitorId();
       if (!visitorId && vid) setVisitorId(vid);
 
+      const callVersion = sessionVersionRef.current;
       setIsLoading(true);
       setErrorMessage(null);
       const res = await submitExperimentConsent({
@@ -202,6 +215,9 @@ export function ExperimentProvider({
         shop_profile: shopProfile,
         experiment_code: experimentCode,
       });
+      if (callVersion !== sessionVersionRef.current) {
+        return null;
+      }
       setIsLoading(false);
 
       if (!res.ok) {
@@ -296,9 +312,11 @@ export function ExperimentProvider({
   );
 
   const resetSession = useCallback(() => {
+    sessionVersionRef.current += 1;
     setAssignment(null);
     setScenarioState(null);
     setIsScenarioSynced(true);
+    setIsLoading(false);
     setErrorMessage(null);
     if (typeof window !== 'undefined') {
       window.localStorage.removeItem(ASSIGNMENT_STORAGE_KEY);
@@ -306,6 +324,7 @@ export function ExperimentProvider({
       window.localStorage.setItem(VISITOR_STORAGE_KEY, fresh);
       setVisitorId(fresh);
     }
+    void exitExperimentSession().catch(() => undefined);
   }, []);
 
   const value = useMemo<ExperimentContextValue>(

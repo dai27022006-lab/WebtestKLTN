@@ -172,14 +172,18 @@ Mọi Route Handler dưới `src/app/api/**` **bắt buộc** trả về cùng m
 ### 2.6. Trợ lý ảo RAG Gemini (`F7`)
 
 14. **`POST /api/chat`**
-    - **Auth & Role:** Participant đã `consent_given = true` và `active_variant === 'chatbot_on'` (**chặn cứng `403` nếu `chatbot_off`**)
-    - **Request Schema:** `sendChatMessageSchema` (`src/schemas/chat.ts`)
+    - **Auth & Role — 2 chế độ rõ ràng:**
+      - **Storefront Mode (không truyền `assignment_id`):** Public cho mọi khách hàng trên Mặt tiền Cửa hàng — **không** bắt ký consent F11 và **không** tạo bản ghi rác trong `experiment_assignments`/`scenario_runs`/`chat_sessions`. Server lấy danh mục active, gọi `runChatbotStub`, kiểm tra Strict Server-Side Grounding (`is_active = true` và `deleted_at IS NULL`) và trả `SendChatMessageResponse` hợp lệ (`session_id` giữ nguyên nếu có hoặc sinh UUID mới).
+      - **Experiment Mode (có truyền `assignment_id`):** Participant đã `consent_given = true`, khớp `visitor_id` / cookie phiên và `active_variant === 'chatbot_on'` (**chặn cứng `403` nếu `chatbot_off`**); lưu lịch sử vào `chat_sessions` và `chat_messages` trong DB.
+    - **Request Schema:** `sendChatMessageSchema` (`src/schemas/chat.ts`) — `assignment_id` & `visitor_id` optional ở Storefront; khi có `assignment_id` thì bắt buộc kèm `visitor_id` hợp lệ.
     - **Response DTO (`200`):** `ApiResponse<SendChatMessageResponse>` (tất cả `suggested_products` đã được server đối chiếu tồn tại & `is_active = true` trong DB)
     - **Error Codes:** `400 VALIDATION_ERROR`, `403 CHATBOT_DISABLED_FOR_VARIANT`, `404 ASSIGNMENT_NOT_FOUND`, `422 CONSENT_REQUIRED`, `429 RATE_LIMIT_EXCEEDED`, `500 LLM_UPSTREAM_ERROR`
 
 15. **`GET /api/chat/sessions`**
-    - **Auth & Role:** Participant sở hữu `assignment_id` (kiểm tra session token / visitor khớp)
-    - **Request Schema (Query):** `chatSessionsQuerySchema` (`src/schemas/chat.ts`)
+    - **Auth & Role:**
+      - Nếu **không truyền `assignment_id`**: Public — trả ngay `{ sessions: [] }`.
+      - Nếu **có truyền `assignment_id`**: Participant sở hữu `assignment_id` (kiểm tra session cookie / visitor khớp) hoặc `admin`.
+    - **Request Schema (Query):** `chatSessionsQuerySchema` (`src/schemas/chat.ts` — `assignment_id` optional)
     - **Response DTO (`200`):** `ApiResponse<ChatSessionsResponse>`
     - **Error Codes:** `400 VALIDATION_ERROR`, `403 FORBIDDEN`, `404 ASSIGNMENT_NOT_FOUND`
 
@@ -210,6 +214,12 @@ Mọi Route Handler dưới `src/app/api/**` **bắt buộc** trả về cùng m
     - **Request Schema:** `completeScenarioSchema` (`src/schemas/experiment.ts`)
     - **Response DTO (`200`):** `ApiResponse<CompleteScenarioResponse>` (chấm `is_correct` ở server, ghi `completed_at`, tính `duration_seconds`, không trả đáp án đúng khi người tham gia chưa xong toàn bộ thí nghiệm)
     - **Error Codes:** `400 VALIDATION_ERROR`, `404 SCENARIO_NOT_FOUND`, `409 SCENARIO_ALREADY_COMPLETED`
+
+19a. **`POST /api/experiments/exit`**
+    - **Auth & Role:** Public / Session cookie (dùng khi người tham gia bấm Thoát chế độ thí nghiệm để quay về Storefront sạch)
+    - **Request Schema:** Không
+    - **Response DTO (`200`):** `ApiResponse<ExperimentExitResponse>` (`{ exited: true }`, xóa cookie HTTP-only `dsa_experiment`)
+    - **Error Codes:** `500 INTERNAL_ERROR`
 
 ### 2.9. Quản trị (`F9` — P1)
 
@@ -244,6 +254,15 @@ Mọi Route Handler dưới `src/app/api/**` **bắt buộc** trả về cùng m
     - **Response DTO (`200`):**
       - Khi `format=csv`: Trả `text/csv; charset=utf-8` (`Content-Disposition: attachment`, kèm chống CSV Formula Injection) khớp trực tiếp schema đầu vào của `analysis/analyze_experiment.py` và `analysis/cluster_behavior_and_rfm.py`.
       - Khi `format=json`: Trả `ApiResponse<AdminExportJsonResponse>`.
+    - **Error Codes:** `400 VALIDATION_ERROR`, `401 UNAUTHORIZED`, `403 FORBIDDEN`
+
+24. **`GET /api/admin/chat-logs`** *(Nhật ký hội thoại Chatbot ẩn danh cho Admin)*
+    - **Auth & Role:** Authenticated `role === 'admin'`
+    - **Request Schema (Query):** `adminChatLogsQuerySchema` (`src/schemas/chat.ts`):
+      - `include_simulated`: `boolean` (mặc định `false`)
+      - `limit`: `number` (`1..100`, mặc định `30`)
+    - **Quy tắc ẩn danh:** Chỉ trả `participant_code`, không trả `email`, `full_name` hay `user_id`.
+    - **Response DTO (`200`):** `ApiResponse<AdminChatLogItemDto[]>` (mỗi mục gồm `session_id`, `participant_code`, `title`, `created_at`, `is_simulated`, và danh sách `messages` gồm `id`, `role`, `content`, `model_name`, `suggested_products`, `latency_ms`, `tokens_used`, `cost_usd`, `created_at`)
     - **Error Codes:** `400 VALIDATION_ERROR`, `401 UNAUTHORIZED`, `403 FORBIDDEN`
 
 ---
@@ -295,7 +314,16 @@ Mọi Route Handler dưới `src/app/api/**` **bắt buộc** trả về cùng m
 
 ### 3.2. Gemini RAG Chat (`POST /api/chat`)
 
-**Request (`sendChatMessageSchema`):**
+**Request (`sendChatMessageSchema` — Storefront Mode, không cần `assignment_id`):**
+
+```json
+{
+  "visitor_id": "vis_01jcx9m3p9k2q1r5s8t0u4v7",
+  "message": "Shop mình bán mỹ phẩm dưỡng da trên TikTok Shop, ngân sách dưới 1 triệu."
+}
+```
+
+**Request (`sendChatMessageSchema` — Experiment Mode `/experiment`, có `assignment_id`):**
 
 ```json
 {

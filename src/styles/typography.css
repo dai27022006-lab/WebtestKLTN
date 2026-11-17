@@ -23,11 +23,42 @@ body {
   line-height: 1.66;
 }
 
+[data-theme="dark"] .type-body,
+.dg-dark-band .type-body,
+[data-surface="dark"] .type-body {
+  letter-spacing: 0.008em;
+  line-height: 1.7;
+}
+
+[data-theme="dark"] .type-body-sm,
+.dg-dark-band .type-body-sm,
+[data-surface="dark"] .type-body-sm {
+  letter-spacing: 0.008em;
+  line-height: 1.65;
+}
+
+[data-surface="light"] {
+  letter-spacing: var(--tracking-body);
+  line-height: var(--leading-body);
+}
+
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]):not([data-theme="dark"]) body,
   [data-theme="system"] body {
     letter-spacing: 0.008em;
     line-height: 1.66;
+  }
+
+  :root:not([data-theme="light"]):not([data-theme="dark"]) .type-body,
+  [data-theme="system"] .type-body {
+    letter-spacing: 0.008em;
+    line-height: 1.7;
+  }
+
+  :root:not([data-theme="light"]):not([data-theme="dark"]) .type-body-sm,
+  [data-theme="system"] .type-body-sm {
+    letter-spacing: 0.008em;
+    line-height: 1.65;
   }
 }
 
@@ -97,6 +128,7 @@ h3 {
 
 /* Body & Prose Measure (45-75ch) */
 .type-lead {
+  font-family: var(--font-sans);
   font-size: var(--text-body-lg);
   line-height: 1.7;
   color: var(--ink-soft);
@@ -105,6 +137,7 @@ h3 {
 }
 
 .type-body {
+  font-family: var(--font-sans);
   font-size: var(--text-body);
   line-height: var(--leading-body);
   color: var(--ink);
@@ -113,6 +146,7 @@ h3 {
 }
 
 .type-body-sm {
+  font-family: var(--font-sans);
   font-size: var(--text-body-sm);
   line-height: 1.6;
   color: var(--ink-soft);
@@ -120,6 +154,7 @@ h3 {
 }
 
 .type-caption {
+  font-family: var(--font-sans);
   font-size: var(--text-caption);
   line-height: 1.45;
   color: var(--ink-soft);

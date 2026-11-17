@@ -30,9 +30,9 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 const SITE_TITLE =
-  'DreamTeam — Kho Sản Phẩm Số & Trợ Lý Tư Vấn RAG Cho Chủ Shop Nhỏ';
+  'DreamTeam — Cửa Hàng Sản Phẩm Số & Trợ Lý Tư Vấn Cho Chủ Shop Nhỏ';
 const SITE_DESCRIPTION =
-  'Nền tảng sản phẩm số (Template Website, Prompt Pack, Workflow tự động) dành cho chủ shop nhỏ 1–3 người, tích hợp Trợ lý ảo RAG và Thí nghiệm đối chứng A/B.';
+  'Cửa hàng Template Website, Prompt Pack AI và Workflow tự động dành cho chủ shop nhỏ 1–3 người trên Shopee, TikTok Shop và Facebook, kèm Trợ lý tư vấn chọn gói phù hợp.';
 
 export const metadata: Metadata = {
   metadataBase: new URL(getSiteBaseUrl()),

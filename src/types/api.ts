@@ -110,6 +110,14 @@ export interface LogoutResponse {
 // 5. Products (/api/products, /api/products/:id)
 // =============================================================================
 
+export interface ProductCaseStudy {
+  shop_name: string;
+  shop_type: string;
+  rating: number;
+  quote: string;
+  outcome: string;
+}
+
 export interface ProductSpecs {
   target_shop_size?: string;
   platforms?: string[];
@@ -117,6 +125,8 @@ export interface ProductSpecs {
   tech_stack?: string[];
   setup_time_minutes?: number;
   guide_summary?: string;
+  case_studies?: ProductCaseStudy[];
+  preview_highlights?: string[];
   [key: string]: unknown;
 }
 
@@ -303,8 +313,8 @@ export interface SuggestedProductCardDto {
 
 export interface SendChatMessageRequest {
   session_id?: string;
-  assignment_id: string;
-  visitor_id: string;
+  assignment_id?: string;
+  visitor_id?: string;
   scenario_run_id?: string;
   message: string;
   is_simulated?: boolean;
@@ -421,6 +431,10 @@ export interface ScenarioNextResponse {
   is_finished: boolean;
 }
 
+export interface ExperimentExitResponse {
+  exited: boolean;
+}
+
 export interface CompleteScenarioRequest {
   assignment_id: string;
   scenario_run_id: string;
@@ -471,6 +485,32 @@ export interface AdminOrderListQuery {
   include_simulated?: boolean;
   page?: number;
   limit?: number;
+}
+
+export interface AdminChatLogQuery {
+  include_simulated?: boolean;
+  limit?: number;
+}
+
+export interface AdminChatLogMessageDto {
+  id: string;
+  role: ChatRole;
+  content: string;
+  model_name: string | null;
+  suggested_products: SuggestedProductCardDto[];
+  latency_ms: number | null;
+  tokens_used: number | null;
+  cost_usd: number | null;
+  created_at: string;
+}
+
+export interface AdminChatLogItemDto {
+  session_id: string;
+  participant_code: string;
+  title: string | null;
+  created_at: string;
+  is_simulated: boolean;
+  messages: AdminChatLogMessageDto[];
 }
 
 export interface VariantPerformanceSummary {

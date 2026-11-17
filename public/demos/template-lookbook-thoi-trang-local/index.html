@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Demo — Lookbook Thời Trang &amp; Bảng Size</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: system-ui, -apple-system, "Segoe UI", sans-serif; background: #ffffff; color: #0f172a; line-height: 1.5; }
+    .demo-bar { background: #1e293b; color: #f8fafc; font-size: 12px; text-align: center; padding: 6px 12px; }
+    .container { max-width: 1060px; margin: 0 auto; padding: 20px 16px 56px; }
+    .top { display: flex; justify-content: space-between; align-items: center; padding-bottom: 16px; border-bottom: 1px solid #e2e8f0; }
+    .logo { font-weight: 800; letter-spacing: 0.08em; font-size: 16px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin: 24px 0; }
+    .look-card { border: 1px solid #e2e8f0; border-radius: 16px; overflow: hidden; background: #f8fafc; }
+    .look-photo { height: 180px; display: flex; align-items: flex-end; padding: 14px; color: #fff; font-weight: 700; }
+    .look-body { padding: 14px; background: #fff; }
+    .size-box { border: 1px solid #cbd5e1; border-radius: 16px; padding: 20px; background: #f8fafc; margin-top: 24px; }
+    .controls { display: flex; flex-wrap: wrap; gap: 10px; margin: 12px 0; }
+    input[type="number"] { padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 10px; width: 130px; }
+    button { background: #187f65; color: #fff; border: 0; border-radius: 10px; padding: 9px 16px; font-weight: 700; cursor: pointer; }
+    .result { font-weight: 700; color: #187f65; margin-top: 8px; }
+  </style>
+</head>
+<body>
+  <div class="demo-bar">Bản xem thử minh họa (HTML Demo) • Lookbook &amp; Tính Size Tự Động</div>
+  <div class="container">
+    <header class="top">
+      <div class="logo">STUDIO BẮC NAM</div>
+      <span style="font-size:13px;color:#475569;">BST Thu Đông 2026</span>
+    </header>
+    <h1 style="font-size:clamp(24px,4vw,34px);margin:20px 0 6px;">Áo Khoác Linen &amp; Quần Ống Suông Form Chuẩn</h1>
+    <p style="color:#475569;margin:0;">Chọn mẫu mặc thử phối sẵn và đối chiếu size theo chiều cao, cân nặng để hạn chế đổi trả.</p>
+    <div class="grid">
+      <div class="look-card">
+        <div class="look-photo" style="background:linear-gradient(150deg,#334155,#0f172a);">SET 01 • Blazer Linen</div>
+        <div class="look-body"><strong>485.000đ</strong> · Đen / Kem / Rêu</div>
+      </div>
+      <div class="look-card">
+        <div class="look-photo" style="background:linear-gradient(150deg,#187f65,#0d4a3a);">SET 02 • Sơ Mi Oversize</div>
+        <div class="look-body"><strong>340.000đ</strong> · Trắng / Xanh ngọc</div>
+      </div>
+      <div class="look-card">
+        <div class="look-photo" style="background:linear-gradient(150deg,#9a5b00,#451a03);">SET 03 • Váy Midi Xếp Ly</div>
+        <div class="look-body"><strong>420.000đ</strong> · Nâu đất / Be</div>
+      </div>
+    </div>
+    <div class="size-box">
+      <h2 style="margin:0 0 6px;font-size:18px;">Gợi ý Size Nhanh Cho Khách</h2>
+      <div class="controls">
+        <input id="h" type="number" value="162" placeholder="Chiều cao (cm)" />
+        <input id="w" type="number" value="53" placeholder="Cân nặng (kg)" />
+        <button type="button" onclick="calcSize()">Kiểm tra size</button>
+      </div>
+      <div id="size-out" class="result">Size gợi ý: Size M (Form vừa vặn, dài vừa đẹp)</div>
+    </div>
+  </div>
+  <script>
+    function calcSize() {
+      var w = Number(document.getElementById('w').value) || 50;
+      var s = w < 49 ? 'Size S (dưới 49kg)' : w < 57 ? 'Size M (49–56kg)' : w < 65 ? 'Size L (57–64kg)' : 'Size XL (65kg trở lên)';
+      document.getElementById('size-out').textContent = 'Size gợi ý: ' + s;
+    }
+  </script>
+</body>
+</html>

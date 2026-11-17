@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Suspense, useEffect, useRef, useState } from 'react';
 
 import {
@@ -33,7 +33,15 @@ const LIKERT_OPTIONS: Array<{ score: 1 | 2 | 3 | 4 | 5; label: string }> = [
 
 const CHANNELS_LIST = ['TikTok Shop', 'Shopee', 'Facebook', 'Zalo'];
 
+function getTaskGuidanceText(variant: 'chatbot_on' | 'chatbot_off'): string {
+  if (variant === 'chatbot_on') {
+    return 'Gợi ý: Ở nhiệm vụ này, bạn có thể bấm nút Trợ lý tư vấn ở góc dưới bên phải hoặc tự duyệt danh mục sản phẩm.';
+  }
+  return 'Hướng dẫn: Ở nhiệm vụ này, bạn hãy tự tìm kiếm, lọc và so sánh các gói trong danh mục sản phẩm để chọn giải pháp phù hợp nhất.';
+}
+
 function ExperimentWorkspace() {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const preselectedId = searchParams.get('selected_product_id') ?? '';
 
@@ -53,9 +61,9 @@ function ExperimentWorkspace() {
   const [consentTouched, setConsentTouched] = useState(false);
   const [industry, setIndustry] = useState('Mỹ phẩm');
   const [teamSize, setTeamSize] = useState('2');
-  const [roleInStudy, setRoleInStudy] = useState<'shop_owner' | 'student_roleplay'>(
-    'shop_owner'
-  );
+  const [roleInStudy, setRoleInStudy] = useState<
+    'shop_owner' | 'student_roleplay'
+  >('shop_owner');
   const [selectedChannels, setSelectedChannels] = useState<string[]>([
     'TikTok Shop',
     'Shopee',
@@ -63,9 +71,9 @@ function ExperimentWorkspace() {
 
   const [products, setProducts] = useState<ProductSummaryDto[]>([]);
   const [selectedProductId, setSelectedProductId] = useState<string>('');
-  const [confidenceScore, setConfidenceScore] = useState<1 | 2 | 3 | 4 | 5 | null>(
-    null
-  );
+  const [confidenceScore, setConfidenceScore] = useState<
+    1 | 2 | 3 | 4 | 5 | null
+  >(null);
   const [decisionNote, setDecisionNote] = useState('');
   const [localError, setLocalError] = useState<string | null>(null);
   const [completedStepBanner, setCompletedStepBanner] =
@@ -75,7 +83,9 @@ function ExperimentWorkspace() {
 
   const activeScenarioRunId = scenarioState?.scenario_run_id ?? null;
   const elapsedSeconds = useElapsedTimer(
-    scenarioState && !scenarioState.is_finished ? scenarioState.started_at : null
+    scenarioState && !scenarioState.is_finished
+      ? scenarioState.started_at
+      : null
   );
 
   useEffect(() => {
@@ -115,6 +125,11 @@ function ExperimentWorkspace() {
     });
   }, [assignment, activeScenarioRunId, scenarioState, track]);
 
+  const handleExitSurvey = () => {
+    resetSession();
+    router.push('/');
+  };
+
   const toggleChannel = (channel: string) => {
     setSelectedChannels((prev) =>
       prev.includes(channel)
@@ -141,7 +156,7 @@ function ExperimentWorkspace() {
     setLocalError(null);
 
     if (!selectedProductId) {
-      setLocalError('Vui lòng chọn 1 gói sản phẩm phù hợp với thẻ kịch bản.');
+      setLocalError('Vui lòng chọn 1 gói sản phẩm phù hợp với nhiệm vụ này.');
       return;
     }
     if (!confidenceScore) {
@@ -167,44 +182,53 @@ function ExperimentWorkspace() {
     }
   };
 
-  // Phase 1: Consent screen
+  // Phase 1: Consent screen (Zero variant / code leak)
   if (!assignment || !assignment.consent_given) {
     return (
       <section className="section section--compact">
         <div className="container experiment-shell">
-          {/* Dark Emerald Briefing Header */}
           <div className="dg-exec-banner dg-dark-band">
             <div className="dg-exec-banner-grid" aria-hidden="true" />
             <div className="dg-exec-banner-content">
               <div className="dg-exec-pills">
                 <span className="dg-exec-pill">
                   <span className="dg-dot" />
-                  <span>Within-subject AB/BA</span>
+                  <span>Khảo sát trải nghiệm chọn gói</span>
                 </span>
-                <span className="dg-exec-pill">~5 phút • Miễn tạo tài khoản</span>
+                <span className="dg-exec-pill">~5 phút • Không cần tài khoản</span>
               </div>
               <h1 style={{ color: '#ffffff', margin: '8px 0 6px' }}>
-                Thí nghiệm A/B Đánh giá Trợ lý Ảo DreamTeam (F11)
+                Khảo Sát Trải Nghiệm Chọn Giải Pháp DreamTeam
               </h1>
-              <p style={{ color: 'rgba(255,255,255,0.78)', margin: 0, maxWidth: '60ch' }}>
-                Bạn sẽ thực hiện lần lượt 2 thẻ kịch bản mô phỏng chủ shop nhỏ
-                chọn gói công cụ số: 1 lượt có trợ lý ảo tư vấn và 1 lượt tự
-                duyệt danh mục (thứ tự đảo ngẫu nhiên).
+              <p
+                style={{
+                  color: 'rgba(255,255,255,0.8)',
+                  margin: 0,
+                  maxWidth: '60ch',
+                }}
+              >
+                Bạn sẽ thực hiện lần lượt 2 tình huống mô phỏng chủ shop nhỏ tìm
+                gói sản phẩm phù hợp với ngành hàng và ngân sách mục tiêu, giúp
+                nhóm hoàn thiện trải nghiệm tư vấn trên cửa hàng.
               </p>
             </div>
           </div>
 
-          <div className="surface-card dg-panel" style={{ display: 'grid', gap: '20px' }}>
+          <div
+            className="surface-card dg-panel"
+            style={{ display: 'grid', gap: '20px' }}
+          >
             <div className="callout callout--info">
-              <strong style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+              <strong
+                style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+              >
                 <ShieldCheck size={16} />
-                <span>Cam kết ẩn danh &amp; đạo đức nghiên cứu</span>
+                <span>Cam kết ẩn danh &amp; bảo mật thông tin</span>
               </strong>
               <span>
                 Không yêu cầu đăng ký email hay thông tin cá nhân. Hệ thống chỉ
-                gắn log hội thoại và sự kiện thao tác với mã phiên ngẫu nhiên (
-                <code className="type-mono">participant_code</code>) phục vụ phân
-                tích thống kê đồ án tốt nghiệp.
+                ghi nhận ẩn danh lựa chọn gói, thời gian thao tác và mức độ tự
+                tin (1–5) để đánh giá trải nghiệm người dùng.
               </span>
             </div>
 
@@ -270,7 +294,7 @@ function ExperimentWorkspace() {
                   >
                     <option value="shop_owner">Chủ shop / Người bán thật</option>
                     <option value="student_roleplay">
-                      Sinh viên nhập vai tình huống
+                      Người dùng trải nghiệm tình huống
                     </option>
                   </select>
                 </div>
@@ -316,9 +340,9 @@ function ExperimentWorkspace() {
                     style={{ width: '20px', height: '20px', marginTop: '2px' }}
                   />
                   <span className="type-body-sm" style={{ color: 'var(--ink)' }}>
-                    <strong>Tôi đồng ý tham gia thí nghiệm nghiên cứu</strong>{' '}
-                    và cho phép hệ thống ghi nhận thời gian chọn gói, độ tự tin
-                    (1–5) cùng log hội thoại ẩn danh.
+                    <strong>Tôi đồng ý tham gia khảo sát trải nghiệm</strong> và
+                    cho phép hệ thống ghi nhận thời gian chọn gói, mức độ tự tin
+                    (1–5) cùng các thao tác ẩn danh trong phiên này.
                   </span>
                 </label>
                 {consentTouched && !consentChecked && (
@@ -340,19 +364,35 @@ function ExperimentWorkspace() {
                 </div>
               )}
 
-              <button
-                type="submit"
-                className="dg-btn-purchase btn--block"
-                style={{ justifyContent: 'center', minHeight: '50px' }}
-                disabled={isLoading}
+              <div
+                style={{
+                  display: 'flex',
+                  flexWrap: 'wrap',
+                  gap: '12px',
+                  alignItems: 'center',
+                }}
               >
-                <span>
-                  {isLoading
-                    ? 'Đang khởi tạo mã phiên...'
-                    : 'Xác nhận & Nhận thẻ kịch bản đầu tiên'}
-                </span>
-                <ArrowRight size={16} />
-              </button>
+                <button
+                  type="submit"
+                  className="dg-btn-purchase"
+                  style={{ flex: '1 1 260px', justifyContent: 'center', minHeight: '50px' }}
+                  disabled={isLoading}
+                >
+                  <span>
+                    {isLoading
+                      ? 'Đang chuẩn bị nhiệm vụ...'
+                      : 'Xác nhận & Bắt đầu nhiệm vụ đầu tiên'}
+                  </span>
+                  <ArrowRight size={16} />
+                </button>
+                <button
+                  type="button"
+                  className="btn btn--ghost"
+                  onClick={handleExitSurvey}
+                >
+                  Thoát khảo sát
+                </button>
+              </div>
             </form>
           </div>
         </div>
@@ -360,34 +400,38 @@ function ExperimentWorkspace() {
     );
   }
 
-  // Phase 4 (Finished): Debrief & Completion Card
+  // Phase 4 (Finished): Debrief & Completion Card (participant_code shown ONLY here)
   if (scenarioState?.is_finished) {
     return (
       <section className="section section--compact">
         <div className="container experiment-shell">
-          <div className="surface-card dg-panel" style={{ display: 'grid', gap: '20px' }}>
+          <div
+            className="surface-card dg-panel"
+            style={{ display: 'grid', gap: '20px' }}
+          >
             <span className="badge badge--success" style={{ width: 'fit-content' }}>
               <CheckCircle2 size={14} />
-              <span>Hoàn tất toàn bộ kịch bản thí nghiệm</span>
+              <span>Hoàn tất toàn bộ 2 nhiệm vụ</span>
             </span>
             <h1 className="type-h1" style={{ margin: 0 }}>
-              Cảm ơn bạn đã hoàn thành thí nghiệm F11!
+              Cảm ơn bạn đã hoàn thành khảo sát trải nghiệm!
             </h1>
             <p className="type-body" style={{ margin: 0 }}>
-              Kết quả chọn gói, thời gian quyết định và độ tự tin của bạn đã
-              được lưu an toàn dưới mã tham gia{' '}
-              <strong className="type-mono">{assignment.participant_code}</strong>.
+              Kết quả chọn gói, thời gian thực hiện và mức độ tự tin của bạn đã
+              được lưu an toàn để nhóm cải thiện trải nghiệm cửa hàng DreamTeam.
             </p>
 
             <div className="callout callout--info">
-              <strong>Tóm tắt phiên vừa thực hiện</strong>
+              <strong>Tóm tắt phiên đã hoàn thành</strong>
               <span>
-                Số lượt đã hoàn thành:{' '}
+                Số nhiệm vụ đã hoàn thành:{' '}
                 <strong className="type-mono">
                   {scenarioState.step_order}/{scenarioState.total_steps}
                 </strong>{' '}
-                • Thứ tự nhánh:{' '}
-                <code className="type-mono">{assignment.variant}</code>
+                • Mã phiên đối chiếu:{' '}
+                <strong className="type-mono">
+                  {assignment.participant_code}
+                </strong>
               </span>
             </div>
 
@@ -402,9 +446,9 @@ function ExperimentWorkspace() {
               <button
                 type="button"
                 className="btn btn--ghost"
-                onClick={resetSession}
+                onClick={handleExitSurvey}
               >
-                Tạo phiên thí nghiệm mới (Reset)
+                Thoát khảo sát
               </button>
             </div>
           </div>
@@ -413,42 +457,46 @@ function ExperimentWorkspace() {
     );
   }
 
-  // Intermediate Crossover Transition Banner after completing step 1
+  // Intermediate transition screen after completing step 1 (Anti-bias: neutral transition)
   if (completedStepBanner && scenarioState?.scenario) {
     return (
       <section className="section section--compact">
         <div className="container experiment-shell">
-          <div className="surface-card dg-panel" style={{ display: 'grid', gap: '20px' }}>
+          <div
+            className="surface-card dg-panel"
+            style={{ display: 'grid', gap: '20px' }}
+          >
             <span className="badge badge--success" style={{ width: 'fit-content' }}>
               <CheckCircle2 size={14} />
               <span>
-                Hoàn thành Lượt {completedStepBanner.step_order} trong{' '}
+                Hoàn thành Nhiệm vụ {completedStepBanner.step_order} trong{' '}
                 {formatDurationMmSs(completedStepBanner.duration_seconds)}
               </span>
             </span>
             <h1 className="type-h2" style={{ margin: 0 }}>
-              Sẵn sàng chuyển sang Lượt {scenarioState.step_order}/
-              {scenarioState.total_steps} (Đảo điều kiện AB/BA)
+              Sẵn sàng chuyển sang Nhiệm vụ {scenarioState.step_order}/
+              {scenarioState.total_steps}
             </h1>
             <p className="type-body" style={{ margin: 0 }}>
-              Theo thiết kế đối chứng chéo Within-subject, lượt tiếp theo của
-              bạn sẽ chuyển sang trạng thái:{' '}
-              <strong>
-                {scenarioState.active_variant === 'chatbot_on'
-                  ? 'CÓ Trợ lý ảo tư vấn'
-                  : 'KHÔNG có Trợ lý ảo (Tự duyệt danh mục)'}
-              </strong>
-              .
+              {getTaskGuidanceText(scenarioState.active_variant)}
             </p>
-            <button
-              type="button"
-              className="dg-btn-purchase"
-              style={{ width: 'fit-content' }}
-              onClick={() => setCompletedStepBanner(null)}
-            >
-              <span>Mở thẻ kịch bản tiếp theo</span>
-              <ArrowRight size={15} />
-            </button>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px' }}>
+              <button
+                type="button"
+                className="dg-btn-purchase"
+                onClick={() => setCompletedStepBanner(null)}
+              >
+                <span>Mở nhiệm vụ tiếp theo</span>
+                <ArrowRight size={15} />
+              </button>
+              <button
+                type="button"
+                className="btn btn--ghost"
+                onClick={handleExitSurvey}
+              >
+                Thoát khảo sát
+              </button>
+            </div>
           </div>
         </div>
       </section>
@@ -461,12 +509,8 @@ function ExperimentWorkspace() {
   return (
     <section className="section section--compact">
       <div className="container experiment-shell">
-        {/* AB/BA Condition Banner */}
-        <div
-          className={`callout ${
-            activeVariant === 'chatbot_on' ? 'callout--success' : 'callout--info'
-          }`}
-        >
+        {/* Natural Task Guidance Banner (Zero bias / zero control-group leak) */}
+        <div className="callout callout--info">
           <div
             style={{
               display: 'flex',
@@ -477,18 +521,21 @@ function ExperimentWorkspace() {
             }}
           >
             <div>
-              <strong style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+              <strong
+                style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+              >
                 <Layers size={15} />
                 <span>
                   {activeVariant === 'chatbot_on'
-                    ? 'Lượt này BẬT Trợ lý ảo Tư vấn (chatbot_on)'
-                    : 'Lượt này TẮT Trợ lý ảo — Đối chứng (chatbot_off)'}
+                    ? 'Gợi ý thực hiện nhiệm vụ'
+                    : 'Hướng dẫn thực hiện nhiệm vụ'}
                 </span>
               </strong>
-              <div className="type-body-sm" style={{ color: 'inherit', marginTop: '4px' }}>
-                {activeVariant === 'chatbot_on'
-                  ? 'Bạn có thể mở Trợ lý ảo để hỏi tư vấn theo ngành và ngân sách, hoặc duyệt danh mục.'
-                  : 'Ở lượt này, bạn vui lòng tự tìm kiếm và lọc trong danh mục sản phẩm để chọn gói phù hợp nhất.'}
+              <div
+                className="type-body-sm"
+                style={{ color: 'inherit', marginTop: '4px' }}
+              >
+                {getTaskGuidanceText(activeVariant)}
               </div>
             </div>
 
@@ -499,15 +546,18 @@ function ExperimentWorkspace() {
                 onClick={() => window.dispatchEvent(new Event('dsa:open-chat'))}
               >
                 <Sparkles size={14} />
-                <span>Mở Trợ lý ảo ngay</span>
+                <span>Mở Trợ lý tư vấn</span>
               </button>
             )}
           </div>
         </div>
 
-        {/* Phase 2: Scenario Card & Live Tabular Timer */}
+        {/* Phase 2: Task Card & Live Tabular Timer (Zero scenario.code or P-code) */}
         {scenario ? (
-          <div className="surface-card dg-panel" style={{ display: 'grid', gap: '16px' }}>
+          <div
+            className="surface-card dg-panel"
+            style={{ display: 'grid', gap: '16px' }}
+          >
             <div
               style={{
                 display: 'flex',
@@ -518,19 +568,16 @@ function ExperimentWorkspace() {
               }}
             >
               <div className="chip-row">
-                <span className="badge badge--accent type-mono">
-                  {scenario.code}
+                <span className="badge badge--accent">
+                  Nhiệm vụ {scenarioState.step_order}/{scenarioState.total_steps}
                 </span>
                 <span className="badge">
-                  Lượt {scenarioState.step_order}/{scenarioState.total_steps}
-                </span>
-                <span className="badge">
-                  {DIFFICULTY_LABELS[scenario.difficulty]}
+                  Mức độ: {DIFFICULTY_LABELS[scenario.difficulty]}
                 </span>
               </div>
 
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <span className="type-caption">Thời gian làm bài:</span>
+                <span className="type-caption">Thời gian thực hiện:</span>
                 <span
                   className="badge badge--accent type-timer"
                   style={{ fontSize: '0.95rem', paddingInline: '12px' }}
@@ -555,17 +602,31 @@ function ExperimentWorkspace() {
               </span>
             </div>
 
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', paddingTop: '8px' }}>
+            <div
+              style={{
+                display: 'flex',
+                flexWrap: 'wrap',
+                gap: '12px',
+                paddingTop: '8px',
+              }}
+            >
               <Link href="/products" className="btn btn--secondary">
-                <span>Mở Danh mục sản phẩm (/products) để tìm &amp; lọc</span>
+                <span>Mở Danh mục sản phẩm để tìm &amp; lọc</span>
                 <ArrowRight size={15} />
               </Link>
+              <button
+                type="button"
+                className="btn btn--ghost"
+                onClick={handleExitSurvey}
+              >
+                Thoát khảo sát
+              </button>
             </div>
           </div>
         ) : (
           <div className="surface-card dg-panel">
             <p className="type-body-sm" style={{ margin: 0 }}>
-              Đang tải thẻ kịch bản từ hệ thống...
+              Đang tải thông tin nhiệm vụ...
             </p>
           </div>
         )}
@@ -578,7 +639,7 @@ function ExperimentWorkspace() {
             style={{ display: 'grid', gap: '20px' }}
           >
             <div>
-              <span className="type-eyebrow">Chốt quyết định (Pha 3)</span>
+              <span className="type-eyebrow">Chốt lựa chọn của bạn</span>
               <h2 className="type-h3" style={{ margin: '4px 0 0' }}>
                 Chọn gói sản phẩm &amp; Chấm độ tự tin
               </h2>
@@ -586,7 +647,7 @@ function ExperimentWorkspace() {
 
             <div className="field">
               <label htmlFor="exp-product-select" className="field__label">
-                Gói sản phẩm bạn chọn cho kịch bản này
+                Gói sản phẩm bạn chọn cho nhiệm vụ này
               </label>
               <select
                 id="exp-product-select"
@@ -595,7 +656,7 @@ function ExperimentWorkspace() {
                 onChange={(e) => setSelectedProductId(e.target.value)}
               >
                 <option value="">
-                  -- Chọn 1 gói trong danh mục (hoặc chọn từ /products) --
+                  -- Chọn 1 gói trong danh mục (hoặc chọn từ trang Sản phẩm) --
                 </option>
                 {products.map((p) => (
                   <option key={p.id} value={p.id}>
@@ -610,7 +671,10 @@ function ExperimentWorkspace() {
                   <strong>{selectedProductObj.name}</strong>
                   <span className="type-body-sm">
                     {selectedProductObj.short_description} •{' '}
-                    <strong className="type-price" style={{ color: 'var(--accent)' }}>
+                    <strong
+                      className="type-price"
+                      style={{ color: 'var(--accent)' }}
+                    >
                       {formatVnd(selectedProductObj.price_vnd)}
                     </strong>
                   </span>
@@ -620,7 +684,8 @@ function ExperimentWorkspace() {
 
             <div className="field">
               <span className="field__label">
-                Bạn tự tin mức nào rằng gói này phù hợp nhất với đề bài? (1–5)
+                Bạn tự tin mức nào rằng gói này phù hợp nhất với nhu cầu trên?
+                (1–5)
               </span>
               <div
                 className="likert-scale"
@@ -635,7 +700,10 @@ function ExperimentWorkspace() {
                     aria-pressed={confidenceScore === opt.score}
                     onClick={() => setConfidenceScore(opt.score)}
                   >
-                    <strong className="type-mono" style={{ fontSize: '1.125rem' }}>
+                    <strong
+                      className="type-mono"
+                      style={{ fontSize: '1.125rem' }}
+                    >
                       {opt.score}
                     </strong>
                     <span style={{ fontSize: '0.72rem', textAlign: 'center' }}>
@@ -676,8 +744,8 @@ function ExperimentWorkspace() {
               <CheckCircle2 size={16} />
               <span>
                 {isLoading
-                  ? 'Đang ghi nhận kết quả...'
-                  : 'Xác nhận hoàn thành kịch bản'}
+                  ? 'Đang lưu kết quả...'
+                  : 'Xác nhận hoàn thành nhiệm vụ'}
               </span>
             </button>
           </form>

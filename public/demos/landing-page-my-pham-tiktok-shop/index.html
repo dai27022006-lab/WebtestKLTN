@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Demo — Landing Page Mỹ Phẩm Chuẩn TikTok Shop</title>
+  <style>
+    :root { --bg: #fafaf9; --ink: #1c1917; --muted: #57534e; --accent: #0f766e; --accent-soft: #ccfbf1; --card: #ffffff; --border: #e7e5e4; }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: system-ui, -apple-system, "Segoe UI", sans-serif; background: var(--bg); color: var(--ink); line-height: 1.55; }
+    .demo-banner { background: #0f172a; color: #e2e8f0; text-align: center; font-size: 12px; padding: 6px 12px; }
+    .wrap { max-width: 1040px; margin: 0 auto; padding: 20px 16px 56px; }
+    .nav { display: flex; justify-content: space-between; align-items: center; padding: 12px 0 20px; border-bottom: 1px solid var(--border); gap: 12px; }
+    .brand { font-weight: 800; font-size: 18px; letter-spacing: -0.02em; }
+    .cta-top { background: var(--accent); color: #fff; border: 0; border-radius: 999px; padding: 9px 16px; font-weight: 600; font-size: 13px; cursor: pointer; }
+    .hero { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 28px; align-items: center; padding: 28px 0; }
+    .pill { display: inline-block; background: var(--accent-soft); color: var(--accent); padding: 4px 12px; border-radius: 999px; font-size: 12px; font-weight: 700; }
+    h1 { font-size: clamp(26px, 4vw, 38px); line-height: 1.18; margin: 12px 0; letter-spacing: -0.02em; }
+    .sub { color: var(--muted); font-size: 15px; margin: 0 0 18px; }
+    .price-row { display: flex; align-items: baseline; gap: 10px; margin-bottom: 18px; }
+    .price { font-size: 26px; font-weight: 800; color: var(--accent); }
+    .old { text-decoration: line-through; color: #a8a29e; font-size: 15px; }
+    .btn-group { display: flex; flex-wrap: wrap; gap: 10px; }
+    .btn-primary { background: var(--accent); color: #fff; border: 0; border-radius: 12px; padding: 12px 20px; font-weight: 700; cursor: pointer; }
+    .btn-outline { background: transparent; color: var(--ink); border: 1px solid var(--border); border-radius: 12px; padding: 12px 18px; font-weight: 600; cursor: pointer; }
+    .product-stage { background: linear-gradient(145deg, #f0fdfa, #ffffff); border: 1px solid var(--border); border-radius: 20px; padding: 24px; display: grid; gap: 14px; }
+    .bottle-box { height: 220px; border-radius: 14px; background: linear-gradient(160deg, #115e59, #2dd4bf); display: grid; place-items: center; color: #fff; font-weight: 700; letter-spacing: 0.04em; text-align: center; padding: 16px; }
+    .specs { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 14px; margin-top: 24px; }
+    .card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 16px; }
+    .card h3 { margin: 0 0 6px; font-size: 15px; }
+    .card p { margin: 0; font-size: 13px; color: var(--muted); }
+    .toast { position: fixed; bottom: 16px; right: 16px; background: #0f172a; color: #fff; padding: 10px 16px; border-radius: 10px; font-size: 13px; display: none; }
+    .toast.show { display: block; }
+  </style>
+</head>
+<body>
+  <div class="demo-banner">Bản xem thử minh họa (HTML Demo) • Tương thích Desktop &amp; Mobile 375px</div>
+  <div class="wrap">
+    <header class="nav">
+      <div class="brand">LUMI SKIN • Dưỡng Ẩm Dịu Nhẹ</div>
+      <button class="cta-top" onclick="showToast('Đã cuộn đến khu vực đặt hàng TikTok Shop')">Chốt đơn nhanh</button>
+    </header>
+    <section class="hero">
+      <div>
+        <span class="pill">Số công bố: 1842/25/CBMP • Dịu nhẹ hằng ngày</span>
+        <h1>Serum Cấp Ẩm B5 &amp; Ceramide Phục Hồi Hàng Rào Da</h1>
+        <p class="sub">Công thức không hương liệu, thẩm thấu nhanh trong 15 giây, hỗ trợ giữ ẩm bề mặt da suốt 24 giờ cho thời tiết nóng ẩm.</p>
+        <div class="price-row">
+          <span class="price">289.000đ</span>
+          <span class="old">360.000đ</span>
+        </div>
+        <div class="btn-group">
+          <button class="btn-primary" onclick="showToast('Mô phỏng: Mở giỏ hàng TikTok Shop')">Mua qua TikTok Shop</button>
+          <button class="btn-outline" onclick="showToast('Mô phỏng: Chuyển sang Shopee Mall')">Xem trên Shopee</button>
+        </div>
+      </div>
+      <div class="product-stage">
+        <div class="bottle-box">LUMI B5 HYDRA SERUM<br/><small style="opacity:.85;font-weight:500;">30ml • Dành cho da nhạy cảm</small></div>
+        <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--muted);">
+          <span>Kiểm nghiệm pH 5.5</span>
+          <span>Giao nhanh 2H nội thành</span>
+        </div>
+      </div>
+    </section>
+    <section class="specs">
+      <div class="card"><h3>Bảng thành phần minh bạch</h3><p>Vitamin B5 (5%), Hyaluronic Acid đa phân tử, Ceramide NP hỗ trợ làm mềm bề mặt da.</p></div>
+      <div class="card"><h3>Chuẩn chính sách sàn</h3><p>Câu chữ mô tả công dụng chăm sóc da hằng ngày, tránh các từ ngữ cam kết điều trị y khoa.</p></div>
+      <div class="card"><h3>Chống bùng hàng &amp; đổi trả</h3><p>Kèm checklist hướng dẫn test thử vùng da nhỏ và phiếu bảo hành niêm phong hộp.</p></div>
+    </section>
+  </div>
+  <div class="toast" id="toast"></div>
+  <script>
+    function showToast(msg) {
+      var el = document.getElementById('toast');
+      el.textContent = msg;
+      el.classList.add('show');
+      setTimeout(function() { el.classList.remove('show'); }, 2200);
+    }
+  </script>
+</body>
+</html>

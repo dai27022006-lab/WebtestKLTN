@@ -6,14 +6,10 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   ArrowRight,
   ArrowUpRight,
-  BarChart3,
   Building2,
   CheckCircle2,
-  ChevronDown,
   ChevronLeft,
   ChevronRight,
-  Cpu,
-  Database,
   Download,
   Expand,
   FileCode2,
@@ -28,6 +24,7 @@ import {
   Plus,
   Quote,
   Rocket,
+  Search,
   ShieldCheck,
   ShoppingBag,
   Smartphone,
@@ -44,30 +41,48 @@ import {
 import {
   CtaPreviewMockup,
   HeroVisualStack,
-  type InnerScreenKey,
   InnerPageVisual,
+  type InnerScreenKey,
 } from '@/components/visual/DreamTeamMockups';
 import { ProductPlaceholderFrame } from '@/components/visual/ProductPlaceholderFrame';
 import { initScrollReveals } from '@/motion/reveal';
 import { useCountUp } from '@/motion/useCountUp';
+import { useSpecularSpotlight } from '@/motion/useSpecularSpotlight';
 import { useTypewriter } from '@/motion/useTypewriter';
 import { listProducts } from '@/services';
-import { useExperiment } from '@/state';
+import { useCart, useExperiment } from '@/state';
 import type { ProductSummaryDto, ProductType } from '@/types/api';
 
 const TYPEWRITER_WORDS = [
   'Web Bán Hàng',
   'Prompt Chốt Đơn',
   'Workflow Tự Động',
-  'Phễu Chuyển Đổi',
-  'Trợ Lý Tư Vấn',
+  'Trang Lookbook',
+  'Kịch Bản Bán Hàng',
 ] as const;
 
-const CATEGORY_CARDS = [
+const DEFAULT_THUMBNAIL_BY_TYPE: Record<ProductType, string> = {
+  template: '/images/cat-template.webp',
+  prompt_pack: '/images/cat-prompt.webp',
+  workflow: '/images/cat-workflow.webp',
+};
+
+const CATEGORY_CARDS: Array<{
+  title: string;
+  href: string;
+  cta: string;
+  image?: string;
+  imageAlt?: string;
+  icon: typeof LayoutDashboard;
+  grad: string;
+}> = [
   {
     title: 'Template Website',
     href: '/products?product_type=template',
     cta: 'Xem mẫu web',
+    image: '/images/cat-template.webp',
+    imageAlt:
+      'Laptop hiển thị cấu trúc bố cục giao diện website bán hàng tối giản',
     icon: LayoutDashboard,
     grad: 'dg-grad-1',
   },
@@ -75,6 +90,8 @@ const CATEGORY_CARDS = [
     title: 'Prompt Pack AI',
     href: '/products?product_type=prompt_pack',
     cta: 'Xem bộ prompt',
+    image: '/images/cat-prompt.webp',
+    imageAlt: 'Sổ tay và bộ thẻ biên tập tối giản đại diện cho bộ prompt bán hàng',
     icon: Sparkles,
     grad: 'dg-grad-2',
   },
@@ -82,6 +99,9 @@ const CATEGORY_CARDS = [
     title: 'Workflow Tự Động',
     href: '/products?product_type=workflow',
     cta: 'Xem luồng mẫu',
+    image: '/images/cat-workflow.webp',
+    imageAlt:
+      'Các khối mô-đun kết nối tối giản minh họa quy trình tự động hóa đơn hàng',
     icon: Zap,
     grad: 'dg-grad-3',
   },
@@ -106,7 +126,7 @@ const CATEGORY_CARDS = [
     icon: Rocket,
     grad: 'dg-grad-6',
   },
-] as const;
+];
 
 const SHOWCASE_TABS: Array<{ value: '' | ProductType; label: string }> = [
   { value: '', label: 'Tất cả giải pháp' },
@@ -115,73 +135,73 @@ const SHOWCASE_TABS: Array<{ value: '' | ProductType; label: string }> = [
   { value: 'workflow', label: 'Workflow Tự Động' },
 ];
 
-const CORE_FEATURES = [
+const SHOP_BENEFITS = [
   {
-    title: 'Trợ lý RAG Gemini (F7)',
-    desc: 'Gợi ý gói số dựa trên pgvector và đối chiếu 100% ID thật từ DB, từ chối trả lời khi thiếu dữ liệu.',
+    title: 'Tư vấn chọn gói theo ngân sách',
+    desc: 'Trợ lý tư vấn lọc đúng gói theo ngành hàng, kênh bán và mức ngân sách dự kiến của shop.',
     icon: MessageSquare,
     grad: 'dg-grad-1',
   },
   {
-    title: 'Phân nhánh AB/BA (F8)',
-    desc: 'Thiết kế Within-subject đảo chéo giữa lượt có trợ lý ảo và lượt tự tìm kiếm để khử hiệu ứng quen tay.',
-    icon: Layers,
+    title: 'Xem thử giao diện sống 1280px ↔ 375px',
+    desc: 'Kiểm tra trực tiếp bố cục thật trên cả màn hình máy tính và điện thoại ngay tại trang sản phẩm.',
+    icon: Smartphone,
     grad: 'dg-grad-2',
   },
   {
-    title: 'Thẻ kịch bản F11',
-    desc: 'Giao đề bài kinh doanh thực tế, bấm giờ tự động theo tabular-nums và thu điểm tự tin Likert 1–5.',
-    icon: Timer,
+    title: 'Minh bạch bản quyền 3 cấp',
+    desc: 'Mỗi gói đều ghi rõ phân loại thiết kế gốc, điều chỉnh có nguồn hoặc bản quyền hợp lệ.',
+    icon: ShieldCheck,
     grad: 'dg-grad-3',
   },
   {
-    title: 'Minh bạch bản quyền (F3)',
-    desc: 'Công khai 3 phân loại nguồn gốc original, adapted, licensed kèm giấy phép chi tiết trên từng gói.',
-    icon: ShieldCheck,
+    title: 'Đặt hàng thử nghiệm không rủi ro',
+    desc: 'Kiểm tra trọn vẹn quy trình giỏ hàng, tạo đơn và bàn giao file ở chế độ thử nghiệm miễn phí.',
+    icon: Lock,
     grad: 'dg-grad-4',
   },
   {
-    title: 'Thanh toán Sandbox (F5)',
-    desc: 'Mock Webhook HMAC ổn định 100% giúp kiểm chứng ý định mua trong nghiên cứu mà không thu tiền thật.',
-    icon: Lock,
+    title: 'Nhận file tức thì qua link riêng',
+    desc: 'Ngay khi đơn được xác nhận, hệ thống cấp liên kết tải riêng tư thời hạn 7 ngày và 5 lượt tải.',
+    icon: Download,
     grad: 'dg-grad-5',
   },
   {
-    title: 'Giao hàng Token (F6)',
-    desc: 'Phát hành liên kết tải file riêng tư có hạn dùng expires_at và giới hạn lượt tải sau khi đơn paid.',
-    icon: Download,
+    title: 'Hướng dẫn cài đặt 15–30 phút',
+    desc: 'Kèm tài liệu từng bước ngắn gọn để chủ shop tự thay nội dung và đưa vào bán hàng ngay.',
+    icon: Timer,
     grad: 'dg-grad-6',
   },
   {
-    title: '14 Sự kiện Tracking (F10)',
-    desc: 'Ghi nhận đồng bộ 14 sự kiện chuẩn vào Postgres cùng bộ 4 trường định danh để kiểm định thống kê.',
-    icon: BarChart3,
+    title: 'Tối ưu cho team 1–3 người',
+    desc: 'Tinh gọn thao tác rườm rà, tập trung vào các nút bấm chốt đơn và mẫu nội dung hay dùng nhất.',
+    icon: Layers,
     grad: 'dg-grad-1',
   },
   {
-    title: 'Bộ Eval Tự Động (F12)',
-    desc: 'Chạy đánh giá định kỳ Accuracy chọn đúng gói, Hallucination Rate, độ trễ P95 và chi phí mỗi truy vấn.',
-    icon: CheckCircle2,
+    title: 'Đồng bộ Shopee · TikTok · Facebook',
+    desc: 'Bố cục và kịch bản bán hàng được viết sẵn theo thói quen mua hàng của khách Việt đa kênh.',
+    icon: Rocket,
     grad: 'dg-grad-2',
   },
 ] as const;
 
-const TECH_STACK_TILES = [
-  { name: 'Next.js App Router', icon: Rocket, grad: 'dg-grad-1' },
-  { name: 'TypeScript Strict', icon: FileCode2, grad: 'dg-grad-2' },
-  { name: 'Supabase Postgres', icon: Database, grad: 'dg-grad-3' },
-  { name: 'pgvector 768d', icon: Cpu, grad: 'dg-grad-4' },
-  { name: 'Gemini Flash RAG', icon: Sparkles, grad: 'dg-grad-5' },
-  { name: 'Zod Contract', icon: ShieldCheck, grad: 'dg-grad-6' },
-  { name: 'HMAC Sandbox', icon: Lock, grad: 'dg-grad-1' },
-  { name: 'Signed URL F6', icon: Download, grad: 'dg-grad-2' },
-  { name: '14 Tracking Events', icon: BarChart3, grad: 'dg-grad-3' },
-  { name: 'Eval Pipeline F12', icon: CheckCircle2, grad: 'dg-grad-4' },
-  { name: 'Dark & Light Mode', icon: Moon, grad: 'dg-grad-5' },
-  { name: 'Mobile 375px First', icon: Smartphone, grad: 'dg-grad-6' },
+const QUALITY_STANDARDS = [
+  { name: 'Tốc độ tải tức thì', icon: Zap, grad: 'dg-grad-1' },
+  { name: 'Chuẩn Mobile 375px', icon: Smartphone, grad: 'dg-grad-2' },
+  { name: 'Giao diện Sáng & Tối', icon: Moon, grad: 'dg-grad-3' },
+  { name: 'Trợ lý Tư vấn AI', icon: Sparkles, grad: 'dg-grad-4' },
+  { name: 'Tìm kiếm theo nhu cầu', icon: Search, grad: 'dg-grad-5' },
+  { name: 'Cấu trúc Sạch Chuẩn SEO', icon: FileCode2, grad: 'dg-grad-6' },
+  { name: 'Link tải bảo mật 7 ngày', icon: Download, grad: 'dg-grad-1' },
+  { name: 'Bản quyền Minh bạch', icon: ShieldCheck, grad: 'dg-grad-2' },
+  { name: 'Cài đặt Nhanh 15 phút', icon: Timer, grad: 'dg-grad-3' },
+  { name: 'Dễ sửa Không Cần Code Sâu', icon: LayoutDashboard, grad: 'dg-grad-4' },
+  { name: 'Tối ưu Đa kênh Bán hàng', icon: Layers, grad: 'dg-grad-5' },
+  { name: 'Thanh toán Thử nghiệm An toàn', icon: Lock, grad: 'dg-grad-6' },
 ] as const;
 
-const INNER_PAGES: Array<{
+const STOREFRONT_SCREENS: Array<{
   screen: InnerScreenKey;
   category: string;
   title: string;
@@ -191,142 +211,190 @@ const INNER_PAGES: Array<{
 }> = [
   {
     screen: 'catalog',
-    category: 'Danh mục F2',
-    title: 'Tìm kiếm & Lọc Đa Chiều',
+    category: 'Danh mục sản phẩm',
+    title: 'Tìm Kiếm & Lọc Theo Ngành',
     href: '/products',
-    desc: 'Lọc tức thì theo loại gói số, ngành hàng, khoảng ngân sách và sắp xếp giá VND.',
-    tags: ['Lọc 0ms', 'Ngữ cảnh F11'],
+    desc: 'Lọc nhanh theo loại sản phẩm số, ngành hàng, mức ngân sách và sắp xếp theo giá VND.',
+    tags: ['Lọc đa chiều', 'Ngân sách rõ'],
   },
   {
     screen: 'detail',
-    category: 'Chi tiết gói F3',
-    title: 'Preview 375px & Bản Quyền',
+    category: 'Chi tiết sản phẩm',
+    title: 'Xem Thử 1280px ↔ 375px',
     href: '/products/landing-page-my-pham-tiktok-shop',
-    desc: 'Chuyển đổi khung Desktop/Mobile và đối chiếu hộp minh bạch bản quyền 3 cấp.',
-    tags: ['1280px ↔ 375px', 'License Box'],
+    desc: 'Tương tác trực tiếp với giao diện mẫu trên Desktop, Mobile 375px và đối chiếu thông tin bản quyền.',
+    tags: ['Live HTML', 'Phóng to toàn khung'],
   },
   {
-    screen: 'experiment',
-    category: 'Thí nghiệm F11',
-    title: 'Phòng Thí Nghiệm AB/BA',
-    href: '/experiment',
-    desc: 'Quy trình 4 pha ẩn danh: Consent, bấm giờ kịch bản, chọn gói và chấm Likert 1–5.',
-    tags: ['Miễn tạo TK', 'Timer Tabular'],
+    screen: 'cart',
+    category: 'Giỏ hàng',
+    title: 'Quản Lý Gói Đã Chọn',
+    href: '/cart',
+    desc: 'Cộng dồn chính xác tổng tiền VND theo từng gói sản phẩm trước khi chuyển qua bước xác nhận đơn.',
+    tags: ['Tổng hợp tức thì', 'Dễ chỉnh sửa'],
   },
   {
     screen: 'checkout',
-    category: 'Thanh toán F4–F5',
-    title: 'Giỏ Hàng & Mock Sandbox',
-    href: '/cart',
-    desc: 'Tính tiền trực tiếp từ DB server và mô phỏng kết quả Webhook Paid / Failed.',
-    tags: ['Giá từ DB', 'Webhook HMAC'],
+    category: 'Thanh toán thử nghiệm',
+    title: 'Xác Nhận Đơn Không Rủi Ro',
+    href: '/checkout',
+    desc: 'Kiểm chứng toàn bộ luồng đặt hàng 3 bước ở chế độ thử nghiệm miễn phí trước khi tải tài nguyên.',
+    tags: ['Không thu tiền thật', 'Xác nhận 1 chạm'],
   },
   {
     screen: 'orders',
-    category: 'Giao hàng số F6',
-    title: 'Kho Bàn Giao Token Có Hạn',
-    href: '/checkout',
-    desc: 'Quản lý download_grants với giới hạn 5 lượt tải, thời hạn 7 ngày và xem trước JSON.',
-    tags: ['Signed Token', 'Hạn 7 ngày'],
+    category: 'Đơn hàng & Kho tải',
+    title: 'Kho Link Tải File 7 Ngày',
+    href: '/orders',
+    desc: 'Theo dõi lịch sử đơn đã tạo và tải trực tiếp gói tài nguyên với giới hạn 5 lượt trong 7 ngày.',
+    tags: ['Link tải riêng', 'Hạn 7 ngày'],
   },
   {
-    screen: 'analytics',
-    category: 'Quản trị F10 • F1',
-    title: 'Dashboard A/B & Auth Split',
-    href: '/admin/analytics',
-    desc: 'Bảng so sánh chatbot_on/off, phễu 14 sự kiện, kinh tế RAG và tách dữ liệu mô phỏng.',
-    tags: ['Include Simulated', 'RAG Cost/Query'],
+    screen: 'auth',
+    category: 'Tài khoản shop',
+    title: 'Quản Lý Đơn & Tải Lại Dễ Dàng',
+    href: '/auth',
+    desc: 'Đăng ký hoặc đăng nhập gọn nhẹ để đồng bộ giỏ hàng và tra cứu lại các gói đã mua bất cứ lúc nào.',
+    tags: ['Đồng bộ đơn', 'Bảo mật phiên'],
   },
 ];
 
-const SCENARIO_CARDS = [
+const PILOT_FEEDBACK_CASES = [
   {
-    code: 'SC-01',
+    code: 'MP',
     grad: 'grad-indigo',
     persona: 'Chủ shop Mỹ phẩm dưỡng da',
     channel: 'TikTok Shop • Quy mô 2 người',
     budget: 'Ngân sách ≤ 1.000.000đ',
     summary:
-      'Cần mẫu landing page tối ưu màn hình điện thoại 375px, trình bày bảng thành phần dịu nhẹ và tuân thủ chính sách quảng cáo không cam kết trị liệu.',
-    meta: 'Bài toán F11 • Ngành Mỹ phẩm',
+      'Ưu tiên mẫu landing page chuẩn mobile 375px, hiển thị rõ số công bố sản phẩm và bảng thành phần dịu nhẹ để gắn link từ video ngắn mà không bị vướng từ cấm.',
+    industryFilter: 'Mỹ phẩm',
+    ctaLabel: 'Xem gói ngành Mỹ phẩm',
   },
   {
-    code: 'SC-02',
+    code: 'TT',
     grad: 'grad-cyan',
     persona: 'Chủ shop Thời trang local',
     channel: 'Instagram & Shopee • 2 người',
     budget: 'Ngân sách ≤ 700.000đ',
     summary:
-      'Cần trang trưng bày bộ sưu tập lookbook kèm bảng quy đổi size trực quan cho khách xem livestream và form giữ đơn nhanh.',
-    meta: 'Bài toán F11 • Ngành Thời trang',
+      'Cần trang trưng bày bộ sưu tập lookbook kèm bảng quy đổi size trực quan để gửi cho khách đang xem livestream, giúp giảm thời gian nhắn hỏi số đo.',
+    industryFilter: 'Thời trang',
+    ctaLabel: 'Xem gói ngành Thời trang',
   },
   {
-    code: 'SC-03',
+    code: 'FB',
     grad: 'grad-emerald',
     persona: 'Quán đồ uống & Bếp nhỏ',
     channel: 'Quét QR tại quầy & Zalo • 2 người',
     budget: 'Ngân sách ≤ 600.000đ',
     summary:
-      'Muốn khách quét mã QR xem menu điện tử, chọn topping ngọt/đá và gửi tóm tắt đơn thẳng qua Zalo thay vì nhắn hỏi từng món.',
-    meta: 'Bài toán F11 • Ngành F&B',
+      'Khách tại bàn quét mã QR xem thực đơn trên điện thoại, chọn mức đường đá và gửi tóm tắt đơn thẳng sang Zalo thay vì phải chờ nhắn hỏi từng món.',
+    industryFilter: 'F&B',
+    ctaLabel: 'Xem gói ngành F&B',
   },
   {
-    code: 'SC-04',
+    code: 'ĐK',
     grad: 'grad-copper',
     persona: 'Shop đa kênh giờ cao điểm',
-    channel: 'Shopee, TikTok, FB • 1–3 người',
+    channel: 'Shopee, TikTok, Facebook • 1–3 người',
     budget: 'Ngân sách ≤ 700.000đ',
     summary:
-      'Cần bộ kịch bản trả lời inbox nhanh hoặc luồng tự động ghi đơn mới về Google Sheets và báo Telegram tránh sót đơn.',
-    meta: 'Bài toán F11 • Vận hành đa kênh',
+      'Dùng bộ prompt trả lời tin nhắn nhanh kết hợp luồng tự động gom đơn về Google Sheets và báo tin Telegram để không bỏ sót đơn vào khung giờ cao điểm.',
+    industryFilter: 'Đa ngành',
+    ctaLabel: 'Xem gói Đa ngành',
   },
 ] as const;
 
 const FAQ_ITEMS = [
   {
-    q: 'Tham gia Thí nghiệm F11 có cần tạo tài khoản hay nhập email không?',
-    a: 'Không. Để giảm ma sát cho người tham gia, hệ thống cấp ngay mã phiên ẩn danh (participant_code) sau khi bạn bấm xác nhận đồng ý (consent) tại trang /experiment mà không yêu cầu email hay mật khẩu.',
+    q: 'Sau khi tải gói sản phẩm về, shop nhỏ có thể dùng ngay như thế nào?',
+    a: 'Mỗi gói đều đi kèm tài liệu hướng dẫn triển khai 15–30 phút bằng tiếng Việt. Với Template Website bạn chỉ cần thay logo, ảnh sản phẩm và link sàn; với Prompt Pack có sẵn mẫu điền thông tin trên Notion/PDF; với Workflow có sẵn file JSON để nhập 1 chạm.',
   },
   {
-    q: 'Thanh toán Sandbox trên DreamTeam có trừ tiền thật không?',
-    a: 'Hoàn toàn không. Luồng thanh toán sử dụng Mock Sandbox Webhook nội bộ (F5) chỉ nhằm đo lường ý định mua (purchase intent) trong nghiên cứu đồ án và kiểm thử cơ chế cấp link tải file (F6).',
+    q: 'Thanh toán thử nghiệm (Sandbox) trên hệ thống có trừ tiền thật không?',
+    a: 'Hoàn toàn không. Cửa hàng hiện đang bật chế độ thanh toán thử nghiệm để bạn tự kiểm tra trọn vẹn quy trình tạo đơn, xác nhận thanh toán và nhận link tải file mà không thu tiền thật.',
   },
   {
-    q: 'Ý nghĩa 3 nhãn bản quyền original, adapted và licensed là gì?',
-    a: 'original là gói do nhóm đề tài tự thiết kế 100%; adapted là mẫu chuyển thể từ cấu trúc tham khảo mở và biên tập lại cho shop Việt Nam; licensed là tài nguyên sử dụng theo giấy phép thương mại hợp lệ.',
+    q: 'Ý nghĩa 3 cấp bản quyền Thiết kế gốc, Điều chỉnh có nguồn và Bản quyền hợp lệ là gì?',
+    a: 'Thiết kế gốc là gói do đội ngũ DreamTeam tự xây dựng 100%; Điều chỉnh có nguồn là mẫu tham khảo mở được Việt hóa và tối ưu lại cho shop nhỏ; Bản quyền hợp lệ là tài nguyên có giấy phép thương mại rõ ràng đi kèm hồ sơ.',
   },
   {
-    q: 'Trợ lý ảo RAG lấy dữ liệu từ đâu để tư vấn sản phẩm?',
-    a: 'Trợ lý chỉ truy xuất dữ liệu thật từ bảng products trong PostgreSQL/pgvector và bắt buộc server đối chiếu lại ID đang hoạt động (is_active = true). Khi không có gói phù hợp, trợ lý sẽ từ chối thay vì tự bịa giá hay tính năng.',
+    q: 'Trợ lý tư vấn DreamTeam lấy gợi ý sản phẩm từ đâu?',
+    a: 'Trợ lý đối chiếu trực tiếp với các gói sản phẩm đang bán trong cửa hàng theo ngành hàng, kênh bán và mức ngân sách bạn mô tả, giúp tránh gợi ý sai giá hoặc sai tên gói.',
   },
   {
-    q: 'Sau khi thanh toán Sandbox thành công, link tải file hoạt động thế nào?',
-    a: 'Khi đơn chuyển sang trạng thái paid, server phát hành download_grants có mã token riêng, thời hạn mặc định 7 ngày và giới hạn 5 lượt tải qua endpoint bảo mật /api/downloads/[token].',
+    q: 'Quyền tải file trong 7 ngày và giới hạn 5 lượt tải hoạt động ra sao?',
+    a: 'Sau khi đơn hàng chuyển sang trạng thái hoàn tất, hệ thống cấp cho mỗi gói một liên kết tải riêng tư. Bạn có thể vào mục Đơn hàng để tải lại tối đa 5 lần trong vòng 7 ngày kể từ lúc mua.',
   },
   {
-    q: 'Dữ liệu thí nghiệm và dữ liệu mô phỏng được tách bạch ra sao?',
-    a: 'Mọi bản ghi thử nghiệm mẫu đều gắn cờ is_simulated = true. Trên Dashboard /admin/analytics, hệ thống mặc định chỉ tính các phiên thật (is_simulated = false) và hiển thị cảnh báo hổ phách nếu quản trị viên bật chế độ xem dữ liệu mô phỏng.',
+    q: 'Làm sao xem thử giao diện trước khi mua trên màn hình Mobile 375px?',
+    a: 'Tại trang chi tiết của từng Template Website, bạn bấm chuyển giữa chế độ Desktop 1280px và Mobile 375px ngay trong khung xem thử hoặc bấm Phóng to để soi từng phần tử trên màn hình điện thoại.',
   },
 ] as const;
 
+const DIALOG_LIGHT_DISMISS = {
+  closedby: 'any',
+} as unknown as React.DialogHTMLAttributes<HTMLDialogElement>;
+
+function ShowcaseThumbnail({
+  product,
+}: {
+  product: ProductSummaryDto;
+}) {
+  const [imgFailed, setImgFailed] = useState(false);
+  const src =
+    product.thumbnail_url || DEFAULT_THUMBNAIL_BY_TYPE[product.product_type];
+
+  if (!src || imgFailed) {
+    return (
+      <ProductPlaceholderFrame
+        productType={product.product_type}
+        industry={product.industry}
+        sourceType={product.source_type}
+        aspect="16/10"
+        slug={product.slug}
+      />
+    );
+  }
+
+  return (
+    /* eslint-disable-next-line @next/next/no-img-element */
+    <img
+      src={src}
+      alt={`Ảnh đại diện ${product.name} (${PRODUCT_TYPE_LABELS[product.product_type]})`}
+      width={960}
+      height={600}
+      loading="lazy"
+      className="dg-showcase-thumb-img"
+      onError={() => setImgFailed(true)}
+    />
+  );
+}
+
 export function HomeLanding() {
-  const { track } = useExperiment();
+  const { addItem } = useCart();
+  const { assignment, scenarioState, activeVariant, track } = useExperiment();
 
   const heroSectionRef = useRef<HTMLElement | null>(null);
+  const showcaseGridRef = useSpecularSpotlight<HTMLDivElement>();
+  const featuresGridRef = useSpecularSpotlight<HTMLDivElement>();
+
   const [heroShowcaseType, setHeroShowcaseType] =
     useState<ProductType>('template');
   const [activeFilter, setActiveFilter] = useState<'' | ProductType>('');
   const [products, setProducts] = useState<ProductSummaryDto[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [loadError, setLoadError] = useState<string | null>(null);
+  const [addingId, setAddingId] = useState<string | null>(null);
+  const [addedId, setAddedId] = useState<string | null>(null);
 
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
   const [previewScreen, setPreviewScreen] = useState<
-    (typeof INNER_PAGES)[number] | null
+    (typeof STOREFRONT_SCREENS)[number] | null
   >(null);
   const previewDialogRef = useRef<HTMLDialogElement | null>(null);
 
-  // Carousel state (Section 7: 3-Card Scenario Carousel)
   const carouselTrackRef = useRef<HTMLDivElement | null>(null);
   const [activeSlide, setActiveSlide] = useState<number>(0);
   const [isAutoPaused, setIsAutoPaused] = useState<boolean>(false);
@@ -339,15 +407,21 @@ export function HomeLanding() {
     900,
     0
   );
-  const { ref: countGroundingRef, displayValue: countGroundingDisplay } =
+  const { ref: countResponsiveRef, displayValue: countResponsiveDisplay } =
     useCountUp(100, 1100, 0);
+
+  const isInExperimentOff = Boolean(
+    assignment?.consent_given &&
+      scenarioState?.scenario_run_id &&
+      !scenarioState.is_finished &&
+      activeVariant === 'chatbot_off'
+  );
 
   useEffect(() => {
     const cleanupReveal = initScrollReveals();
     return cleanupReveal;
   }, []);
 
-  // Load real products from GET /api/products
   const fetchShowcaseProducts = useCallback(
     async (filterType: '' | ProductType, signal?: AbortSignal) => {
       setLoadError(null);
@@ -381,7 +455,6 @@ export function HomeLanding() {
     };
   }, [activeFilter, fetchShowcaseProducts]);
 
-  // Preview Modal (<dialog>) handlers
   useEffect(() => {
     const dialog = previewDialogRef.current;
     if (!dialog) return;
@@ -403,7 +476,7 @@ export function HomeLanding() {
       pressedOutside = isOutside(e);
     };
     const onUp = (e: PointerEvent) => {
-      if (pressedOutside && isOutside(e)) dialog.close();
+      if (dialog.open && pressedOutside && isOutside(e)) dialog.close();
     };
 
     dialog.addEventListener('close', onClose);
@@ -417,23 +490,22 @@ export function HomeLanding() {
     };
   }, []);
 
-  const openScreenPreview = (item: (typeof INNER_PAGES)[number]) => {
+  const openScreenPreview = (item: (typeof STOREFRONT_SCREENS)[number]) => {
     setPreviewScreen(item);
     previewDialogRef.current?.showModal();
   };
 
-  // Carousel scroll helper
   const scrollToSlide = useCallback(
     (index: number, announce = true) => {
       const track = carouselTrackRef.current;
       const wrapped =
-        ((index % SCENARIO_CARDS.length) + SCENARIO_CARDS.length) %
-        SCENARIO_CARDS.length;
+        ((index % PILOT_FEEDBACK_CASES.length) + PILOT_FEEDBACK_CASES.length) %
+        PILOT_FEEDBACK_CASES.length;
       setActiveSlide(wrapped);
 
       if (announce) {
         setSlideAnnouncement(
-          `Kịch bản ${wrapped + 1} trên ${SCENARIO_CARDS.length}: ${SCENARIO_CARDS[wrapped].code}`
+          `Trường hợp ${wrapped + 1} trên ${PILOT_FEEDBACK_CASES.length}: ${PILOT_FEEDBACK_CASES[wrapped].persona}`
         );
       }
 
@@ -454,7 +526,6 @@ export function HomeLanding() {
     []
   );
 
-  // Sync active slide on manual scroll (throttled via rAF)
   useEffect(() => {
     const track = carouselTrackRef.current;
     if (!track) return;
@@ -490,7 +561,6 @@ export function HomeLanding() {
     };
   }, []);
 
-  // Optional gentle autoplay (respects Pause button & prefers-reduced-motion)
   useEffect(() => {
     if (isAutoPaused || typeof window === 'undefined') return;
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
@@ -512,17 +582,32 @@ export function HomeLanding() {
     });
   };
 
+  const handleQuickAddToCart = async (productId: string) => {
+    if (addingId === productId) return;
+    setAddingId(productId);
+    const ok = await addItem(productId, 1);
+    setAddingId(null);
+    if (ok) {
+      void track('add_to_cart', { product_id: productId });
+      setAddedId(productId);
+      setTimeout(() => {
+        setAddedId((curr) => (curr === productId ? null : curr));
+      }, 1800);
+    }
+  };
+
   return (
     <>
-      {/* 2. Atmospheric Hero Split + Typewriter + 3D Mockup Stack (0ms Instant Entry) */}
+      {/* 1. Hero + 3D Mockup Stack + Typewriter (#hero) */}
       <section ref={heroSectionRef} className="dg-hero dg-dark-band" id="hero">
         <div className="container">
           <div className="dg-hero-grid">
             <div className="dg-hero-copy">
               <div className="dg-hero-badge">
                 <span className="dg-dot" aria-hidden="true" />
-                <span>DÀNH CHO CHỦ SHOP NHỎ 1–3 NGƯỜI • SHOPEE / TIKTOK / FB</span>
-                <span className="dg-hero-version">F1–F12</span>
+                <span>
+                  DÀNH CHO CHỦ SHOP 1–3 NGƯỜI • SHOPEE / TIKTOK / FACEBOOK
+                </span>
               </div>
 
               <h1 className="text-line-clip">
@@ -540,19 +625,19 @@ export function HomeLanding() {
               </h1>
 
               <p className="lead">
-                Kho Template Website tự thiết kế, Prompt Pack chốt đơn và Workflow
-                tự động minh bạch bản quyền — đi kèm Trợ lý ảo RAG đối chiếu 100%
-                dữ liệu thật và Thí nghiệm đối chứng AB/BA.
+                Kho Template Website tinh gọn, bộ Prompt Pack chốt đơn và
+                Workflow tự động hóa minh bạch bản quyền — đi kèm Trợ lý tư vấn
+                lọc đúng gói theo ngành hàng và ngân sách.
               </p>
 
               <div className="dg-hero-cta">
                 <Link href="/products" className="dg-btn-purchase">
-                  <span>Khám phá gói giải pháp</span>
+                  <span>Khám phá kho sản phẩm</span>
                   <ArrowRight size={17} />
                 </Link>
-                <Link href="/experiment" className="dg-btn-outline">
+                <Link href="/#showcase" className="dg-btn-outline">
                   <Play size={16} />
-                  <span>Tham gia Thí nghiệm F11</span>
+                  <span>Xem mẫu nổi bật</span>
                 </Link>
               </div>
 
@@ -560,19 +645,23 @@ export function HomeLanding() {
                 <div className="dg-hero-trust-chip">
                   <LayoutDashboard size={16} />
                   <span>
-                    <strong ref={countTypesRef}>{countTypesDisplay}</strong> Loại Gói Số
+                    <strong ref={countTypesRef}>{countTypesDisplay}</strong>{' '}
+                    Nhóm giải pháp
+                  </span>
+                </div>
+                <div className="dg-hero-trust-chip">
+                  <Smartphone size={16} />
+                  <span>
+                    <strong ref={countResponsiveRef}>
+                      {countResponsiveDisplay}%
+                    </strong>{' '}
+                    Chuẩn Mobile 375px
                   </span>
                 </div>
                 <div className="dg-hero-trust-chip">
                   <ShieldCheck size={16} />
                   <span>
-                    <strong ref={countGroundingRef}>{countGroundingDisplay}%</strong> Grounding DB
-                  </span>
-                </div>
-                <div className="dg-hero-trust-chip">
-                  <Timer size={16} />
-                  <span>
-                    <strong>Miễn tạo TK</strong> khi làm F11
+                    <strong>Bản quyền 3 cấp</strong> rõ ràng
                   </span>
                 </div>
               </div>
@@ -585,13 +674,9 @@ export function HomeLanding() {
             />
           </div>
         </div>
-        <a href="#categories" className="dg-hero-scroll-cue">
-          <span>Cuộn để khám phá</span>
-          <ChevronDown size={16} />
-        </a>
       </section>
 
-      {/* 3. 6 Nhóm Giải Pháp & Ngành Hàng (#categories) */}
+      {/* 2. 6 Nhóm Giải Pháp & Ngành Hàng (#categories) */}
       <section className="section-padding-lg dg-frameworks-section" id="categories">
         <div className="container">
           <div className="dg-section-heading">
@@ -602,11 +687,12 @@ export function HomeLanding() {
               <span>Danh Mục Thực Chiến</span>
             </div>
             <h2>
-              Một Hệ Thống, <span className="dg-grad-text">Sáu Nhóm Giải Pháp</span>
+              Một Hệ Thống,{' '}
+              <span className="dg-grad-text">Sáu Lựa Chọn Nhanh</span>
             </h2>
             <p>
-              Chọn đúng loại công cụ số hoặc lọc thẳng theo ngành hàng shop nhỏ
-              1–3 người đang kinh doanh trên Shopee, TikTok Shop và Facebook.
+              Chọn đúng loại công cụ số hoặc lọc thẳng theo ngành hàng của shop
+              nhỏ 1–3 người đang bán trên Shopee, TikTok Shop và Facebook.
             </p>
           </div>
 
@@ -619,9 +705,22 @@ export function HomeLanding() {
                   href={card.href}
                   className="dg-framework-card"
                 >
-                  <div className={`dg-framework-icon ${card.grad}`}>
-                    <Icon size={26} />
-                  </div>
+                  {card.image ? (
+                    <div className="dg-framework-media">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={card.image}
+                        alt={card.imageAlt ?? card.title}
+                        width={960}
+                        height={600}
+                        loading="lazy"
+                      />
+                    </div>
+                  ) : (
+                    <div className={`dg-framework-icon ${card.grad}`}>
+                      <Icon size={26} />
+                    </div>
+                  )}
                   <span className="dg-framework-name">{card.title}</span>
                   <span className="dg-framework-link">
                     <span>{card.cta}</span>
@@ -634,7 +733,7 @@ export function HomeLanding() {
         </div>
       </section>
 
-      {/* 4. PEAK: Showcase Gallery + Filter Tabs (#showcase) */}
+      {/* 3. PEAK: Showcase Gallery + Filter Tabs + GPU Spotlight (#showcase) */}
       <section className="section-padding-lg dg-bg-soft" id="showcase">
         <div className="container">
           <div className="dg-section-heading">
@@ -645,11 +744,12 @@ export function HomeLanding() {
               <span>Kho Giải Pháp DreamTeam</span>
             </div>
             <h2>
-              Sản Phẩm Sẵn Sàng <span className="dg-grad-text">Triển Khai Ngay</span>
+              Sản Phẩm Sẵn Sàng{' '}
+              <span className="dg-grad-text">Triển Khai Ngay</span>
             </h2>
             <p>
-              Toàn bộ gói giải pháp được truy vấn trực tiếp từ cơ sở dữ liệu thật
-              kèm giá niêm yết VND và phân loại bản quyền rõ ràng.
+              Lọc nhanh từng nhóm sản phẩm số kèm giá niêm yết VND, phân loại bản
+              quyền minh bạch và nút thêm vào giỏ tức thì.
             </p>
           </div>
 
@@ -705,22 +805,19 @@ export function HomeLanding() {
               ))}
             </div>
           ) : (
-            <div className="dg-showcase-grid">
+            <div ref={showcaseGridRef} className="dg-showcase-grid">
               {products.map((product) => {
                 const sourceMeta = SOURCE_TYPE_META[product.source_type];
+                const isAdding = addingId === product.id;
+                const isAdded = addedId === product.id;
+
                 return (
                   <article
                     key={product.id}
-                    className="dg-showcase-card dg-panel"
+                    className="dg-showcase-card dg-panel dg-spotlight-card"
                   >
                     <div className="dg-showcase-img-wrap">
-                      <ProductPlaceholderFrame
-                        productType={product.product_type}
-                        industry={product.industry}
-                        sourceType={product.source_type}
-                        aspect="16/10"
-                        slug={product.slug}
-                      />
+                      <ShowcaseThumbnail product={product} />
                       <div className="dg-showcase-overlay">
                         <Link
                           href={`/products/${product.slug}`}
@@ -754,13 +851,36 @@ export function HomeLanding() {
                         <span className="type-price dg-showcase-price">
                           {formatVnd(product.price_vnd)}
                         </span>
-                        <Link
-                          href={`/products/${product.slug}`}
-                          className="dg-btn-outline dg-btn-sm"
+                        <div
+                          style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '8px',
+                            flexWrap: 'wrap',
+                          }}
                         >
-                          <span>Xem chi tiết</span>
-                          <ArrowRight size={14} />
-                        </Link>
+                          <Link
+                            href={`/products/${product.slug}`}
+                            className="dg-btn-outline dg-btn-sm"
+                          >
+                            <span>Xem chi tiết</span>
+                          </Link>
+                          <button
+                            type="button"
+                            className="dg-btn-purchase dg-btn-sm"
+                            disabled={isAdding}
+                            onClick={() => void handleQuickAddToCart(product.id)}
+                          >
+                            <ShoppingBag size={14} />
+                            <span>
+                              {isAdded
+                                ? 'Đã thêm'
+                                : isAdding
+                                  ? 'Đang thêm...'
+                                  : 'Thêm vào giỏ'}
+                            </span>
+                          </button>
+                        </div>
                       </div>
                     </div>
                   </article>
@@ -778,7 +898,7 @@ export function HomeLanding() {
         </div>
       </section>
 
-      {/* 5. 8 Trụ Cột Tính Năng Lõi F1–F12 (#features — Dark Band) */}
+      {/* 4. 8 Lợi Ích Vận Hành Cho Shop Nhỏ (#features — Dark Band + Spotlight) */}
       <section
         className="section-padding-lg dg-features-section dg-dark-band dg-dark-bg editorial-reveal"
         id="features"
@@ -793,24 +913,26 @@ export function HomeLanding() {
               <span className="dg-sub-heading-icon">
                 <Sparkles size={13} />
               </span>
-              <span>Kiến Trúc Nghiệp Vụ F1–F12</span>
+              <span>Lợi Ích Cho Chủ Shop</span>
             </div>
             <h2>
-              Đầy Đủ Hạ Tầng Cho{' '}
-              <span className="dg-grad-text">Cửa Hàng Số &amp; Nghiên Cứu A/B</span>
+              Giải Pháp Thực Tiễn Cho{' '}
+              <span className="dg-grad-text">Cửa Hàng 1–3 Người</span>
             </h2>
             <p>
-              Mỗi tính năng trong DreamTeam phục vụ trực tiếp cho luồng mua hàng
-              sản phẩm số hoặc câu hỏi nghiên cứu định lượng về hiệu quả Trợ lý ảo
-              RAG.
+              Tập trung vào những công cụ giúp shop bán nhanh hơn trên di động,
+              giảm thời gian soạn nội dung và hạn chế sót đơn đa kênh.
             </p>
           </div>
 
-          <div className="dg-features-grid">
-            {CORE_FEATURES.map((feat) => {
+          <div ref={featuresGridRef} className="dg-features-grid">
+            {SHOP_BENEFITS.map((feat) => {
               const Icon = feat.icon;
               return (
-                <article key={feat.title} className="dg-feature-card dg-panel">
+                <article
+                  key={feat.title}
+                  className="dg-feature-card dg-panel dg-spotlight-card"
+                >
                   <div className={`dg-feature-icon ${feat.grad}`}>
                     <Icon size={24} />
                   </div>
@@ -823,7 +945,7 @@ export function HomeLanding() {
         </div>
       </section>
 
-      {/* 6. 12 Công Nghệ Nền Tảng (#stack) */}
+      {/* 5. 12 Tiêu Chuẩn Nền Tảng (#stack) */}
       <section
         className="section-padding-lg dg-stack-section editorial-reveal"
         id="stack"
@@ -835,21 +957,22 @@ export function HomeLanding() {
           <div className="dg-section-heading">
             <div className="dg-sub-heading">
               <span className="dg-sub-heading-icon">
-                <Cpu size={13} />
+                <ShieldCheck size={13} />
               </span>
-              <span>Nền Tảng Kỹ Thuật</span>
+              <span>Tiêu Chuẩn Triển Khai</span>
             </div>
             <h2>
-              Xây Dựng Trên <span className="dg-grad-text">Stack Tin Cậy</span>
+              12 Cam Kết Chất Lượng{' '}
+              <span className="dg-grad-text">Trên Từng Gói Số</span>
             </h2>
             <p>
-              100% thành phần công nghệ đang vận hành thực tế trong mã nguồn
-              DreamTeam — kiểm chứng kiểu dữ liệu chặt chẽ từ schema đến UI.
+              Mỗi sản phẩm trên DreamTeam đều được chuẩn hóa từ bố cục điện
+              thoại 375px đến hướng dẫn cài đặt nhanh và link tải an toàn.
             </p>
           </div>
 
           <div className="dg-stack-grid">
-            {TECH_STACK_TILES.map((tile) => {
+            {QUALITY_STANDARDS.map((tile) => {
               const Icon = tile.icon;
               return (
                 <div key={tile.name} className="dg-stack-tile">
@@ -864,7 +987,7 @@ export function HomeLanding() {
         </div>
       </section>
 
-      {/* 7. Bản Đồ Các Màn Hình Nghiệp Vụ (#pages) */}
+      {/* 6. Trải Nghiệm Màn Hình Mua Hàng (#pages) */}
       <section
         className="section-padding-lg dg-bg-soft editorial-reveal"
         id="pages"
@@ -875,19 +998,20 @@ export function HomeLanding() {
               <span className="dg-sub-heading-icon">
                 <Layers size={13} />
               </span>
-              <span>Luồng Trải Nghiệm Toàn Hệ Thống</span>
+              <span>Hành Trình Mua Sắm</span>
             </div>
             <h2>
-              Khám Phá Các <span className="dg-grad-text">Màn Hình Nghiệp Vụ</span>
+              Trải Nghiệm Mượt Mà{' '}
+              <span className="dg-grad-text">Từ Chọn Gói Đến Nhận File</span>
             </h2>
             <p>
-              Mở trực tiếp từng màn hình từ danh mục, xem trước 375px, phòng thí
-              nghiệm AB/BA đến thanh toán Sandbox và phân tích Admin.
+              Xem nhanh 6 bước mua hàng thực tế trên DreamTeam: tìm theo ngành,
+              xem thử 1280px ↔ 375px, giỏ hàng, xác nhận đơn và tải file ngay.
             </p>
           </div>
 
           <div className="dg-inner-pages-grid">
-            {INNER_PAGES.map((item) => (
+            {STOREFRONT_SCREENS.map((item) => (
               <article key={item.title} className="dg-ip2-card dg-panel">
                 <div className="dg-ip2-media">
                   <InnerPageVisual screen={item.screen} />
@@ -930,38 +1054,44 @@ export function HomeLanding() {
         </div>
       </section>
 
-      {/* 8. Carousel 3 Thẻ Kịch Bản Thực Tế F11 (#reviews / #scenarios) */}
+      {/* 7. Phản Hồi Từ Đợt Chạy Thử Nghiệm Mẫu (#reviews) */}
       <section
         className="section-padding-lg editorial-reveal"
-        id="scenarios"
+        id="reviews"
         aria-roledescription="carousel"
-        aria-label="Hồ sơ kịch bản thí nghiệm chủ shop F11"
+        aria-label="Phản hồi từ đợt chạy thử nghiệm mẫu"
       >
         <div className="container">
           <div className="dg-section-heading">
             <div className="dg-sub-heading">
               <span className="dg-sub-heading-icon">
-                <Timer size={13} />
+                <MessageSquare size={13} />
               </span>
-              <span>Hồ Sơ Kịch Bản Thí Nghiệm F11</span>
+              <span>Phản Hồi Từ Đợt Chạy Thử Nghiệm Mẫu</span>
             </div>
             <h2>
-              Các Tình Huống <span className="dg-grad-text">Chủ Shop Thực Tế</span>
+              Các Trường Hợp{' '}
+              <span className="dg-grad-text">Chủ Shop Thử Nghiệm Mẫu</span>
             </h2>
             <p>
-              Người tham gia thí nghiệm đóng vai chủ shop 1–3 người xử lý những
-              tình huống mua gói giải pháp dưới áp lực ngân sách thật.
+              Tổng hợp trải nghiệm từ các chủ shop &amp; người dùng thử nghiệm
+              mẫu quy mô 1–3 người theo từng ngành hàng; đây là phản hồi từ đợt
+              chạy thử nghiệm mẫu, không phải đánh giá thương mại tự phát.
             </p>
           </div>
 
           <div className="dg-testi-controls-bar">
-            <div className="dg-testi-dots" role="group" aria-label="Chọn kịch bản">
-              {SCENARIO_CARDS.map((card, idx) => (
+            <div
+              className="dg-testi-dots"
+              role="group"
+              aria-label="Chọn trường hợp thử nghiệm"
+            >
+              {PILOT_FEEDBACK_CASES.map((card, idx) => (
                 <button
-                  key={card.code}
+                  key={card.persona}
                   type="button"
                   className="dg-testi-dot-btn"
-                  aria-label={`Xem kịch bản ${idx + 1}: ${card.code}`}
+                  aria-label={`Xem trường hợp ${idx + 1}: ${card.persona}`}
                   aria-current={activeSlide === idx ? 'true' : undefined}
                   onClick={() => scrollToSlide(idx)}
                 />
@@ -982,7 +1112,7 @@ export function HomeLanding() {
             <button
               type="button"
               className="dg-testi-nav-btn dg-testi-prev"
-              aria-label="Kịch bản trước"
+              aria-label="Trường hợp trước"
               onClick={() => scrollToSlide(activeSlide - 1)}
             >
               <ChevronLeft size={18} />
@@ -993,14 +1123,14 @@ export function HomeLanding() {
               className="dg-scenario-track"
               tabIndex={0}
               role="group"
-              aria-label="Danh sách thẻ kịch bản F11"
+              aria-label="Danh sách phản hồi thử nghiệm mẫu"
             >
-              {SCENARIO_CARDS.map((card, idx) => (
+              {PILOT_FEEDBACK_CASES.map((card, idx) => (
                 <article
-                  key={card.code}
+                  key={card.persona}
                   role="group"
                   aria-roledescription="slide"
-                  aria-label={`${idx + 1} trên ${SCENARIO_CARDS.length}: ${card.persona}`}
+                  aria-label={`${idx + 1} trên ${PILOT_FEEDBACK_CASES.length}: ${card.persona}`}
                   className={`dg-testi2-card dg-panel ${card.grad} ${
                     activeSlide === idx ? 'is-active' : ''
                   }`}
@@ -1032,9 +1162,12 @@ export function HomeLanding() {
                   <p>{card.summary}</p>
 
                   <div className="dg-testi-meta">
-                    <span>{card.meta}</span>
-                    <Link href="/experiment" className="dg-scenario-cta">
-                      <span>Làm bài tại /experiment</span>
+                    <span className="badge">Phản hồi từ đợt chạy thử nghiệm mẫu</span>
+                    <Link
+                      href={`/products?industry=${encodeURIComponent(card.industryFilter)}`}
+                      className="dg-scenario-cta"
+                    >
+                      <span>{card.ctaLabel}</span>
                       <ArrowRight size={14} />
                     </Link>
                   </div>
@@ -1045,7 +1178,7 @@ export function HomeLanding() {
             <button
               type="button"
               className="dg-testi-nav-btn dg-testi-next"
-              aria-label="Kịch bản tiếp theo"
+              aria-label="Trường hợp tiếp theo"
               onClick={() => scrollToSlide(activeSlide + 1)}
             >
               <ChevronRight size={18} />
@@ -1058,7 +1191,7 @@ export function HomeLanding() {
         </div>
       </section>
 
-      {/* 9. FAQ Accordion (#faqs) */}
+      {/* 8. FAQ Accordion (#faqs) */}
       <section
         className="section-padding-lg dg-bg-soft dg-features-section editorial-reveal"
         id="faqs"
@@ -1076,12 +1209,12 @@ export function HomeLanding() {
               <span>Hỏi Đáp Thường Gặp</span>
             </div>
             <h2>
-              Giải Đáp Trước Khi{' '}
-              <span className="dg-grad-text">Mua Gói &amp; Làm Thí Nghiệm</span>
+              Giải Đáp Nhanh{' '}
+              <span className="dg-grad-text">Trước Khi Chọn Gói</span>
             </h2>
             <p>
-              Thông tin minh bạch về cách tính điểm F11, bản quyền 3 cấp, nguồn
-              dữ liệu Trợ lý RAG và luồng Sandbox.
+              Thông tin rõ ràng về cách sử dụng sau khi tải, bản quyền 3 cấp,
+              xem thử Mobile 375px và chế độ đặt hàng thử nghiệm không thu tiền.
             </p>
           </div>
 
@@ -1128,10 +1261,10 @@ export function HomeLanding() {
                 <Sparkles size={24} />
               </div>
               <div>
-                <h3>Đi thẳng tới tính năng bạn cần kiểm tra</h3>
+                <h3>Đi thẳng tới khu vực bạn cần</h3>
                 <p>
-                  Lối tắt nhanh tới danh mục sản phẩm số, phòng thí nghiệm F11,
-                  luồng thanh toán Sandbox và đăng nhập tài khoản Demo.
+                  Lối tắt nhanh tới danh mục sản phẩm số, tra cứu đơn hàng &amp;
+                  kho link tải, giỏ hàng và tài khoản của bạn.
                 </p>
               </div>
             </div>
@@ -1141,39 +1274,39 @@ export function HomeLanding() {
                 <div className="dg-faq-help-tile-icon grad-indigo">
                   <LayoutDashboard size={17} />
                 </div>
-                <h4>Danh mục F2</h4>
-                <p>Tìm &amp; lọc theo ngành hàng, giá VND</p>
+                <h4>Kho sản phẩm</h4>
+                <p>Lọc theo ngành hàng &amp; giá VND</p>
               </Link>
 
-              <Link href="/experiment" className="dg-faq-help-tile">
+              <Link href="/orders" className="dg-faq-help-tile">
                 <div className="dg-faq-help-tile-icon grad-cyan">
-                  <Timer size={17} />
+                  <Download size={17} />
                 </div>
-                <h4>Thí nghiệm F11</h4>
-                <p>2 kịch bản AB/BA trong ~5 phút</p>
+                <h4>Đơn hàng &amp; Link tải</h4>
+                <p>Xem lại đơn và tải file trong 7 ngày</p>
               </Link>
 
               <Link href="/cart" className="dg-faq-help-tile">
                 <div className="dg-faq-help-tile-icon grad-emerald">
                   <ShoppingBag size={17} />
                 </div>
-                <h4>Sandbox F5–F6</h4>
-                <p>Kiểm thử webhook &amp; nhận token tải</p>
+                <h4>Giỏ hàng của bạn</h4>
+                <p>Kiểm tra gói đã chọn trước khi đặt</p>
               </Link>
 
               <Link href="/auth" className="dg-faq-help-tile">
                 <div className="dg-faq-help-tile-icon grad-copper">
                   <Lock size={17} />
                 </div>
-                <h4>Tài khoản Demo</h4>
-                <p>Đăng nhập nhanh Khách hoặc Admin</p>
+                <h4>Tài khoản cửa hàng</h4>
+                <p>Đăng nhập hoặc tạo tài khoản mới</p>
               </Link>
             </div>
           </div>
         </div>
       </section>
 
-      {/* 10. Dark CTA Strip (.dg-cta-dark) */}
+      {/* 9. Dark CTA Strip (.dg-cta-dark) */}
       <section className="section-padding-lg editorial-reveal">
         <div className="container">
           <div className="dg-cta-dark dg-dark-band">
@@ -1182,25 +1315,38 @@ export function HomeLanding() {
               <div className="dg-cta-dark-copy">
                 <span className="dg-cta-dark-badge">
                   <Rocket size={14} />
-                  <span>Sẵn sàng trải nghiệm ~5 phút</span>
+                  <span>Triển khai nhanh 15–30 phút</span>
                 </span>
                 <h2>
-                  Bắt đầu chọn gói chuẩn cho shop nhỏ hoặc tham gia Thí nghiệm A/B
+                  Sẵn sàng chọn bộ công cụ số phù hợp cho shop nhỏ của bạn?
                 </h2>
                 <p>
-                  Trải nghiệm trọn vẹn 2 lượt kịch bản Within-subject AB/BA không
-                  cần tạo tài khoản, hoặc duyệt toàn bộ danh mục gói số ngay hôm
-                  nay.
+                  Xem thử trực tiếp giao diện trên máy tính 1280px và điện thoại
+                  375px trước khi quyết định, hoặc nhờ Trợ lý tư vấn gợi ý theo
+                  đúng ngân sách.
                 </p>
                 <div className="dg-hero-cta" style={{ marginBottom: 0 }}>
-                  <Link href="/experiment" className="dg-btn-purchase">
-                    <span>Tham gia Thí nghiệm F11</span>
+                  <Link href="/products" className="dg-btn-purchase">
+                    <span>Khám phá toàn bộ sản phẩm</span>
                     <ArrowRight size={16} />
                   </Link>
-                  <Link href="/products" className="dg-btn-outline">
-                    <Play size={15} />
-                    <span>Xem toàn bộ gói số</span>
-                  </Link>
+                  {!isInExperimentOff ? (
+                    <button
+                      type="button"
+                      className="dg-btn-outline"
+                      onClick={() =>
+                        window.dispatchEvent(new CustomEvent('dsa:open-chat'))
+                      }
+                    >
+                      <MessageSquare size={15} />
+                      <span>Mở Trợ lý tư vấn</span>
+                    </button>
+                  ) : (
+                    <Link href="/products?sort=newest" className="dg-btn-outline">
+                      <Play size={15} />
+                      <span>Xem gói mới nhất</span>
+                    </Link>
+                  )}
                 </div>
               </div>
 
@@ -1217,13 +1363,18 @@ export function HomeLanding() {
         ref={previewDialogRef}
         className="editorial-dialog dg-preview-dialog"
         aria-labelledby="inner-preview-title"
+        {...DIALOG_LIGHT_DISMISS}
       >
         {previewScreen && (
           <div className="dg-preview-dialog-body">
             <div className="dg-preview-dialog-head">
               <div>
                 <span className="type-eyebrow">{previewScreen.category}</span>
-                <h2 id="inner-preview-title" className="type-h3" style={{ margin: '4px 0 0' }}>
+                <h2
+                  id="inner-preview-title"
+                  className="type-h3"
+                  style={{ margin: '4px 0 0' }}
+                >
                   {previewScreen.title}
                 </h2>
               </div>

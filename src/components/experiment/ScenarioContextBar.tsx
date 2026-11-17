@@ -2,33 +2,66 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useRef } from 'react';
+import { useEffect, useRef } from 'react';
 
 import { ArrowRight, Timer, X } from '@/components/icons/DreamIcons';
-import {
-  DIFFICULTY_LABELS,
-  formatDurationMmSs,
-  formatVnd,
-} from '@/components/shared/formatters';
+import { formatDurationMmSs, formatVnd } from '@/components/shared/formatters';
 import { useElapsedTimer } from '@/motion/useElapsedTimer';
 import { useExperiment } from '@/state';
 
+const DIALOG_LIGHT_DISMISS = {
+  closedby: 'any',
+} as unknown as React.DialogHTMLAttributes<HTMLDialogElement>;
+
 export function ScenarioContextBar() {
   const pathname = usePathname();
-  const { assignment, scenarioState, activeVariant } = useExperiment();
+  const { assignment, scenarioState, resetSession } = useExperiment();
   const dialogRef = useRef<HTMLDialogElement | null>(null);
 
   const isVisible = Boolean(
-    assignment &&
+    assignment?.consent_given &&
       scenarioState?.scenario_run_id &&
       scenarioState.scenario &&
       !scenarioState.is_finished &&
-      pathname !== '/experiment'
+      pathname !== '/experiment' &&
+      !pathname.startsWith('/admin')
   );
 
   const elapsedSeconds = useElapsedTimer(
     isVisible ? scenarioState?.started_at : null
   );
+
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    if (!dialog) return;
+
+    let pressedOutside = false;
+    const isOutside = (e: PointerEvent) => {
+      const rect = dialog.getBoundingClientRect();
+      return (
+        e.clientX < rect.left ||
+        e.clientX > rect.right ||
+        e.clientY < rect.top ||
+        e.clientY > rect.bottom
+      );
+    };
+
+    const onDown = (e: PointerEvent) => {
+      pressedOutside = isOutside(e);
+    };
+    const onUp = (e: PointerEvent) => {
+      if (dialog.open && pressedOutside && isOutside(e)) {
+        dialog.close();
+      }
+    };
+
+    dialog.addEventListener('pointerdown', onDown);
+    dialog.addEventListener('pointerup', onUp);
+    return () => {
+      dialog.removeEventListener('pointerdown', onDown);
+      dialog.removeEventListener('pointerup', onUp);
+    };
+  }, [isVisible]);
 
   if (!isVisible || !assignment || !scenarioState?.scenario) {
     return null;
@@ -37,24 +70,14 @@ export function ScenarioContextBar() {
   const { scenario, step_order, total_steps } = scenarioState;
 
   return (
-    <aside className="scenario-bar" aria-label="Ngữ cảnh kịch bản F11 đang mở">
+    <aside className="scenario-bar" aria-label="Nhiệm vụ trải nghiệm đang mở">
       <div className="container scenario-bar__inner">
         <div className="scenario-bar__info">
-          <span className="badge type-mono">{assignment.participant_code}</span>
           <span className="badge badge--accent">
-            Lượt {step_order}/{total_steps}
-          </span>
-          <span
-            className={`badge ${
-              activeVariant === 'chatbot_on' ? 'badge--success' : 'badge--info'
-            }`}
-          >
-            {activeVariant === 'chatbot_on'
-              ? 'Có trợ lý ảo'
-              : 'Không trợ lý ảo'}
+            Nhiệm vụ {step_order}/{total_steps}
           </span>
           <span className="scenario-bar__title" title={scenario.title}>
-            {scenario.code}: {scenario.title}
+            {scenario.title}
           </span>
         </div>
 
@@ -74,9 +97,16 @@ export function ScenarioContextBar() {
             Xem đề bài
           </button>
           <Link href="/experiment" className="dg-btn-purchase dg-btn-sm">
-            <span>Về chốt gói</span>
+            <span>Chốt lựa chọn</span>
             <ArrowRight size={14} />
           </Link>
+          <button
+            type="button"
+            className="btn btn--secondary btn--sm"
+            onClick={resetSession}
+          >
+            Thoát khảo sát
+          </button>
         </div>
       </div>
 
@@ -84,6 +114,7 @@ export function ScenarioContextBar() {
         ref={dialogRef}
         className="editorial-dialog"
         aria-labelledby="scenario-bar-dialog-title"
+        {...DIALOG_LIGHT_DISMISS}
       >
         <div style={{ padding: '24px', display: 'grid', gap: '16px' }}>
           <div
@@ -95,13 +126,14 @@ export function ScenarioContextBar() {
             }}
           >
             <span className="type-eyebrow">
-              Đề bài {scenario.code} • {DIFFICULTY_LABELS[scenario.difficulty]}
+              Nhiệm vụ {step_order}/{total_steps}
             </span>
             <button
               type="button"
               className="icon-btn"
               onClick={() => dialogRef.current?.close()}
               aria-label="Đóng đề bài"
+              autoFocus
             >
               <X size={16} />
             </button>
@@ -121,7 +153,14 @@ export function ScenarioContextBar() {
             </span>
           </div>
 
-          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px' }}>
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'flex-end',
+              flexWrap: 'wrap',
+              gap: '12px',
+            }}
+          >
             <button
               type="button"
               className="btn btn--secondary"
@@ -134,7 +173,7 @@ export function ScenarioContextBar() {
               className="dg-btn-purchase dg-btn-sm"
               onClick={() => dialogRef.current?.close()}
             >
-              <span>Quay về trang chốt gói</span>
+              <span>Chốt lựa chọn</span>
               <ArrowRight size={14} />
             </Link>
           </div>

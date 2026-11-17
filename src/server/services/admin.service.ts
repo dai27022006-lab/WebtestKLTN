@@ -1,6 +1,7 @@
 import type { z } from 'zod';
 
 import type { EventVariant } from '@/lib/tracking/events';
+import type { adminChatLogsQuerySchema } from '@/schemas/chat';
 import type { adminExportQuerySchema } from '@/schemas/experiment';
 import type { adminOrderQuerySchema } from '@/schemas/order';
 import type {
@@ -9,8 +10,9 @@ import type {
   productListQuerySchema,
 } from '@/schemas/product';
 import { notFoundError } from '@/server/errors';
-import { getStore } from '@/server/store';
+import { getStore, type ProductRecord } from '@/server/store';
 import type {
+  AdminChatLogItemDto,
   AdminDashboardSummaryDto,
   AdminExportDataset,
   AdminExportEventRow,
@@ -21,6 +23,7 @@ import type {
   OrderDto,
   PaginationMeta,
   ProductDetailDto,
+  SuggestedProductCardDto,
   VariantPerformanceSummary,
 } from '@/types/api';
 
@@ -31,6 +34,7 @@ type ProductListQueryParsed = z.infer<typeof productListQuerySchema>;
 type AdminCreateProductParsed = z.infer<typeof adminCreateProductSchema>;
 type AdminUpdateProductParsed = z.infer<typeof adminUpdateProductSchema>;
 type AdminOrderQueryParsed = z.infer<typeof adminOrderQuerySchema>;
+type AdminChatLogsQueryParsed = z.infer<typeof adminChatLogsQuerySchema>;
 type AdminExportQueryParsed = z.infer<typeof adminExportQuerySchema>;
 
 export async function adminListProducts(
@@ -142,6 +146,68 @@ export async function adminListOrders(
       totalPages: Math.max(1, Math.ceil(total / query.limit)),
     },
   };
+}
+
+function toAdminSuggestedCard(product: ProductRecord): SuggestedProductCardDto {
+  return {
+    id: product.id,
+    slug: product.slug,
+    name: product.name,
+    product_type: product.product_type,
+    industry: product.industry,
+    price_vnd: product.price_vnd,
+    thumbnail_url: product.thumbnail_url,
+    reason: product.short_description,
+  };
+}
+
+export async function adminListChatLogs(
+  query: AdminChatLogsQueryParsed
+): Promise<AdminChatLogItemDto[]> {
+  const store = getStore();
+  const entries = await store.listAdminChatLogs({
+    include_simulated: query.include_simulated,
+    limit: query.limit,
+  });
+
+  const productIds = Array.from(
+    new Set(
+      entries.flatMap((entry) =>
+        entry.messages.flatMap((msg) => msg.suggested_product_ids)
+      )
+    )
+  );
+  const products =
+    productIds.length > 0 ? await store.findProductsByIds(productIds, true) : [];
+  const productMap = new Map(products.map((p) => [p.id, p]));
+
+  return entries.map((entry) => ({
+    session_id: entry.session.id,
+    participant_code: entry.participant_code,
+    title: entry.session.title,
+    created_at: entry.session.created_at,
+    is_simulated: entry.session.is_simulated,
+    messages: entry.messages.map((msg) => {
+      const suggestedProducts: SuggestedProductCardDto[] = [];
+      for (const productId of msg.suggested_product_ids) {
+        const product = productMap.get(productId);
+        if (!product || product.deleted_at !== null) continue;
+        suggestedProducts.push(toAdminSuggestedCard(product));
+      }
+
+      return {
+        id: msg.id,
+        role: msg.role,
+        content: msg.content,
+        model_name: msg.model_name,
+        suggested_products: suggestedProducts,
+        latency_ms: msg.latency_ms,
+        tokens_used: msg.tokens_used,
+        cost_usd: msg.cost_usd,
+        created_at: msg.created_at,
+      };
+    }),
+  }));
 }
 
 function roundTo(value: number, decimals: number): number {

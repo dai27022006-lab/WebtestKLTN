@@ -1,8 +1,17 @@
+'use client';
+
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
 import { DreamTeamBrandMark } from '@/components/visual/DreamTeamBrandMark';
 
 export function SiteFooter() {
+  const pathname = usePathname();
+
+  if (pathname.startsWith('/admin')) {
+    return null;
+  }
+
   return (
     <footer className="dg-footer dg-dark-band">
       <div className="dg-footer-glow glow-a" aria-hidden="true" />
@@ -17,30 +26,29 @@ export function SiteFooter() {
                 size={34}
                 showWordmark
                 inverted
-                subtitle="Giải pháp số cho chủ shop nhỏ"
+                subtitle="Công cụ số cho shop nhỏ"
               />
             </Link>
             <p>
-              Nền tảng thương mại điện tử kinh doanh Template Website, Prompt Pack
-              và Workflow tự động cho chủ shop 1–3 người trên Shopee, TikTok
-              Shop, Facebook — tích hợp Trợ lý ảo RAG (F7) &amp; Thí nghiệm A/B
-              (F11).
+              Cửa hàng Template Website, Prompt Pack AI và Workflow tự động tối
+              ưu cho chủ shop 1–3 người kinh doanh trên Shopee, TikTok Shop và
+              Facebook — dễ cài đặt, minh bạch bản quyền và nhận file tức thì.
             </p>
             <div className="dg-footer-badges">
-              <span className="dg-footer-pill">100% Grounding DB</span>
-              <span className="dg-footer-pill">Within-subject AB/BA</span>
-              <span className="dg-footer-pill">Sandbox F5–F6</span>
+              <span className="dg-footer-pill">Tối ưu Mobile 375px</span>
+              <span className="dg-footer-pill">Bản quyền minh bạch</span>
+              <span className="dg-footer-pill">Tải file tức thì</span>
             </div>
           </div>
 
           <div>
             <h5>
               <span className="dg-footer-dot grad-emerald" aria-hidden="true" />
-              Khám phá &amp; Mua sắm
+              Sản phẩm &amp; Hỗ trợ
             </h5>
             <ul className="dg-footer-links">
               <li>
-                <Link href="/products">Toàn bộ gói giải pháp (F2)</Link>
+                <Link href="/products">Toàn bộ sản phẩm số</Link>
               </li>
               <li>
                 <Link href="/products?product_type=template">
@@ -58,7 +66,10 @@ export function SiteFooter() {
                 </Link>
               </li>
               <li>
-                <Link href="/cart">Giỏ hàng &amp; Checkout Sandbox</Link>
+                <Link href="/orders">Tra cứu đơn hàng &amp; Link tải</Link>
+              </li>
+              <li>
+                <Link href="/#faqs">Hỏi đáp &amp; Bản quyền</Link>
               </li>
             </ul>
           </div>
@@ -66,25 +77,20 @@ export function SiteFooter() {
           <div>
             <h5>
               <span className="dg-footer-dot grad-copper" aria-hidden="true" />
-              Nghiên cứu &amp; Quản trị
+              Tài khoản &amp; Khảo sát
             </h5>
             <ul className="dg-footer-links">
               <li>
-                <Link href="/experiment">Tham gia Thí nghiệm A/B (F11)</Link>
+                <Link href="/auth">Đăng nhập / Đăng ký</Link>
               </li>
               <li>
-                <Link href="/admin/analytics">
-                  Dashboard Phân tích &amp; RAG (F10)
-                </Link>
+                <Link href="/cart">Giỏ hàng của bạn</Link>
               </li>
               <li>
-                <Link href="/auth">Đăng nhập / Tài khoản Demo (F1)</Link>
+                <Link href="/experiment">Tham gia khảo sát trải nghiệm</Link>
               </li>
               <li>
-                <Link href="/#faqs">Câu hỏi thường gặp &amp; Bản quyền</Link>
-              </li>
-              <li>
-                <Link href="/api/health">Trạng thái hệ thống (/api/health)</Link>
+                <Link href="/admin/analytics">Khu vực quản trị</Link>
               </li>
             </ul>
           </div>
@@ -92,13 +98,13 @@ export function SiteFooter() {
 
         <div className="dg-footer-bottom">
           <span>
-            © 2026 DreamTeam • Đồ án Tốt nghiệp — Thanh toán trên hệ thống là
-            chế độ Sandbox đo ý định mua, không thu tiền thật.
+            © 2026 DreamTeam • Cửa hàng sản phẩm số cho chủ shop nhỏ — Chế độ
+            thanh toán thử nghiệm không thu tiền thật.
           </span>
           <div className="dg-footer-bottom-links">
-            <Link href="/products">Danh mục</Link>
-            <Link href="/experiment">Thí nghiệm F11</Link>
-            <Link href="/checkout">Thanh toán Sandbox</Link>
+            <Link href="/products">Sản phẩm</Link>
+            <Link href="/orders">Đơn hàng</Link>
+            <Link href="/#faqs">Hỏi đáp</Link>
             <Link href="/auth">Tài khoản</Link>
           </div>
         </div>

@@ -73,7 +73,7 @@ export default function CheckoutPage() {
     setOrderCreated(res.data);
   };
 
-  const handleMockSandboxWebhook = async (outcome: 'paid' | 'failed') => {
+  const handleSandboxConfirm = async (outcome: 'paid' | 'failed') => {
     if (!orderCreated || isPaying) return;
     setIsPaying(true);
     setErrorMessage(null);
@@ -118,14 +118,14 @@ export default function CheckoutPage() {
         : null
     );
     setFailedNotice(
-      'Webhook Sandbox đã trả về trạng thái Thất bại (Failed). Bạn có thể thử thanh toán lại bất kỳ lúc nào.'
+      'Giao dịch thử nghiệm vừa mô phỏng trạng thái chưa thành công. Bạn có thể bấm xác nhận thanh toán lại bất kỳ lúc nào.'
     );
   };
 
   return (
     <section className="section section--compact">
       <div className="container">
-        <div className="stepper" aria-label="Tiến trình giao dịch Sandbox">
+        <div className="stepper" aria-label="Tiến trình đặt hàng thử nghiệm">
           <div className="stepper__item stepper__item--done">
             <span className="badge badge--success">
               <ShoppingBag size={12} /> 1
@@ -136,28 +136,31 @@ export default function CheckoutPage() {
             <span className="badge badge--accent">
               <Lock size={12} /> 2
             </span>
-            <span>Thanh toán Sandbox</span>
+            <span>Xác nhận đơn thử nghiệm</span>
           </div>
           <div className="stepper__item">
             <span className="badge">
               <Download size={12} /> 3
             </span>
-            <span>Nhận file qua token</span>
+            <span>Nhận file ngay</span>
           </div>
         </div>
 
         <div className="section-header" style={{ marginBottom: '24px' }}>
           <div className="section-header__copy">
-            <span className="type-eyebrow">Cổng thanh toán thử nghiệm (F5)</span>
-            <h1 className="type-h1">Tạo đơn &amp; Mô phỏng Mock Sandbox Webhook</h1>
+            <span className="type-eyebrow">Thanh toán thử nghiệm</span>
+            <h1 className="type-h1">
+              Xác nhận đơn hàng &amp; Mở kho link tải
+            </h1>
             <p className="type-body-sm">
-              Thanh toán Sandbox phục vụ đo ý định mua trong đồ án nghiên cứu,
-              tuyệt đối không thu tiền thật.
+              Hệ thống đang chạy chế độ đặt hàng thử nghiệm (Sandbox) — bạn có
+              thể kiểm tra quy trình tạo đơn và nhận file ngay mà không bị trừ
+              tiền thật.
             </p>
           </div>
           {!user && (
             <Link href="/auth" className="btn btn--secondary btn--sm">
-              Đăng nhập để gắn đơn vào tài khoản
+              Đăng nhập để lưu đơn vào tài khoản
             </Link>
           )}
         </div>
@@ -191,29 +194,38 @@ export default function CheckoutPage() {
               justifyItems: 'center',
             }}
           >
-            <EditorialEmptyIllustration title="Chưa có sản phẩm để thanh toán" />
+            <EditorialEmptyIllustration title="Chưa có sản phẩm để xác nhận" />
             <h2 className="type-h3" style={{ margin: 0 }}>
-              Chưa có sản phẩm trong giỏ để tạo đơn Sandbox
+              Chưa có sản phẩm trong giỏ để tạo đơn thử nghiệm
             </h2>
-            <Link href="/products" className="dg-btn-purchase">
-              <span>Quay lại chọn gói giải pháp</span>
-              <ArrowRight size={15} />
-            </Link>
+            <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+              <Link href="/products" className="dg-btn-purchase">
+                <span>Quay lại chọn gói giải pháp</span>
+                <ArrowRight size={15} />
+              </Link>
+              <Link href="/orders" className="btn btn--secondary">
+                Thư viện đơn hàng đã mua
+              </Link>
+            </div>
           </div>
         ) : (
           <div className="two-col-ops">
-            {/* Left: Order Summary from Server */}
-            <div className="surface-card dg-panel" style={{ display: 'grid', gap: '16px' }}>
+            {/* Left: Order Summary */}
+            <div
+              className="surface-card dg-panel"
+              style={{ display: 'grid', gap: '16px' }}
+            >
               <div
                 style={{
                   display: 'flex',
                   justifyContent: 'space-between',
                   alignItems: 'center',
                   gap: '12px',
+                  flexWrap: 'wrap',
                 }}
               >
                 <h2 className="type-h3" style={{ margin: 0 }}>
-                  Chi tiết đơn hàng đối soát DB
+                  Chi tiết đơn hàng
                 </h2>
                 {orderCreated && (
                   <span
@@ -252,7 +264,8 @@ export default function CheckoutPage() {
                     }}
                   >
                     <span className="type-body-sm">
-                      {row.name} × <strong className="type-mono">{row.qty}</strong>
+                      {row.name} ×{' '}
+                      <strong className="type-mono">{row.qty}</strong>
                     </span>
                     <strong className="type-price">
                       {formatVnd(row.total)}
@@ -268,7 +281,7 @@ export default function CheckoutPage() {
                   alignItems: 'center',
                 }}
               >
-                <strong>Tổng thanh toán (Server chốt)</strong>
+                <strong>Tổng thanh toán (Thử nghiệm)</strong>
                 <strong
                   className="type-price"
                   style={{ fontSize: '1.5rem', color: 'var(--accent)' }}
@@ -292,26 +305,29 @@ export default function CheckoutPage() {
                   <span>
                     {isCreating
                       ? 'Đang tạo đơn hàng...'
-                      : 'Tạo đơn Sandbox & Mở cổng giả lập'}
+                      : 'Tạo đơn hàng thử nghiệm'}
                   </span>
                   <ArrowRight size={15} />
                 </button>
               )}
             </div>
 
-            {/* Right: Mock Sandbox Webhook Panel */}
-            <aside className="surface-card dg-panel" style={{ display: 'grid', gap: '16px' }}>
-              <span className="type-eyebrow">Mock Sandbox Webhook Panel</span>
+            {/* Right: Sandbox Payment Confirmation */}
+            <aside
+              className="surface-card dg-panel"
+              style={{ display: 'grid', gap: '16px' }}
+            >
+              <span className="type-eyebrow">Xác nhận đơn thử nghiệm</span>
               <h2 className="type-h3" style={{ margin: 0 }}>
-                Mô phỏng kết quả thanh toán
+                Hoàn tất thanh toán thử nghiệm
               </h2>
 
               {!orderCreated ? (
                 <div className="callout callout--info">
                   <span>
-                    Bấm <strong>Tạo đơn Sandbox</strong> ở cột bên trái để sinh
-                    mã đơn và kích hoạt 2 nút mô phỏng kết quả webhook{' '}
-                    <code className="type-mono">Paid / Failed</code>.
+                    Bấm <strong>Tạo đơn hàng thử nghiệm</strong> ở cột bên trái
+                    để khởi tạo mã đơn và trải nghiệm bước xác nhận nhận file
+                    ngay.
                   </span>
                 </div>
               ) : (
@@ -330,6 +346,7 @@ export default function CheckoutPage() {
                       style={{
                         display: 'flex',
                         justifyContent: 'space-between',
+                        gap: '8px',
                       }}
                     >
                       <span className="type-caption">Mã đơn hàng</span>
@@ -341,10 +358,14 @@ export default function CheckoutPage() {
                       style={{
                         display: 'flex',
                         justifyContent: 'space-between',
+                        gap: '8px',
                       }}
                     >
-                      <span className="type-caption">Số tiền</span>
-                      <strong className="type-price" style={{ color: 'var(--accent)' }}>
+                      <span className="type-caption">Giá trị đơn thử nghiệm</span>
+                      <strong
+                        className="type-price"
+                        style={{ color: 'var(--accent)' }}
+                      >
                         {formatVnd(orderCreated.payment_intent.amount_vnd)}
                       </strong>
                     </div>
@@ -352,12 +373,13 @@ export default function CheckoutPage() {
                       style={{
                         display: 'flex',
                         justifyContent: 'space-between',
+                        gap: '8px',
                       }}
                     >
-                      <span className="type-caption">Webhook nội bộ</span>
-                      <code className="type-caption type-mono">
-                        {orderCreated.payment_intent.webhook_path}
-                      </code>
+                      <span className="type-caption">Hình thức</span>
+                      <span className="badge badge--info">
+                        Sandbox không trừ tiền
+                      </span>
                     </div>
                   </div>
 
@@ -373,13 +395,13 @@ export default function CheckoutPage() {
                       className="dg-btn-purchase btn--block"
                       style={{ justifyContent: 'center' }}
                       disabled={isPaying}
-                      onClick={() => void handleMockSandboxWebhook('paid')}
+                      onClick={() => void handleSandboxConfirm('paid')}
                     >
                       <CheckCircle2 size={16} />
                       <span>
                         {isPaying
-                          ? 'Đang gửi webhook...'
-                          : 'Giả lập Thanh toán Thành công (Paid)'}
+                          ? 'Đang xác nhận đơn...'
+                          : 'Xác nhận Thành công & Nhận file ngay'}
                       </span>
                     </button>
 
@@ -387,18 +409,18 @@ export default function CheckoutPage() {
                       type="button"
                       className="btn btn--secondary btn--block"
                       disabled={isPaying}
-                      onClick={() => void handleMockSandboxWebhook('failed')}
+                      onClick={() => void handleSandboxConfirm('failed')}
                     >
-                      Giả lập Thất bại (Failed)
+                      Thử trạng thái Thanh toán chưa thành công
                     </button>
                   </div>
                 </>
               )}
 
               <p className="type-caption" style={{ margin: 0 }}>
-                Khi giả lập <strong>Paid</strong> thành công, server tự phát
-                hành <code className="type-mono">download_grants</code> có thời
-                hạn 7 ngày (tối đa 5 lượt tải) và xóa giỏ hàng hiện tại.
+                Sau khi xác nhận thành công, hệ thống tự động mở{' '}
+                <strong>Kho link tải an toàn (hạn 7 ngày)</strong> với tối đa
+                5 lượt tải cho từng gói và làm mới giỏ hàng của bạn.
               </p>
             </aside>
           </div>
