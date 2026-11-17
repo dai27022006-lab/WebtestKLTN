@@ -53,11 +53,20 @@ function readStoredAssignment(): ExperimentAssignmentDto | null {
   }
 }
 
+function writeStoredAssignment(assignment: ExperimentAssignmentDto): void {
+  if (typeof window === 'undefined') return;
+  window.localStorage.setItem(
+    ASSIGNMENT_STORAGE_KEY,
+    JSON.stringify(assignment)
+  );
+}
+
 export interface ExperimentContextValue {
   visitorId: string;
   assignment: ExperimentAssignmentDto | null;
   scenarioState: ScenarioNextResponse | null;
   activeVariant: EventVariant;
+  isScenarioSynced: boolean;
   isLoading: boolean;
   errorMessage: string | null;
   giveConsent: (
@@ -94,6 +103,7 @@ export function ExperimentProvider({
   );
   const [scenarioState, setScenarioState] =
     useState<ScenarioNextResponse | null>(null);
+  const [isScenarioSynced, setIsScenarioSynced] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -104,11 +114,27 @@ export function ExperimentProvider({
       const vid = readStoredVisitorId();
       const storedAssignment = readStoredAssignment();
       setVisitorId(vid);
-      if (storedAssignment) {
-        setAssignment(storedAssignment);
+      if (!storedAssignment) {
+        setIsScenarioSynced(true);
+        return;
+      }
+
+      setAssignment(storedAssignment);
+      try {
         const nextRes = await getNextScenario(storedAssignment.assignment_id);
-        if (active && nextRes.ok) {
+        if (!active) return;
+        if (nextRes.ok) {
           setScenarioState(nextRes.data);
+          const syncedAssignment: ExperimentAssignmentDto = {
+            ...storedAssignment,
+            active_variant: nextRes.data.active_variant,
+          };
+          setAssignment(syncedAssignment);
+          writeStoredAssignment(syncedAssignment);
+        }
+      } finally {
+        if (active) {
+          setIsScenarioSynced(true);
         }
       }
     });
@@ -126,17 +152,39 @@ export function ExperimentProvider({
   const loadNextScenario = useCallback(
     async (assignmentIdOverride?: string) => {
       const targetId = assignmentIdOverride ?? assignment?.assignment_id;
-      if (!targetId) return null;
-      setIsLoading(true);
-      setErrorMessage(null);
-      const res = await getNextScenario(targetId);
-      setIsLoading(false);
-      if (!res.ok) {
-        setErrorMessage(res.error.message);
+      if (!targetId) {
+        setIsScenarioSynced(true);
         return null;
       }
-      setScenarioState(res.data);
-      return res.data;
+      setIsLoading(true);
+      setErrorMessage(null);
+      try {
+        const res = await getNextScenario(targetId);
+        if (!res.ok) {
+          setErrorMessage(res.error.message);
+          return null;
+        }
+        setScenarioState(res.data);
+        const currentAssignment =
+          assignment && assignment.assignment_id === targetId
+            ? assignment
+            : readStoredAssignment();
+        if (
+          currentAssignment &&
+          currentAssignment.assignment_id === targetId
+        ) {
+          const syncedAssignment: ExperimentAssignmentDto = {
+            ...currentAssignment,
+            active_variant: res.data.active_variant,
+          };
+          setAssignment(syncedAssignment);
+          writeStoredAssignment(syncedAssignment);
+        }
+        return res.data;
+      } finally {
+        setIsLoading(false);
+        setIsScenarioSynced(true);
+      }
     },
     [assignment]
   );
@@ -161,16 +209,14 @@ export function ExperimentProvider({
         return null;
       }
 
+      setIsScenarioSynced(false);
       setAssignment(res.data);
-      if (typeof window !== 'undefined') {
-        window.localStorage.setItem(
-          ASSIGNMENT_STORAGE_KEY,
-          JSON.stringify(res.data)
-        );
-      }
+      writeStoredAssignment(res.data);
 
-      await loadNextScenario(res.data.assignment_id);
-      return res.data;
+      const nextScenario = await loadNextScenario(res.data.assignment_id);
+      return nextScenario
+        ? { ...res.data, active_variant: nextScenario.active_variant }
+        : res.data;
     },
     [visitorId, loadNextScenario]
   );
@@ -252,6 +298,7 @@ export function ExperimentProvider({
   const resetSession = useCallback(() => {
     setAssignment(null);
     setScenarioState(null);
+    setIsScenarioSynced(true);
     setErrorMessage(null);
     if (typeof window !== 'undefined') {
       window.localStorage.removeItem(ASSIGNMENT_STORAGE_KEY);
@@ -267,6 +314,7 @@ export function ExperimentProvider({
       assignment,
       scenarioState,
       activeVariant,
+      isScenarioSynced,
       isLoading,
       errorMessage,
       giveConsent,
@@ -280,6 +328,7 @@ export function ExperimentProvider({
       assignment,
       scenarioState,
       activeVariant,
+      isScenarioSynced,
       isLoading,
       errorMessage,
       giveConsent,

@@ -10,7 +10,11 @@ import {
   writeSignedCookie,
 } from '@/server/auth/cookies';
 import { toUserProfileDto } from '@/server/auth/session';
-import { conflictError, unauthorizedError } from '@/server/errors';
+import {
+  conflictError,
+  unauthorizedError,
+  unprocessableError,
+} from '@/server/errors';
 import { getStore } from '@/server/store';
 import { hashPasswordLocal } from '@/server/store/seed-data';
 import type { AuthSessionResponse } from '@/types/api';
@@ -58,14 +62,22 @@ export async function registerUser(
     });
 
     if (error || !data.user) {
-      if (error?.message?.toLowerCase().includes('already')) {
+      const errorMessage = error?.message ?? '';
+      const lowerMessage = errorMessage.toLowerCase();
+      if (lowerMessage.includes('already')) {
         throw conflictError(
           'Email này đã được đăng ký.',
           'EMAIL_ALREADY_EXISTS'
         );
       }
+      if (
+        lowerMessage.includes('invalid') ||
+        lowerMessage.includes('password')
+      ) {
+        throw unprocessableError(errorMessage, 'INVALID_SIGNUP_INPUT');
+      }
       throw conflictError(
-        error?.message || 'Không thể tạo tài khoản lúc này.',
+        errorMessage || 'Không thể tạo tài khoản lúc này.',
         'REGISTER_FAILED'
       );
     }

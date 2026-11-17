@@ -366,8 +366,14 @@ export default function AuthPage() {
           <div className="surface-card dg-panel" style={{ display: 'grid', gap: '12px', marginTop: '16px' }}>
             <span className="type-eyebrow">Tài khoản Demo (Dev Store)</span>
             <p className="type-body-sm" style={{ margin: 0 }}>
-              Điền nhanh để kiểm thử luồng khách hàng hoặc quyền quản trị viên
-              xem số liệu A/B tại <code className="type-mono">/admin/analytics</code>:
+              Hai tài khoản <code className="type-mono">.local</code> điền nhanh bên dưới dùng
+              được ngay trên <strong>Local Dev Store</strong> (xem số liệu A/B tại{' '}
+              <code className="type-mono">/admin/analytics</code>), hoặc trên{' '}
+              <strong>Supabase</strong> sau khi chạy{' '}
+              <code className="type-mono" style={{ overflowWrap: 'anywhere' }}>
+                node scripts/seed-supabase-demo-users.mjs
+              </code>
+              .
             </p>
 
             <div style={{ display: 'grid', gap: '8px' }}>
@@ -401,6 +407,17 @@ export default function AuthPage() {
                 </button>
               </div>
             </div>
+
+            <p className="type-caption" style={{ margin: 0 }}>
+              Nếu đăng ký mới công khai trên Supabase, hãy dùng email thật (ví dụ{' '}
+              <code className="type-mono">@gmail.com</code> — Supabase Auth từ chối tên miền{' '}
+              <code className="type-mono">.local</code> khi tự đăng ký), rồi có thể nâng quyền
+              Admin bằng script hoặc SQL{' '}
+              <code className="type-mono" style={{ overflowWrap: 'anywhere' }}>
+                UPDATE public.users SET role = &apos;admin&apos;
+              </code>
+              .
+            </p>
           </div>
         </div>
       </div>

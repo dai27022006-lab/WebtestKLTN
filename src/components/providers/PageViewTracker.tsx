@@ -7,11 +7,11 @@ import { useExperiment } from '@/state';
 
 export function PageViewTracker() {
   const pathname = usePathname();
-  const { assignment, track } = useExperiment();
+  const { assignment, isScenarioSynced, track } = useExperiment();
   const lastTrackedRef = useRef<string | null>(null);
 
   useEffect(() => {
-    if (!assignment) return;
+    if (!assignment || !isScenarioSynced) return;
     const key = `${assignment.assignment_id}:${pathname}`;
     if (lastTrackedRef.current === key) return;
     lastTrackedRef.current = key;
@@ -19,7 +19,7 @@ export function PageViewTracker() {
     void track('page_viewed', {
       properties: { path: pathname },
     });
-  }, [assignment, pathname, track]);
+  }, [assignment, isScenarioSynced, pathname, track]);
 
   return null;
 }

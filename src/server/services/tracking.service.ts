@@ -9,7 +9,10 @@ import {
 import { getStore } from '@/server/store';
 import type { TrackEventResponse } from '@/types/api';
 
-import { resolveActiveVariantForStep } from './experiment.service';
+import {
+  getTotalStepsForVariant,
+  resolveActiveVariantForStep,
+} from './experiment.service';
 
 export async function recordTrackingEvent(
   input: TrackEventSchemaOutput
@@ -54,13 +57,28 @@ export async function recordTrackingEvent(
     }
     activeVariant = run.active_variant;
   } else {
-    const runs = await store.listScenarioRunsByAssignment(assignment.id);
+    const [runs, activeScenarios] = await Promise.all([
+      store.listScenarioRunsByAssignment(assignment.id),
+      store.listActiveScenarios(),
+    ]);
     const openRun = runs.find((r) => r.completed_at === null);
     if (openRun) {
       activeVariant = openRun.active_variant;
     } else {
-      const nextStep = runs.filter((r) => r.completed_at !== null).length + 1;
-      activeVariant = resolveActiveVariantForStep(assignment.variant, nextStep);
+      const completedRuns = runs.filter((r) => r.completed_at !== null);
+      const totalSteps = getTotalStepsForVariant(
+        assignment.variant,
+        activeScenarios.length
+      );
+      if (completedRuns.length >= totalSteps && completedRuns.length > 0) {
+        activeVariant = completedRuns[completedRuns.length - 1].active_variant;
+      } else {
+        const nextStep = completedRuns.length + 1;
+        activeVariant = resolveActiveVariantForStep(
+          assignment.variant,
+          nextStep
+        );
+      }
     }
   }
 

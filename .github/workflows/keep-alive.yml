@@ -23,8 +23,15 @@ jobs:
           test "$status" -ge 200 -a "$status" -lt 300
 
       - name: Ping Deployed App Health Endpoint
-        if: ${{ vars.APP_HEALTH_URL != '' }}
         run: |
-          status=$(curl -s -o /dev/null -w "%{http_code}" "${{ vars.APP_HEALTH_URL }}")
+          HEALTH_URL="${{ vars.APP_HEALTH_URL }}"
+          if [ -z "${HEALTH_URL// }" ]; then
+            HEALTH_URL="https://webtest-kltn-ij3s.vercel.app/api/health"
+          fi
+          echo "Pinging health endpoint: $HEALTH_URL"
+          body_file=$(mktemp)
+          status=$(curl -sS --max-time 25 -o "$body_file" -w "%{http_code}" "$HEALTH_URL")
           echo "App health HTTP status: $status"
+          echo "App health response: $(cat "$body_file")"
+          rm -f "$body_file"
           test "$status" -ge 200 -a "$status" -lt 300

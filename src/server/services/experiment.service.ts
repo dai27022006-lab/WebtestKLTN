@@ -176,7 +176,7 @@ export async function submitExperimentConsent(input: ConsentParsed): Promise<{
   };
 }
 
-function getTotalStepsForVariant(
+export function getTotalStepsForVariant(
   variant: ExperimentVariant,
   activeScenariosCount: number
 ): number {
