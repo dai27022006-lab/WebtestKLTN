@@ -525,6 +525,29 @@ export interface VariantPerformanceSummary {
   sandbox_purchase_count: number;
 }
 
+export interface AdminFunnelStageDto {
+  key: string;
+  label: string;
+  count: number;
+  pct_of_top: number;
+}
+
+export interface AdminDailyTrendPointDto {
+  date: string;
+  label: string;
+  completed_runs: number;
+  assistant_messages: number;
+  orders_count: number;
+  paid_revenue_vnd: number;
+}
+
+export interface AdminCategoryBreakdownDto {
+  key: string;
+  label: string;
+  count: number;
+  share_pct: number;
+}
+
 export interface AdminDashboardSummaryDto {
   include_simulated: boolean;
   total_participants: number;
@@ -544,6 +567,21 @@ export interface AdminDashboardSummaryDto {
     paid_orders: number;
     total_sandbox_value_vnd: number;
   };
+  funnel_stages: AdminFunnelStageDto[];
+  daily_trend: AdminDailyTrendPointDto[];
+  industry_breakdown: AdminCategoryBreakdownDto[];
+  ai_mix: {
+    gemini_count: number;
+    stub_count: number;
+    grounded_count: number;
+    grounding_rate: number;
+  };
+  orders_breakdown: {
+    paid: number;
+    pending: number;
+    failed_or_cancelled: number;
+  };
+  event_counts: Record<EventName, number>;
 }
 
 export type AdminExportDataset = 'scenario_runs' | 'events' | 'rag_logs';

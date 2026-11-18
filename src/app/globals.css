@@ -5767,3 +5767,414 @@ dialog.admin-drawer::backdrop {
     justify-content: center;
   }
 }
+
+/* --------------------------------------------------------------------------
+   Visual Dashboards (5-Element Admin & Shop Owner Analytics)
+   - Uses native <progress> + conic-gradient + @property (modern-web-guidance)
+   -------------------------------------------------------------------------- */
+@property --dg-ring-value {
+  syntax: '<number>';
+  inherits: true;
+  initial-value: 0;
+}
+
+.dg-dash-bento {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: var(--space-4);
+  align-items: stretch;
+}
+
+.dg-dash-span-4 {
+  grid-column: span 4;
+}
+
+.dg-dash-span-5 {
+  grid-column: span 5;
+}
+
+.dg-dash-span-7 {
+  grid-column: span 7;
+}
+
+.dg-dash-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  min-width: 0;
+}
+
+.dg-dash-card__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+.dg-dash-card__title-wrap {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.dg-dash-eyebrow {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ink-tertiary);
+}
+
+.dg-dash-legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 14px;
+}
+
+.dg-legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--ink-soft);
+}
+
+.dg-legend-swatch {
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.dg-legend-swatch.is-emerald,
+.dg-bar-fill.is-emerald,
+.dg-split-bar__seg.is-emerald {
+  background-color: var(--accent);
+}
+
+.dg-legend-swatch.is-copper,
+.dg-bar-fill.is-copper,
+.dg-split-bar__seg.is-copper {
+  background-color: var(--accent-copper);
+}
+
+.dg-legend-swatch.is-info,
+.dg-bar-fill.is-info,
+.dg-split-bar__seg.is-info {
+  background-color: var(--status-info);
+}
+
+.dg-ring-pair {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  padding-block: var(--space-1);
+}
+
+.dg-ring-card {
+  display: grid;
+  justify-items: center;
+  gap: var(--space-2);
+}
+
+.dg-progress-ring-wrap {
+  position: relative;
+  display: grid;
+  place-items: center;
+}
+
+progress.dg-progress-ring {
+  --ring-size: 112px;
+  --ring-thickness: 11px;
+  --ring-track: var(--bg-surface-sunken);
+  --ring-fill: var(--accent);
+  appearance: none;
+  -webkit-appearance: none;
+  width: var(--ring-size);
+  height: var(--ring-size);
+  border-radius: 50%;
+  background: conic-gradient(
+    var(--ring-fill) calc(var(--dg-ring-value) * 1%),
+    var(--ring-track) 0
+  );
+  border: var(--ring-thickness) solid transparent;
+  background-clip: border-area;
+  background-origin: border-box;
+  transition: --dg-ring-value 0s ease-out;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  progress.dg-progress-ring {
+    transition-duration: 0.45s;
+  }
+}
+
+@supports not (background-clip: border-area) {
+  progress.dg-progress-ring {
+    border: 0;
+    mask-image: radial-gradient(
+      transparent calc(50% - var(--ring-thickness)),
+      #000000 calc(50% - var(--ring-thickness) + 0.75px)
+    );
+    -webkit-mask-image: radial-gradient(
+      transparent calc(50% - var(--ring-thickness)),
+      #000000 calc(50% - var(--ring-thickness) + 0.75px)
+    );
+  }
+}
+
+@media (forced-colors: active) {
+  progress.dg-progress-ring {
+    forced-color-adjust: none;
+    --ring-fill: CanvasText;
+    --ring-track: Canvas;
+  }
+}
+
+progress.dg-progress-ring::-webkit-progress-bar,
+progress.dg-progress-ring::-webkit-progress-value,
+progress.dg-progress-ring::-moz-progress-bar {
+  display: none;
+  background: none;
+}
+
+.dg-progress-ring-content {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  text-align: center;
+  line-height: 1.15;
+  pointer-events: none;
+}
+
+.dg-progress-ring-primary {
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.dg-progress-ring-secondary {
+  font-size: 0.7rem;
+  color: var(--ink-soft);
+  font-variant-numeric: tabular-nums;
+}
+
+.dg-ring-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--ink-soft);
+  text-align: center;
+}
+
+.dg-compare-list,
+.dg-funnel-list {
+  display: grid;
+  gap: 11px;
+}
+
+.dg-compare-row,
+.dg-funnel-step {
+  display: grid;
+  gap: 5px;
+}
+
+.dg-compare-row__labels,
+.dg-funnel-step__meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 0.8125rem;
+  color: var(--ink-soft);
+}
+
+.dg-compare-row__title {
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.dg-compare-bars {
+  display: grid;
+  gap: 4px;
+}
+
+.dg-bar-track {
+  width: 100%;
+  height: 9px;
+  border-radius: var(--radius-pill);
+  background-color: var(--bg-surface-sunken);
+  overflow: hidden;
+}
+
+.dg-bar-fill {
+  height: 100%;
+  border-radius: var(--radius-pill);
+  transition: width var(--duration-base) var(--ease-standard);
+}
+
+.dg-split-bar {
+  width: 100%;
+  height: 12px;
+  border-radius: var(--radius-pill);
+  background-color: var(--bg-surface-sunken);
+  display: flex;
+  overflow: hidden;
+  gap: 2px;
+}
+
+.dg-split-bar__seg {
+  height: 100%;
+  min-width: 0;
+}
+
+.dg-col-chart {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 8px;
+  align-items: end;
+  padding-top: 4px;
+}
+
+.dg-col-item {
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+  min-width: 0;
+}
+
+.dg-col-value {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--ink-soft);
+  font-variant-numeric: tabular-nums;
+}
+
+.dg-col-track {
+  width: 100%;
+  max-width: 28px;
+  height: 92px;
+  border-radius: 6px;
+  background-color: var(--bg-surface-sunken);
+  display: flex;
+  align-items: flex-end;
+  overflow: hidden;
+}
+
+.dg-col-bar {
+  width: 100%;
+  border-radius: 6px 6px 0 0;
+  background-color: var(--border-strong);
+  transition: height var(--duration-base) var(--ease-standard);
+}
+
+.dg-col-bar.is-active {
+  background: var(--dg-gradient-brand);
+}
+
+.dg-col-label {
+  font-size: 0.7rem;
+  color: var(--ink-tertiary);
+  white-space: nowrap;
+}
+
+.dg-chip-metrics {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-2);
+}
+
+.dg-mini-stat {
+  padding: 10px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-hairline);
+  background-color: var(--bg-surface-subtle);
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.dg-mini-stat strong {
+  font-size: 0.92rem;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dg-spend-hero {
+  display: grid;
+  gap: var(--space-4);
+  margin-top: auto;
+}
+
+.dg-spend-main {
+  display: grid;
+  gap: 4px;
+  padding: 14px 16px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-hairline);
+  background-color: var(--bg-surface-subtle);
+}
+
+.dg-recent-feed {
+  display: grid;
+  gap: 8px;
+}
+
+.dg-recent-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-hairline);
+  background-color: var(--bg-surface-subtle);
+  text-decoration: none;
+  transition: border-color var(--duration-fast) var(--ease-standard),
+    background-color var(--duration-fast) var(--ease-standard);
+}
+
+.dg-recent-row:hover {
+  border-color: var(--accent);
+  background-color: var(--bg-surface);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dg-bar-fill,
+  .dg-col-bar {
+    transition: none;
+  }
+}
+
+@media (max-width: 1080px) {
+  .dg-dash-span-5,
+  .dg-dash-span-7 {
+    grid-column: span 12;
+  }
+
+  .dg-dash-span-4 {
+    grid-column: span 6;
+  }
+}
+
+@media (max-width: 767px) {
+  .dg-dash-span-4,
+  .dg-dash-span-5,
+  .dg-dash-span-7 {
+    grid-column: span 12;
+  }
+
+  .dg-chip-metrics {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

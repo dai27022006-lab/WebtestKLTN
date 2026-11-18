@@ -1,6 +1,10 @@
 import type { z } from 'zod';
 
-import type { EventVariant } from '@/lib/tracking/events';
+import {
+  EVENT_NAMES,
+  type EventName,
+  type EventVariant,
+} from '@/lib/tracking/events';
 import type { adminChatLogsQuerySchema } from '@/schemas/chat';
 import type { adminExportQuerySchema } from '@/schemas/experiment';
 import type { adminOrderQuerySchema } from '@/schemas/order';
@@ -12,7 +16,9 @@ import type {
 import { notFoundError } from '@/server/errors';
 import { getStore, type ProductRecord } from '@/server/store';
 import type {
+  AdminCategoryBreakdownDto,
   AdminChatLogItemDto,
+  AdminDailyTrendPointDto,
   AdminDashboardSummaryDto,
   AdminExportDataset,
   AdminExportEventRow,
@@ -20,6 +26,7 @@ import type {
   AdminExportRagLogRow,
   AdminExportRow,
   AdminExportScenarioRunRow,
+  AdminFunnelStageDto,
   OrderDto,
   PaginationMeta,
   ProductDetailDto,
@@ -217,6 +224,130 @@ function roundTo(value: number, decimals: number): number {
   return Math.round(value * factor) / factor;
 }
 
+const INDUSTRY_LABELS: Record<string, string> = {
+  my_pham: 'Mỹ phẩm',
+  cosmetics: 'Mỹ phẩm',
+  thoi_trang: 'Thời trang',
+  fashion: 'Thời trang',
+  fnb: 'F&B / Đồ uống',
+  do_an: 'F&B / Đồ uống',
+  gia_dung: 'Gia dụng',
+  da_kenh: 'Đa kênh',
+  multi: 'Đa kênh',
+  general: 'Shop tổng hợp',
+};
+
+function toVnDateKey(iso: string | null | undefined): string | null {
+  if (!iso) return null;
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) return null;
+  const vnMs = date.getTime() + 7 * 60 * 60 * 1000;
+  return new Date(vnMs).toISOString().slice(0, 10);
+}
+
+function formatDayMonth(dateKey: string): string {
+  const [, month, day] = dateKey.split('-');
+  return day && month ? `${day}/${month}` : dateKey;
+}
+
+function buildDailyTrend(params: {
+  completedRuns: Array<{ completed_at: string | null }>;
+  assistantMessages: Array<{ created_at: string }>;
+  orders: Array<{ status: string; total_vnd: number; paid_at: string | null; created_at: string }>;
+}): AdminDailyTrendPointDto[] {
+  const buckets = new Map<string, Omit<AdminDailyTrendPointDto, 'date' | 'label'>>();
+
+  const ensureBucket = (dateKey: string | null) => {
+    if (!dateKey) return null;
+    let entry = buckets.get(dateKey);
+    if (!entry) {
+      entry = {
+        completed_runs: 0,
+        assistant_messages: 0,
+        orders_count: 0,
+        paid_revenue_vnd: 0,
+      };
+      buckets.set(dateKey, entry);
+    }
+    return entry;
+  };
+
+  for (const run of params.completedRuns) {
+    const entry = ensureBucket(toVnDateKey(run.completed_at));
+    if (entry) entry.completed_runs += 1;
+  }
+  for (const msg of params.assistantMessages) {
+    const entry = ensureBucket(toVnDateKey(msg.created_at));
+    if (entry) entry.assistant_messages += 1;
+  }
+  for (const order of params.orders) {
+    const createdEntry = ensureBucket(toVnDateKey(order.created_at));
+    if (createdEntry) createdEntry.orders_count += 1;
+    if (order.status === 'paid') {
+      const paidEntry = ensureBucket(toVnDateKey(order.paid_at ?? order.created_at));
+      if (paidEntry) paidEntry.paid_revenue_vnd += order.total_vnd;
+    }
+  }
+
+  const nowVnMs = Date.now() + 7 * 60 * 60 * 1000;
+  const rollingDays: string[] = [];
+  for (let offset = 6; offset >= 0; offset -= 1) {
+    rollingDays.push(new Date(nowVnMs - offset * 86_400_000).toISOString().slice(0, 10));
+  }
+
+  const hasRollingActivity = rollingDays.some((key) => buckets.has(key));
+  const targetKeys =
+    hasRollingActivity || buckets.size === 0
+      ? rollingDays
+      : Array.from(buckets.keys()).sort().slice(-7);
+
+  return targetKeys.map((date) => {
+    const row = buckets.get(date) ?? {
+      completed_runs: 0,
+      assistant_messages: 0,
+      orders_count: 0,
+      paid_revenue_vnd: 0,
+    };
+    return {
+      date,
+      label: formatDayMonth(date),
+      ...row,
+    };
+  });
+}
+
+function buildIndustryBreakdown(
+  assignments: Array<{ shop_profile: { industry?: string } | null }>
+): AdminCategoryBreakdownDto[] {
+  const total = assignments.length;
+  if (total === 0) return [];
+
+  const counts = new Map<string, { label: string; count: number }>();
+  for (const row of assignments) {
+    const rawKey = (row.shop_profile?.industry ?? '').trim();
+    const normKey = rawKey.toLowerCase() || 'chua_phan_loai';
+    const label =
+      INDUSTRY_LABELS[normKey] ??
+      (rawKey ? rawKey : 'Chưa khai báo');
+    const current = counts.get(normKey);
+    if (current) {
+      current.count += 1;
+    } else {
+      counts.set(normKey, { label, count: 1 });
+    }
+  }
+
+  return Array.from(counts.entries())
+    .sort((a, b) => b[1].count - a[1].count)
+    .slice(0, 5)
+    .map(([key, item]) => ({
+      key,
+      label: item.label,
+      count: item.count,
+      share_pct: Math.round((item.count / total) * 100),
+    }));
+}
+
 export async function getAdminDashboardSummary(
   includeSimulated: boolean
 ): Promise<AdminDashboardSummaryDto> {
@@ -225,6 +356,15 @@ export async function getAdminDashboardSummary(
 
   const completedRuns = raw.scenarioRuns.filter((r) => r.completed_at !== null);
   const purchaseEvents = raw.events.filter((e) => e.event_name === 'purchase');
+
+  const eventCounts = Object.fromEntries(
+    EVENT_NAMES.map((name) => [name, 0])
+  ) as Record<EventName, number>;
+  for (const ev of raw.events) {
+    if (ev.event_name in eventCounts) {
+      eventCounts[ev.event_name] += 1;
+    }
+  }
 
   const variants: VariantPerformanceSummary[] = (
     ['chatbot_on', 'chatbot_off'] as EventVariant[]
@@ -290,17 +430,63 @@ export async function getAdminDashboardSummary(
     0
   );
 
+  const geminiCount = raw.assistantMessages.filter((m) =>
+    (m.model_name ?? '').toLowerCase().includes('gemini')
+  ).length;
+  const stubCount = raw.assistantMessages.length - geminiCount;
+  const groundedCount = raw.assistantMessages.filter(
+    (m) => m.suggested_product_ids.length > 0
+  ).length;
+
   const paidOrders = raw.orders.filter((o) => o.status === 'paid');
+  const pendingOrders = raw.orders.filter((o) => o.status === 'pending');
+  const failedOrCancelledCount = raw.orders.filter(
+    (o) => o.status === 'failed' || o.status === 'cancelled'
+  ).length;
   const totalSandboxValue = paidOrders.reduce(
     (sum, o) => sum + o.total_vnd,
     0
   );
 
+  const consentedParticipants = raw.assignments.filter(
+    (a) => a.consent_given
+  ).length;
+
+  const rawFunnel = [
+    { key: 'consented', label: 'Đồng ý tham gia', count: consentedParticipants },
+    {
+      key: 'product_viewed',
+      label: 'Xem chi tiết gói',
+      count: eventCounts.product_viewed,
+    },
+    {
+      key: 'chat_sent',
+      label: 'Hỏi Trợ lý tư vấn',
+      count: Math.max(eventCounts.chat_message_sent, raw.assistantMessages.length),
+    },
+    { key: 'add_to_cart', label: 'Thêm vào giỏ', count: eventCounts.add_to_cart },
+    {
+      key: 'checkout_started',
+      label: 'Bắt đầu thanh toán',
+      count: eventCounts.checkout_started,
+    },
+    {
+      key: 'purchase',
+      label: 'Hoàn tất đơn hàng',
+      count: Math.max(paidOrders.length, eventCounts.purchase),
+    },
+  ];
+  const topFunnelCount = Math.max(1, ...rawFunnel.map((s) => s.count));
+  const funnelStages: AdminFunnelStageDto[] = rawFunnel.map((stage) => ({
+    ...stage,
+    pct_of_top:
+      stage.count > 0 ? Math.min(100, Math.round((stage.count / topFunnelCount) * 100)) : 0,
+  }));
+
   return {
     include_simulated: includeSimulated,
     total_participants: raw.assignments.length,
-    consented_participants: raw.assignments.filter((a) => a.consent_given)
-      .length,
+    consented_participants: consentedParticipants,
     total_completed_runs: completedRuns.length,
     variants,
     rag_metrics: {
@@ -319,6 +505,28 @@ export async function getAdminDashboardSummary(
       paid_orders: paidOrders.length,
       total_sandbox_value_vnd: totalSandboxValue,
     },
+    funnel_stages: funnelStages,
+    daily_trend: buildDailyTrend({
+      completedRuns,
+      assistantMessages: raw.assistantMessages,
+      orders: raw.orders,
+    }),
+    industry_breakdown: buildIndustryBreakdown(raw.assignments),
+    ai_mix: {
+      gemini_count: geminiCount,
+      stub_count: stubCount,
+      grounded_count: groundedCount,
+      grounding_rate:
+        raw.assistantMessages.length > 0
+          ? roundTo(groundedCount / raw.assistantMessages.length, 4)
+          : 0,
+    },
+    orders_breakdown: {
+      paid: paidOrders.length,
+      pending: pendingOrders.length,
+      failed_or_cancelled: failedOrCancelledCount,
+    },
+    event_counts: eventCounts,
   };
 }
 

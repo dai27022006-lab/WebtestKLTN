@@ -241,7 +241,7 @@ Mọi Route Handler dưới `src/app/api/**` **bắt buộc** trả về cùng m
 22. **`GET /api/admin/dashboard`**
     - **Auth & Role:** Authenticated `role === 'admin'`
     - **Request Schema (Query):** `adminDashboardQuerySchema` (`src/schemas/experiment.ts`, mặc định `include_simulated=false`)
-    - **Response DTO (`200`):** `ApiResponse<AdminDashboardSummaryDto>`
+    - **Response DTO (`200`):** `ApiResponse<AdminDashboardSummaryDto>` (gồm `variants`, `rag_metrics`, `orders_summary`, `funnel_stages`, `daily_trend`, `industry_breakdown`, `ai_mix`, `orders_breakdown`, `event_counts`)
     - **Error Codes:** `400 VALIDATION_ERROR`, `401 UNAUTHORIZED`, `403 FORBIDDEN`
 
 23. **`GET /api/admin/export`** *(Xuất dữ liệu ẩn danh cho pipeline phân tích `analysis/`)*
@@ -262,7 +262,7 @@ Mọi Route Handler dưới `src/app/api/**` **bắt buộc** trả về cùng m
       - `include_simulated`: `boolean` (mặc định `false`)
       - `limit`: `number` (`1..100`, mặc định `30`)
     - **Quy tắc ẩn danh:** Chỉ trả `participant_code`, không trả `email`, `full_name` hay `user_id`.
-    - **Response DTO (`200`):** `ApiResponse<AdminChatLogItemDto[]>` (mỗi mục gồm `session_id`, `participant_code`, `title`, `created_at`, `is_simulated`, và danh sách `messages` gồm `id`, `role`, `content`, `model_name`, `suggested_products`, `latency_ms`, `tokens_used`, `cost_usd`, `created_at`)
+    - **Response DTO (`200`):** `ApiResponse<AdminChatLogItemDto[]>` (mỗi mục gồm `session_id`, `participant_code`, `title`, `created_at`, `is_simulated`, và danh sách `messages` gồm `id`, `role`, `content`, `prompt_version`, `model_name`, `retrieved_product_ids`, `suggested_products`, `latency_ms`, `tokens_used`, `cost_usd`, `created_at`)
     - **Error Codes:** `400 VALIDATION_ERROR`, `401 UNAUTHORIZED`, `403 FORBIDDEN`
 
 ---

@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
+import { AdminVisualDashboard } from '@/components/analytics/AdminVisualDashboard';
 import {
   AlertTriangle,
   BarChart3,
@@ -445,6 +446,9 @@ export default function AdminAnalyticsPage() {
             </article>
           </div>
 
+          {/* 2.5. Visual 5-Element Dashboard (Charts, Progress Rings, Funnel & Daily Trend) */}
+          <AdminVisualDashboard summary={summary} recentOrders={orders} />
+
           {/* 3. A/B Variant Comparison Table */}
           <div className="surface-card dg-panel" style={{ display: 'grid', gap: '14px' }}>
             <div
@@ -549,6 +553,7 @@ export default function AdminAnalyticsPage() {
                     <thead>
                       <tr>
                         <th scope="col">Tên sự kiện</th>
+                        <th scope="col">Số lần ghi nhận</th>
                         <th scope="col">Thời điểm kích hoạt</th>
                       </tr>
                     </thead>
@@ -556,6 +561,9 @@ export default function AdminAnalyticsPage() {
                       {coreEvents.map((name) => (
                         <tr key={name}>
                           <td className="type-mono">{name}</td>
+                          <td className="type-mono" style={{ fontWeight: 700 }}>
+                            {summary.event_counts?.[name] ?? 0}
+                          </td>
                           <td>{EVENT_CATALOG[name].trigger}</td>
                         </tr>
                       ))}
@@ -578,6 +586,9 @@ export default function AdminAnalyticsPage() {
                       {chatOnlyEvents.map((name) => (
                         <tr key={name}>
                           <td className="type-mono">{name}</td>
+                          <td className="type-mono" style={{ fontWeight: 700 }}>
+                            {summary.event_counts?.[name] ?? 0}
+                          </td>
                           <td>{EVENT_CATALOG[name].trigger}</td>
                         </tr>
                       ))}

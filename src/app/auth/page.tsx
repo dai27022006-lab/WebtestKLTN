@@ -2,8 +2,9 @@
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
+import { ShopDashboardPanel } from '@/components/analytics/ShopDashboardPanel';
 import {
   ArrowRight,
   Building2,
@@ -19,7 +20,9 @@ import {
 } from '@/components/icons/DreamIcons';
 import { useAuth } from '@/components/providers/AuthProvider';
 import { DreamTeamBrandMark } from '@/components/visual/DreamTeamBrandMark';
-import { login, register } from '@/services';
+import { listOrders, listProducts, login, register } from '@/services';
+import { useExperiment } from '@/state';
+import type { OrderDto, ProductSummaryDto } from '@/types/api';
 
 function evaluatePasswordStrength(pw: string): {
   score: 0 | 1 | 2 | 3 | 4;
@@ -41,7 +44,8 @@ function evaluatePasswordStrength(pw: string): {
 
 export default function AuthPage() {
   const router = useRouter();
-  const { user, setUserDirect, logoutUser } = useAuth();
+  const { user, isLoading: isAuthLoading, setUserDirect, logoutUser } = useAuth();
+  const { visitorId } = useExperiment();
 
   const [tab, setTab] = useState<'login' | 'register'>('login');
   const [email, setEmail] = useState('');
@@ -52,8 +56,37 @@ export default function AuthPage() {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [orders, setOrders] = useState<OrderDto[]>([]);
+  const [products, setProducts] = useState<ProductSummaryDto[]>([]);
+  const [isDashLoading, setIsDashLoading] = useState(false);
 
   const strength = evaluatePasswordStrength(password);
+
+  useEffect(() => {
+    if (!user) return;
+    const controller = new AbortController();
+    const timer = setTimeout(() => {
+      setIsDashLoading(true);
+      void Promise.all([
+        listOrders(visitorId || undefined, controller.signal),
+        listProducts({ limit: 50 }, controller.signal),
+      ]).then(([ordersRes, productsRes]) => {
+        if (controller.signal.aborted) return;
+        setIsDashLoading(false);
+        if (ordersRes.ok) {
+          setOrders(ordersRes.data);
+        }
+        if (productsRes.ok) {
+          setProducts(productsRes.data);
+        }
+      });
+    }, 0);
+
+    return () => {
+      clearTimeout(timer);
+      controller.abort();
+    };
+  }, [user, visitorId]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -99,6 +132,84 @@ export default function AuthPage() {
     setErrorMessage(null);
   };
 
+  if (!isAuthLoading && user) {
+    return (
+      <section className="section section--compact">
+        <div
+          className="container"
+          style={{ display: 'grid', gap: 'var(--space-6)' }}
+        >
+          <div
+            className="surface-card dg-panel"
+            style={{
+              display: 'flex',
+              flexWrap: 'wrap',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              gap: '16px',
+            }}
+          >
+            <div style={{ display: 'grid', gap: '8px', minWidth: 0 }}>
+              <span className="type-eyebrow">Không gian Tài khoản Chủ Shop</span>
+              <h1 className="type-h1" style={{ margin: 0 }}>
+                {user.full_name ?? user.email}
+              </h1>
+              <div className="chip-row">
+                <span className="badge type-mono">{user.email}</span>
+                <span className="badge badge--accent">
+                  Vai trò:{' '}
+                  {user.role === 'admin' ? 'Quản trị viên' : 'Chủ shop / Khách'}
+                </span>
+                {user.shop_category && (
+                  <span className="badge">Ngành: {user.shop_category}</span>
+                )}
+              </div>
+            </div>
+
+            <div
+              style={{
+                display: 'flex',
+                gap: '10px',
+                flexWrap: 'wrap',
+              }}
+            >
+              {user.role === 'admin' && (
+                <Link
+                  href="/admin/analytics"
+                  className="dg-btn-purchase dg-btn-sm"
+                >
+                  <span>Khu vực Quản trị</span>
+                  <ArrowRight size={14} />
+                </Link>
+              )}
+              <Link href="/orders" className="btn btn--secondary btn--sm">
+                Thư viện đơn hàng
+              </Link>
+              <Link href="/products" className="btn btn--secondary btn--sm">
+                Xem danh mục
+              </Link>
+              <button
+                type="button"
+                className="btn btn--ghost btn--sm"
+                onClick={() => void logoutUser()}
+              >
+                Đăng xuất
+              </button>
+            </div>
+          </div>
+
+          <ShopDashboardPanel
+            orders={orders}
+            products={products}
+            isLoading={isDashLoading}
+            title="Bảng Thống Kê Tài Khoản Shop"
+            subtitle="Tổng hợp nhanh tiến độ đơn hàng, chi tiêu, cơ cấu gói đã chọn và lượt tải còn lại của tài khoản."
+          />
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section className="dg-auth-split">
       {/* Left Column: Centered Auth Form */}
@@ -133,58 +244,8 @@ export default function AuthPage() {
             </span>
           </div>
 
-          {user ? (
-            <div
-              className="surface-card dg-panel"
-              style={{ display: 'grid', gap: '14px' }}
-            >
-              <span className="type-eyebrow">Phiên đăng nhập hiện tại</span>
-              <h1 className="type-h2" style={{ margin: 0 }}>
-                {user.full_name ?? user.email}
-              </h1>
-              <div className="chip-row">
-                <span className="badge type-mono">{user.email}</span>
-                <span className="badge badge--accent">
-                  Vai trò:{' '}
-                  {user.role === 'admin' ? 'Quản trị viên' : 'Chủ shop / Khách'}
-                </span>
-                {user.shop_category && (
-                  <span className="badge">Ngành: {user.shop_category}</span>
-                )}
-              </div>
-
-              <div
-                style={{
-                  display: 'flex',
-                  gap: '10px',
-                  flexWrap: 'wrap',
-                  paddingTop: '8px',
-                }}
-              >
-                {user.role === 'admin' && (
-                  <Link
-                    href="/admin/analytics"
-                    className="dg-btn-purchase dg-btn-sm"
-                  >
-                    <span>Khu vực Quản trị</span>
-                    <ArrowRight size={14} />
-                  </Link>
-                )}
-                <Link href="/orders" className="btn btn--secondary">
-                  Thư viện đơn hàng
-                </Link>
-                <Link href="/products" className="btn btn--secondary">
-                  Xem danh mục
-                </Link>
-                <button
-                  type="button"
-                  className="btn btn--ghost"
-                  onClick={() => void logoutUser()}
-                >
-                  Đăng xuất
-                </button>
-              </div>
-            </div>
+          {isAuthLoading ? (
+            <div className="skeleton-box" style={{ height: '320px' }} />
           ) : (
             <div
               className="surface-card dg-panel"

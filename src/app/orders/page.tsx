@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
+import { ShopDashboardPanel } from '@/components/analytics/ShopDashboardPanel';
 import {
   ArrowRight,
   CheckCircle2,
@@ -16,9 +17,9 @@ import {
   ORDER_STATUS_META,
 } from '@/components/shared/formatters';
 import { EditorialEmptyIllustration } from '@/components/visual/EditorialEmptyIllustration';
-import { listOrders } from '@/services';
+import { listOrders, listProducts } from '@/services';
 import { useExperiment } from '@/state';
-import type { OrderDto, OrderStatus } from '@/types/api';
+import type { OrderDto, OrderStatus, ProductSummaryDto } from '@/types/api';
 
 type OrderFilterValue = 'all' | 'paid' | 'pending' | 'failed';
 
@@ -33,6 +34,7 @@ export default function OrdersLedgerPage() {
   const { visitorId } = useExperiment();
 
   const [orders, setOrders] = useState<OrderDto[]>([]);
+  const [products, setProducts] = useState<ProductSummaryDto[]>([]);
   const [statusFilter, setStatusFilter] = useState<OrderFilterValue>('all');
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -41,16 +43,22 @@ export default function OrdersLedgerPage() {
     async (signal?: AbortSignal) => {
       setIsLoading(true);
       setErrorMessage(null);
-      const res = await listOrders(visitorId || undefined, signal);
+      const [ordersRes, productsRes] = await Promise.all([
+        listOrders(visitorId || undefined, signal),
+        listProducts({ limit: 50 }, signal),
+      ]);
       if (signal?.aborted) return;
       setIsLoading(false);
 
-      if (!res.ok) {
-        setErrorMessage(res.error.message);
+      if (!ordersRes.ok) {
+        setErrorMessage(ordersRes.error.message);
         return;
       }
 
-      setOrders(res.data);
+      setOrders(ordersRes.data);
+      if (productsRes.ok) {
+        setProducts(productsRes.data);
+      }
     },
     [visitorId]
   );
@@ -129,6 +137,14 @@ export default function OrdersLedgerPage() {
             trừ tiền thật.
           </span>
         </div>
+
+        <ShopDashboardPanel
+          orders={orders}
+          products={products}
+          isLoading={isLoading}
+          title="Thống kê Đơn hàng & Gói số"
+          subtitle="Tổng hợp tỷ lệ hoàn tất, chi tiêu đã thanh toán, phân loại gói sở hữu và lượt tải còn lại của shop."
+        />
 
         <div className="orders-ledger__filters">
           <div
