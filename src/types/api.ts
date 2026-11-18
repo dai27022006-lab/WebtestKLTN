@@ -496,7 +496,9 @@ export interface AdminChatLogMessageDto {
   id: string;
   role: ChatRole;
   content: string;
+  prompt_version: string | null;
   model_name: string | null;
+  retrieved_product_ids: string[];
   suggested_products: SuggestedProductCardDto[];
   latency_ms: number | null;
   tokens_used: number | null;

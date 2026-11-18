@@ -17,16 +17,11 @@ import {
   formatVnd,
   PRODUCT_TYPE_LABELS,
 } from '@/components/shared/formatters';
-import { adminExportDatasetJson, adminListChatLogs } from '@/services';
-import type { AdminChatLogItemDto, AdminExportRagLogRow } from '@/types/api';
+import { adminListChatLogs } from '@/services';
+import type { AdminChatLogItemDto } from '@/types/api';
 
 type ModelSourceFilter = 'all' | 'gemini' | 'stub';
 type SuggestionFilter = 'all' | 'with_suggestions' | 'no_suggestions';
-
-interface RagLookupMeta {
-  prompt_version: string;
-  retrieved_product_ids: string[];
-}
 
 function classifyModelSource(
   modelName: string | null | undefined
@@ -35,20 +30,8 @@ function classifyModelSource(
   return modelName.toLowerCase().includes('gemini') ? 'gemini' : 'stub';
 }
 
-function parseJsonStringArray(raw: string): string[] {
-  try {
-    const parsed = JSON.parse(raw) as unknown;
-    return Array.isArray(parsed)
-      ? parsed.filter((v): v is string => typeof v === 'string')
-      : [];
-  } catch {
-    return [];
-  }
-}
-
 export default function AdminChatLogsPage() {
   const [sessions, setSessions] = useState<AdminChatLogItemDto[]>([]);
-  const [ragLookup, setRagLookup] = useState<Record<string, RagLookupMeta>>({});
   const [includeSimulated, setIncludeSimulated] = useState(false);
   const [modelFilter, setModelFilter] = useState<ModelSourceFilter>('all');
   const [suggestionFilter, setSuggestionFilter] =
@@ -65,13 +48,10 @@ export default function AdminChatLogsPage() {
       setIsLoading(true);
       setErrorMessage(null);
 
-      const [logsRes, ragExportRes] = await Promise.all([
-        adminListChatLogs({ include_simulated: simFlag, limit: 40 }, signal),
-        adminExportDatasetJson(
-          { dataset: 'rag_logs', include_simulated: simFlag },
-          signal
-        ),
-      ]);
+      const logsRes = await adminListChatLogs(
+        { include_simulated: simFlag, limit: 40 },
+        signal
+      );
 
       if (signal?.aborted) return;
       setIsLoading(false);
@@ -87,21 +67,6 @@ export default function AdminChatLogsPage() {
           ? prev
           : logsRes.data[0]?.session_id ?? null
       );
-
-      if (ragExportRes.ok) {
-        const lookup: Record<string, RagLookupMeta> = {};
-        for (const row of ragExportRes.data.rows as AdminExportRagLogRow[]) {
-          lookup[row.message_id] = {
-            prompt_version: row.prompt_version,
-            retrieved_product_ids: parseJsonStringArray(
-              row.retrieved_product_ids
-            ),
-          };
-        }
-        setRagLookup(lookup);
-      } else {
-        setRagLookup({});
-      }
     },
     []
   );
@@ -487,8 +452,7 @@ export default function AdminChatLogsPage() {
                   }
 
                   const source = classifyModelSource(msg.model_name);
-                  const ragMeta = ragLookup[msg.id];
-                  const retrievedIds = ragMeta?.retrieved_product_ids ?? [];
+                  const retrievedIds = msg.retrieved_product_ids;
 
                   return (
                     <div
@@ -526,9 +490,9 @@ export default function AdminChatLogsPage() {
                               {msg.model_name}
                             </code>
                           )}
-                          {ragMeta?.prompt_version && (
+                          {msg.prompt_version && (
                             <code className="badge type-mono">
-                              {ragMeta.prompt_version}
+                              {msg.prompt_version}
                             </code>
                           )}
                         </div>
