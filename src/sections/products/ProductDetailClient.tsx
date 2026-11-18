@@ -13,14 +13,10 @@ import {
   Sparkles,
   Timer,
 } from '@/components/icons/DreamIcons';
-import {
-  formatVnd,
-  PRODUCT_TYPE_LABELS,
-  SOURCE_TYPE_META,
-} from '@/components/shared/formatters';
 import { LiveHtmlPreviewFrame } from '@/components/visual/LiveHtmlPreviewFrame';
 import { ProductPlaceholderFrame } from '@/components/visual/ProductPlaceholderFrame';
 import { getProductById, listProducts } from '@/services';
+import { useLocale } from '@/components/providers/LocaleProvider';
 import { useCart, useExperiment } from '@/state';
 import type {
   ProductCaseStudy,
@@ -33,7 +29,9 @@ interface ProductDetailClientProps {
 }
 
 function RelatedThumb({ item }: { item: ProductSummaryDto }) {
+  const { getProductCopy } = useLocale();
   const [imgFailed, setImgFailed] = useState(false);
+  const copy = getProductCopy(item);
   if (!item.thumbnail_url || imgFailed) {
     return (
       <ProductPlaceholderFrame
@@ -58,7 +56,7 @@ function RelatedThumb({ item }: { item: ProductSummaryDto }) {
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={item.thumbnail_url}
-        alt={`Ảnh minh họa ${item.name}`}
+        alt={copy.name}
         width={960}
         height={600}
         loading="lazy"
@@ -70,6 +68,17 @@ function RelatedThumb({ item }: { item: ProductSummaryDto }) {
 }
 
 export function ProductDetailClient({ slug: slugProp }: ProductDetailClientProps) {
+  const {
+    locale,
+    commerce,
+    chrome,
+    formatPrice,
+    getProductCopy,
+    getProductTypeLabel,
+    getSourceMeta,
+    getIndustryLabel,
+  } = useLocale();
+  const pd = commerce.productDetail;
   const params = useParams<{ slug: string }>();
   const slug = slugProp ?? params?.slug ?? '';
   const router = useRouter();
@@ -168,13 +177,11 @@ export function ProductDetailClient({ slug: slugProp }: ProductDetailClientProps
       <section className="section section--compact">
         <div className="container container--narrow">
           <div className="callout callout--danger" role="alert">
-            <strong>Không thể tải thông tin sản phẩm</strong>
-            <span>
-              {errorMessage ?? 'Sản phẩm không tồn tại hoặc đã ngừng bán.'}
-            </span>
+            <strong>{pd.notFoundTitle}</strong>
+            <span>{errorMessage ?? pd.notFoundDesc}</span>
             <div style={{ marginTop: '8px' }}>
               <Link href="/products" className="btn btn--secondary btn--sm">
-                Quay lại danh mục
+                {pd.backCatalog}
               </Link>
             </div>
           </div>
@@ -183,7 +190,8 @@ export function ProductDetailClient({ slug: slugProp }: ProductDetailClientProps
     );
   }
 
-  const sourceMeta = SOURCE_TYPE_META[product.source_type];
+  const localizedProduct = getProductCopy(product);
+  const sourceMeta = getSourceMeta(product.source_type);
   const deliverables = Array.isArray(product.specs.deliverables)
     ? product.specs.deliverables.map(String)
     : [];
@@ -224,12 +232,12 @@ export function ProductDetailClient({ slug: slugProp }: ProductDetailClientProps
             href="/products"
             style={{ fontWeight: 600, color: 'var(--accent)' }}
           >
-            Sản phẩm
+            {pd.catalogCrumb}
           </Link>
           <ChevronRight size={14} />
-          <span>{product.industry}</span>
+          <span>{getIndustryLabel(product.industry)}</span>
           <ChevronRight size={14} />
-          <strong style={{ color: 'var(--ink)' }}>{product.name}</strong>
+          <strong style={{ color: 'var(--ink)' }}>{localizedProduct.name}</strong>
         </nav>
 
         {/* Split Stage */}
@@ -243,8 +251,8 @@ export function ProductDetailClient({ slug: slugProp }: ProductDetailClientProps
               industry={product.industry}
               sourceType={product.source_type}
               slug={product.slug}
-              productName={product.name}
-              shortDescription={product.short_description}
+              productName={localizedProduct.name}
+              shortDescription={localizedProduct.short_description}
               deliverables={deliverables}
             />
 
@@ -253,16 +261,22 @@ export function ProductDetailClient({ slug: slugProp }: ProductDetailClientProps
               style={{ display: 'grid', gap: '16px' }}
             >
               <h2 className="type-h2" style={{ margin: 0 }}>
-                Mô tả chi tiết giải pháp
+                {pd.deliverablesHeading}
               </h2>
               <p className="type-body" style={{ margin: 0 }}>
-                {product.description}
+                {localizedProduct.description}
               </p>
 
               {previewHighlights.length > 0 && (
                 <div style={{ display: 'grid', gap: '10px' }}>
                   <h3 className="type-h3" style={{ margin: 0 }}>
-                    Điểm nổi bật khi triển khai
+                    {locale === 'en'
+                      ? 'Implementation Highlights'
+                      : locale === 'ru'
+                        ? 'Ключевые преимущества'
+                        : locale === 'zh'
+                          ? '核心亮点'
+                          : 'Điểm nổi bật khi triển khai'}
                   </h3>
                   <ul
                     style={{
@@ -302,7 +316,7 @@ export function ProductDetailClient({ slug: slugProp }: ProductDetailClientProps
               {deliverables.length > 0 && (
                 <div style={{ display: 'grid', gap: '10px' }}>
                   <h3 className="type-h3" style={{ margin: 0 }}>
-                    Gói bàn giao bao gồm
+                    {pd.deliverablesHeading}
                   </h3>
                   <ul
                     style={{
@@ -350,7 +364,7 @@ export function ProductDetailClient({ slug: slugProp }: ProductDetailClientProps
               >
                 {platforms.length > 0 && (
                   <div style={{ display: 'grid', gap: '6px' }}>
-                    <span className="type-caption">Nền tảng hỗ trợ</span>
+                    <span className="type-caption">{pd.platformsLabel}</span>
                     <div className="chip-row">
                       {platforms.map((pf) => (
                         <span key={pf} className="badge">
@@ -363,7 +377,15 @@ export function ProductDetailClient({ slug: slugProp }: ProductDetailClientProps
 
                 {techStack.length > 0 && (
                   <div style={{ display: 'grid', gap: '6px' }}>
-                    <span className="type-caption">Thành phần &amp; Định dạng</span>
+                    <span className="type-caption">
+                      {locale === 'en'
+                        ? 'Stack & Formats'
+                        : locale === 'ru'
+                          ? 'Стек и форматы'
+                          : locale === 'zh'
+                            ? '文件组成与格式'
+                            : 'Thành phần & Định dạng'}
+                    </span>
                     <div className="chip-row">
                       {techStack.map((tech) => (
                         <span key={tech} className="badge type-mono">
@@ -376,7 +398,7 @@ export function ProductDetailClient({ slug: slugProp }: ProductDetailClientProps
 
                 {typeof product.specs.setup_time_minutes === 'number' && (
                   <div style={{ display: 'grid', gap: '6px' }}>
-                    <span className="type-caption">Thời gian cài đặt</span>
+                    <span className="type-caption">{pd.setupLabel}</span>
                     <strong
                       className="type-mono"
                       style={{
@@ -386,7 +408,7 @@ export function ProductDetailClient({ slug: slugProp }: ProductDetailClientProps
                       }}
                     >
                       <Timer size={15} style={{ color: 'var(--accent)' }} />
-                      <span>~{product.specs.setup_time_minutes} phút</span>
+                      <span>{pd.setupMinutes(product.specs.setup_time_minutes)}</span>
                     </strong>
                   </div>
                 )}
@@ -394,7 +416,7 @@ export function ProductDetailClient({ slug: slugProp }: ProductDetailClientProps
 
               {product.specs.guide_summary && (
                 <div className="callout callout--info">
-                  <strong>Hướng dẫn triển khai nhanh</strong>
+                  <strong>{pd.guideHeading}</strong>
                   <span>{String(product.specs.guide_summary)}</span>
                 </div>
               )}
@@ -415,13 +437,13 @@ export function ProductDetailClient({ slug: slugProp }: ProductDetailClientProps
                   }}
                 >
                   <div style={{ display: 'grid', gap: '4px' }}>
-                    <span className="type-eyebrow">Case Study mẫu</span>
+                    <span className="type-eyebrow">{pd.caseStudiesPilotTag}</span>
                     <h2 className="type-h2" style={{ margin: 0 }}>
-                      Trải nghiệm thực tế (Case Study mẫu)
+                      {pd.caseStudiesHeading}
                     </h2>
                   </div>
                   <span className="badge badge--warning">
-                    Phản hồi từ đợt chạy thử nghiệm mẫu
+                    {pd.caseStudiesPilotTag}
                   </span>
                 </div>
 
@@ -459,18 +481,18 @@ export function ProductDetailClient({ slug: slugProp }: ProductDetailClientProps
             >
               <div className="chip-row">
                 <span className="badge badge--accent">
-                  {PRODUCT_TYPE_LABELS[product.product_type]}
+                  {getProductTypeLabel(product.product_type)}
                 </span>
-                <span className="badge">{product.industry}</span>
+                <span className="badge">{getIndustryLabel(product.industry)}</span>
                 {product.specs.target_shop_size && (
                   <span className="badge">
-                    Shop {String(product.specs.target_shop_size)}
+                    {pd.targetTeamLabel}: {String(product.specs.target_shop_size)}
                   </span>
                 )}
               </div>
 
               <h1 className="type-h2" style={{ margin: 0 }}>
-                {product.name}
+                {localizedProduct.name}
               </h1>
 
               <div
@@ -483,12 +505,12 @@ export function ProductDetailClient({ slug: slugProp }: ProductDetailClientProps
                   borderBlock: '1px solid var(--border-hairline)',
                 }}
               >
-                <span className="type-body-sm">Giá niêm yết</span>
+                <span className="type-body-sm">{pd.priceLabel}</span>
                 <span
                   className="type-price"
                   style={{ fontSize: '1.75rem', color: 'var(--accent)' }}
                 >
-                  {formatVnd(product.price_vnd)}
+                  {formatPrice(product.price_vnd)}
                 </span>
               </div>
 
@@ -511,7 +533,7 @@ export function ProductDetailClient({ slug: slugProp }: ProductDetailClientProps
                     }}
                   >
                     <ShieldCheck size={15} style={{ color: 'var(--accent)' }} />
-                    <span>Minh bạch bản quyền</span>
+                    <span>{pd.licenseHeading}</span>
                   </strong>
                   <span className={`badge badge--${sourceMeta.badgeTone}`}>
                     {sourceMeta.label}
@@ -525,11 +547,8 @@ export function ProductDetailClient({ slug: slugProp }: ProductDetailClientProps
 
               {hasOpenScenario && (
                 <div className="callout callout--success">
-                  <strong>Đang thực hiện nhiệm vụ chọn gói</strong>
-                  <span>
-                    Nếu gói này phù hợp với đề bài, bấm nút bên dưới để chốt lựa
-                    chọn cho nhiệm vụ đang làm.
-                  </span>
+                  <strong>{pd.surveyChooseThis}</strong>
+                  <span>{commerce.catalog.surveyReturnBanner}</span>
                   <button
                     type="button"
                     className="dg-btn-purchase btn--block"
@@ -539,7 +558,7 @@ export function ProductDetailClient({ slug: slugProp }: ProductDetailClientProps
                       )
                     }
                   >
-                    <span>Chọn gói này cho nhiệm vụ đang làm</span>
+                    <span>{pd.surveyChooseThis}</span>
                     <ArrowRight size={15} />
                   </button>
                 </div>
@@ -559,10 +578,10 @@ export function ProductDetailClient({ slug: slugProp }: ProductDetailClientProps
                   <ShoppingBag size={16} />
                   <span>
                     {addedFeedback
-                      ? 'Đã thêm vào giỏ hàng'
+                      ? pd.addedToast
                       : isAdding
-                        ? 'Đang thêm...'
-                        : 'Thêm vào giỏ hàng'}
+                        ? chrome.common.loading
+                        : pd.addToCart}
                   </span>
                 </button>
                 <button
@@ -571,15 +590,13 @@ export function ProductDetailClient({ slug: slugProp }: ProductDetailClientProps
                   disabled={isAdding}
                   onClick={() => void handleAddToCart(true)}
                 >
-                  <span>Mua ngay (Thanh toán thử nghiệm)</span>
+                  <span>{pd.buyNow}</span>
                   <ArrowRight size={15} />
                 </button>
               </div>
 
               <span className="type-caption">
-                {product.has_downloadable_file
-                  ? 'Sẵn sàng tải file ngay qua link riêng sau khi xác nhận đơn.'
-                  : 'Liên hệ bộ phận hỗ trợ để nhận bàn giao bổ sung.'}
+                {chrome.preview.sourceSafeNote}
               </span>
             </div>
           </aside>
@@ -589,10 +606,12 @@ export function ProductDetailClient({ slug: slugProp }: ProductDetailClientProps
         {related.length > 0 && (
           <div style={{ display: 'grid', gap: '16px', marginTop: '16px' }}>
             <h2 className="type-h2" style={{ margin: 0 }}>
-              Gợi ý khác cùng ngành {product.industry}
+              {pd.relatedHeading} ({getIndustryLabel(product.industry)})
             </h2>
             <div className="assurance-grid">
-              {related.map((item) => (
+              {related.map((item) => {
+                const relCopy = getProductCopy(item);
+                return (
                 <article
                   key={item.id}
                   className="product-card product-card--horizontal dg-panel"
@@ -603,25 +622,26 @@ export function ProductDetailClient({ slug: slugProp }: ProductDetailClientProps
                       className="badge badge--accent"
                       style={{ width: 'fit-content' }}
                     >
-                      {PRODUCT_TYPE_LABELS[item.product_type]}
+                      {getProductTypeLabel(item.product_type)}
                     </span>
                     <h3 className="product-card__title">
-                      <Link href={`/products/${item.slug}`}>{item.name}</Link>
+                      <Link href={`/products/${item.slug}`}>{relCopy.name}</Link>
                     </h3>
                     <div className="product-card__footer">
                       <span className="type-price">
-                        {formatVnd(item.price_vnd)}
+                        {formatPrice(item.price_vnd)}
                       </span>
                       <Link
                         href={`/products/${item.slug}`}
                         className="btn btn--secondary btn--sm"
                       >
-                        Xem chi tiết
+                        {commerce.catalog.details}
                       </Link>
                     </div>
                   </div>
                 </article>
-              ))}
+                );
+              })}
             </div>
           </div>
         )}
@@ -630,9 +650,9 @@ export function ProductDetailClient({ slug: slugProp }: ProductDetailClientProps
       {/* Mobile Sticky Bottom CTA Bar */}
       <div className="mobile-bottom-cta">
         <div>
-          <div className="type-caption">Giá niêm yết</div>
+          <div className="type-caption">{pd.priceLabel}</div>
           <strong className="type-price" style={{ color: 'var(--accent)' }}>
-            {formatVnd(product.price_vnd)}
+            {formatPrice(product.price_vnd)}
           </strong>
         </div>
         {hasOpenScenario ? (
@@ -645,7 +665,7 @@ export function ProductDetailClient({ slug: slugProp }: ProductDetailClientProps
               )
             }
           >
-            <span>Chọn cho nhiệm vụ</span>
+            <span>{pd.surveyChooseThis}</span>
             <ArrowRight size={14} />
           </button>
         ) : (
@@ -656,7 +676,7 @@ export function ProductDetailClient({ slug: slugProp }: ProductDetailClientProps
             onClick={() => void handleAddToCart(false)}
           >
             <ShoppingBag size={14} />
-            <span>{addedFeedback ? 'Đã thêm' : 'Thêm vào giỏ'}</span>
+            <span>{addedFeedback ? pd.addedToast : pd.addToCart}</span>
           </button>
         )}
       </div>

@@ -6177,3 +6177,217 @@ progress.dg-progress-ring::-moz-progress-bar {
     grid-template-columns: minmax(0, 1fr);
   }
 }
+
+/* =========================================================
+   LANGUAGE SWITCHER (VI / EN / RU / ZH)
+   ========================================================= */
+.dg-lang-wrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.dg-lang-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 36px;
+  padding: 0 10px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-default);
+  background-color: var(--bg-surface);
+  color: var(--text-primary);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  line-height: 1;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: border-color var(--duration-fast) var(--ease-standard),
+    background-color var(--duration-fast) var(--ease-standard),
+    color var(--duration-fast) var(--ease-standard);
+}
+
+.dg-lang-btn:hover,
+.dg-lang-btn.is-open {
+  border-color: var(--accent);
+  background-color: var(--bg-surface-subtle);
+}
+
+.dg-lang-btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.dg-lang-code {
+  min-width: 1.5ch;
+  text-align: center;
+}
+
+.dg-lang-chevron {
+  color: var(--text-muted);
+  transition: transform var(--duration-fast) var(--ease-standard);
+}
+
+.dg-lang-chevron.is-rotated {
+  transform: rotate(180deg);
+}
+
+.dg-lang-popover {
+  position: absolute;
+  top: calc(100% + 8px);
+  z-index: 90;
+  min-width: 196px;
+  padding: 6px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-default);
+  background-color: var(--bg-surface);
+  box-shadow: 0 14px 34px rgba(15, 23, 42, 0.16);
+}
+
+.dg-lang-popover.align-right {
+  right: 0;
+}
+
+.dg-lang-popover.align-left {
+  left: 0;
+}
+
+.dg-lang-popover-title {
+  margin: 0;
+  padding: 6px 10px 6px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.dg-lang-options {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.dg-lang-option {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  width: 100%;
+  padding: 8px 10px;
+  border: 0;
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--text-primary);
+  font-size: 0.84rem;
+  font-weight: 500;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color var(--duration-fast) var(--ease-standard),
+    color var(--duration-fast) var(--ease-standard);
+}
+
+.dg-lang-option:hover {
+  background-color: var(--bg-surface-subtle);
+}
+
+.dg-lang-option.is-active {
+  background-color: var(--accent-soft);
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.dg-lang-option-code {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 26px;
+  height: 20px;
+  padding: 0 5px;
+  border-radius: 5px;
+  background-color: var(--bg-surface-subtle);
+  border: 1px solid var(--border-subtle);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  color: var(--text-secondary);
+}
+
+.dg-lang-option.is-active .dg-lang-option-code {
+  border-color: var(--accent);
+  color: var(--accent);
+  background-color: var(--bg-surface);
+}
+
+.dg-lang-option-native {
+  flex: 1;
+}
+
+.dg-lang-option-check {
+  flex-shrink: 0;
+}
+
+.dg-lang-inline {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px 0 4px;
+}
+
+.dg-lang-inline-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.dg-lang-inline-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.dg-lang-chip {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 10px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-default);
+  background-color: var(--bg-surface-subtle);
+  color: var(--text-primary);
+  font-size: 0.8rem;
+  font-weight: 500;
+  text-align: left;
+  cursor: pointer;
+}
+
+.dg-lang-chip.is-active {
+  border-color: var(--accent);
+  background-color: var(--accent-soft);
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.dg-lang-chip-code {
+  font-size: 0.68rem;
+  font-weight: 700;
+  opacity: 0.8;
+}
+
+.dg-lang-chip-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (max-width: 1180px) and (min-width: 960px) {
+  .dg-lang-btn {
+    padding: 0 8px;
+  }
+}

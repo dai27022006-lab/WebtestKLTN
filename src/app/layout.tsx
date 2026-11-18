@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { JetBrains_Mono, Plus_Jakarta_Sans } from 'next/font/google';
+import { JetBrains_Mono, Noto_Sans, Plus_Jakarta_Sans } from 'next/font/google';
 
 import '@/styles/tokens.css';
 import '@/styles/themes.css';
@@ -16,14 +16,21 @@ import { getSiteBaseUrl } from '@/components/seo/JsonLdScript';
 import { BackToTopProgress } from '@/motion/BackToTopProgress';
 
 const plusJakartaSans = Plus_Jakarta_Sans({
-  subsets: ['vietnamese', 'latin'],
+  subsets: ['vietnamese', 'latin', 'cyrillic-ext'],
   weight: ['400', '500', '600', '700', '800'],
   variable: '--font-plus-jakarta-sans',
   display: 'swap',
 });
 
+const notoSans = Noto_Sans({
+  subsets: ['cyrillic', 'vietnamese', 'latin'],
+  weight: ['400', '500', '600', '700'],
+  variable: '--font-noto-sans',
+  display: 'swap',
+});
+
 const jetbrainsMono = JetBrains_Mono({
-  subsets: ['vietnamese', 'latin'],
+  subsets: ['vietnamese', 'latin', 'cyrillic'],
   weight: ['400', '500', '600'],
   variable: '--font-jetbrains-mono',
   display: 'swap',
@@ -47,7 +54,7 @@ export const metadata: Metadata = {
   },
 };
 
-const THEME_INIT_SCRIPT = `(function(){try{var t=localStorage.getItem('dsa-theme');if(t==='light'||t==='dark'){document.documentElement.setAttribute('data-theme',t);}else{document.documentElement.setAttribute('data-theme','light');}}catch(e){}})();`;
+const THEME_INIT_SCRIPT = `(function(){try{var t=localStorage.getItem('dsa-theme');document.documentElement.setAttribute('data-theme',(t==='light'||t==='dark')?t:'light');var l=localStorage.getItem('dsa-locale');if(l==='vi'||l==='en'||l==='ru'||l==='zh'){document.documentElement.lang=l;document.documentElement.setAttribute('data-locale',l);}else{document.documentElement.setAttribute('data-locale','vi');}}catch(e){}})();`;
 
 export default function RootLayout({
   children,
@@ -57,7 +64,7 @@ export default function RootLayout({
   return (
     <html
       lang="vi"
-      className={`${plusJakartaSans.variable} ${jetbrainsMono.variable}`}
+      className={`${plusJakartaSans.variable} ${notoSans.variable} ${jetbrainsMono.variable}`}
       suppressHydrationWarning
     >
       <head>
@@ -65,9 +72,6 @@ export default function RootLayout({
         <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
       </head>
       <body>
-        <a href="#main-content" className="skip-link">
-          Chuyển thẳng tới nội dung chính
-        </a>
         <AppProviders>
           <SiteHeader />
           <ScenarioContextBar />

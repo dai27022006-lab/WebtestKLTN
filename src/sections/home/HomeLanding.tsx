@@ -34,11 +34,6 @@ import {
   Zap,
 } from '@/components/icons/DreamIcons';
 import {
-  formatVnd,
-  PRODUCT_TYPE_LABELS,
-  SOURCE_TYPE_META,
-} from '@/components/shared/formatters';
-import {
   CtaPreviewMockup,
   HeroVisualStack,
   InnerPageVisual,
@@ -50,16 +45,9 @@ import { useCountUp } from '@/motion/useCountUp';
 import { useSpecularSpotlight } from '@/motion/useSpecularSpotlight';
 import { useTypewriter } from '@/motion/useTypewriter';
 import { listProducts } from '@/services';
+import { useLocale } from '@/components/providers/LocaleProvider';
 import { useCart, useExperiment } from '@/state';
 import type { ProductSummaryDto, ProductType } from '@/types/api';
-
-const TYPEWRITER_WORDS = [
-  'Web Bán Hàng',
-  'Prompt Chốt Đơn',
-  'Workflow Tự Động',
-  'Trang Lookbook',
-  'Kịch Bản Bán Hàng',
-] as const;
 
 const DEFAULT_THUMBNAIL_BY_TYPE: Record<ProductType, string> = {
   template: '/images/cat-template.webp',
@@ -126,13 +114,6 @@ const CATEGORY_CARDS: Array<{
     icon: Rocket,
     grad: 'dg-grad-6',
   },
-];
-
-const SHOWCASE_TABS: Array<{ value: '' | ProductType; label: string }> = [
-  { value: '', label: 'Tất cả giải pháp' },
-  { value: 'template', label: 'Template Website' },
-  { value: 'prompt_pack', label: 'Prompt Pack' },
-  { value: 'workflow', label: 'Workflow Tự Động' },
 ];
 
 const SHOP_BENEFITS = [
@@ -306,33 +287,6 @@ const PILOT_FEEDBACK_CASES = [
   },
 ] as const;
 
-const FAQ_ITEMS = [
-  {
-    q: 'Sau khi tải gói sản phẩm về, shop nhỏ có thể dùng ngay như thế nào?',
-    a: 'Mỗi gói đều đi kèm tài liệu hướng dẫn triển khai 15–30 phút bằng tiếng Việt. Với Template Website bạn chỉ cần thay logo, ảnh sản phẩm và link sàn; với Prompt Pack có sẵn mẫu điền thông tin trên Notion/PDF; với Workflow có sẵn file JSON để nhập 1 chạm.',
-  },
-  {
-    q: 'Thanh toán thử nghiệm (Sandbox) trên hệ thống có trừ tiền thật không?',
-    a: 'Hoàn toàn không. Cửa hàng hiện đang bật chế độ thanh toán thử nghiệm để bạn tự kiểm tra trọn vẹn quy trình tạo đơn, xác nhận thanh toán và nhận link tải file mà không thu tiền thật.',
-  },
-  {
-    q: 'Ý nghĩa 3 cấp bản quyền Thiết kế gốc, Điều chỉnh có nguồn và Bản quyền hợp lệ là gì?',
-    a: 'Thiết kế gốc là gói do đội ngũ DreamTeam tự xây dựng 100%; Điều chỉnh có nguồn là mẫu tham khảo mở được Việt hóa và tối ưu lại cho shop nhỏ; Bản quyền hợp lệ là tài nguyên có giấy phép thương mại rõ ràng đi kèm hồ sơ.',
-  },
-  {
-    q: 'Trợ lý tư vấn DreamTeam lấy gợi ý sản phẩm từ đâu?',
-    a: 'Trợ lý đối chiếu trực tiếp với các gói sản phẩm đang bán trong cửa hàng theo ngành hàng, kênh bán và mức ngân sách bạn mô tả, giúp tránh gợi ý sai giá hoặc sai tên gói.',
-  },
-  {
-    q: 'Quyền tải file trong 7 ngày và giới hạn 5 lượt tải hoạt động ra sao?',
-    a: 'Sau khi đơn hàng chuyển sang trạng thái hoàn tất, hệ thống cấp cho mỗi gói một liên kết tải riêng tư. Bạn có thể vào mục Đơn hàng để tải lại tối đa 5 lần trong vòng 7 ngày kể từ lúc mua.',
-  },
-  {
-    q: 'Làm sao xem thử giao diện trước khi mua trên màn hình Mobile 375px?',
-    a: 'Tại trang chi tiết của từng Template Website, bạn bấm chuyển giữa chế độ Desktop 1280px và Mobile 375px ngay trong khung xem thử hoặc bấm Phóng to để soi từng phần tử trên màn hình điện thoại.',
-  },
-] as const;
-
 const DIALOG_LIGHT_DISMISS = {
   closedby: 'any',
 } as unknown as React.DialogHTMLAttributes<HTMLDialogElement>;
@@ -342,9 +296,11 @@ function ShowcaseThumbnail({
 }: {
   product: ProductSummaryDto;
 }) {
+  const { getProductCopy, getProductTypeLabel } = useLocale();
   const [imgFailed, setImgFailed] = useState(false);
   const src =
     product.thumbnail_url || DEFAULT_THUMBNAIL_BY_TYPE[product.product_type];
+  const copy = getProductCopy(product);
 
   if (!src || imgFailed) {
     return (
@@ -362,7 +318,7 @@ function ShowcaseThumbnail({
     /* eslint-disable-next-line @next/next/no-img-element */
     <img
       src={src}
-      alt={`Ảnh đại diện ${product.name} (${PRODUCT_TYPE_LABELS[product.product_type]})`}
+      alt={`${copy.name} (${getProductTypeLabel(product.product_type)})`}
       width={960}
       height={600}
       loading="lazy"
@@ -373,6 +329,16 @@ function ShowcaseThumbnail({
 }
 
 export function HomeLanding() {
+  const {
+    locale,
+    home,
+    chrome,
+    formatPrice,
+    getProductCopy,
+    getProductTypeLabel,
+    getSourceMeta,
+    getIndustryLabel,
+  } = useLocale();
   const { addItem } = useCart();
   const { assignment, scenarioState, activeVariant, track } = useExperiment();
 
@@ -390,9 +356,7 @@ export function HomeLanding() {
   const [addedId, setAddedId] = useState<string | null>(null);
 
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
-  const [previewScreen, setPreviewScreen] = useState<
-    (typeof STOREFRONT_SCREENS)[number] | null
-  >(null);
+  const [previewIndex, setPreviewIndex] = useState<number | null>(null);
   const previewDialogRef = useRef<HTMLDialogElement | null>(null);
 
   const carouselTrackRef = useRef<HTMLDivElement | null>(null);
@@ -401,7 +365,7 @@ export function HomeLanding() {
   const [slideAnnouncement, setSlideAnnouncement] = useState<string>('');
 
   const { text: typewriterText, isReducedMotion } =
-    useTypewriter(TYPEWRITER_WORDS);
+    useTypewriter(home.typewriterWords);
   const { ref: countTypesRef, displayValue: countTypesDisplay } = useCountUp(
     3,
     900,
@@ -459,7 +423,7 @@ export function HomeLanding() {
     const dialog = previewDialogRef.current;
     if (!dialog) return;
 
-    const onClose = () => setPreviewScreen(null);
+    const onClose = () => setPreviewIndex(null);
     let pressedOutside = false;
 
     const isOutside = (e: PointerEvent) => {
@@ -490,22 +454,23 @@ export function HomeLanding() {
     };
   }, []);
 
-  const openScreenPreview = (item: (typeof STOREFRONT_SCREENS)[number]) => {
-    setPreviewScreen(item);
+  const openScreenPreview = (idx: number) => {
+    setPreviewIndex(idx);
     previewDialogRef.current?.showModal();
   };
 
   const scrollToSlide = useCallback(
     (index: number, announce = true) => {
       const track = carouselTrackRef.current;
+      const cases = home.pilotCases;
       const wrapped =
-        ((index % PILOT_FEEDBACK_CASES.length) + PILOT_FEEDBACK_CASES.length) %
-        PILOT_FEEDBACK_CASES.length;
+        ((index % cases.length) + cases.length) %
+        cases.length;
       setActiveSlide(wrapped);
 
       if (announce) {
         setSlideAnnouncement(
-          `Trường hợp ${wrapped + 1} trên ${PILOT_FEEDBACK_CASES.length}: ${PILOT_FEEDBACK_CASES[wrapped].persona}`
+          `${wrapped + 1} / ${cases.length}: ${cases[wrapped].persona}`
         );
       }
 
@@ -523,7 +488,7 @@ export function HomeLanding() {
         behavior: prefersReduced ? 'auto' : 'smooth',
       });
     },
-    []
+    [home.pilotCases]
   );
 
   useEffect(() => {
@@ -596,6 +561,163 @@ export function HomeLanding() {
     }
   };
 
+  const ui =
+    locale === 'en'
+      ? {
+          categoriesSubLead:
+            'Pick a digital asset category or filter directly by your 1–3 person shop niche across Shopee, TikTok Shop, and Facebook.',
+          showcaseSubLead:
+            'Filter digital kits with transparent VND pricing (~USD ref), clear licensing labels, and instant add-to-cart.',
+          showcaseViewMore: 'Open full catalog & advanced filters',
+          standardsLead:
+            'Every DreamTeam asset is validated from 375px mobile viewports to 15-minute setup guides and private download links.',
+          screensLead:
+            'Walk through the 6 real shopping steps on DreamTeam: filter by niche, inspect 1280px ↔ 375px, cart, confirm order, and download.',
+          zoomScreenAria: (t: string) => `Zoom preview: ${t}`,
+          openPageAria: (t: string) => `Open page: ${t}`,
+          selectCaseAria: 'Choose sample scenario',
+          viewCaseAria: (i: number, p: string) => `View case ${i}: ${p}`,
+          pauseCarousel: 'Pause',
+          resumeCarousel: 'Resume',
+          prevCase: 'Previous case',
+          nextCase: 'Next case',
+          caseGroupAria: 'Sample trial feedback list',
+          caseSlideLabel: (i: number, n: number, p: string) => `${i} of ${n}: ${p}`,
+          pilotBadge: 'Sample trial feedback',
+          faqLead:
+            'Clear answers on usage rights, 3-tier licensing, 375px mobile preview, and sandbox no-charge checkout.',
+          helpHeading: 'Jump straight to what you need',
+          helpDesc:
+            'Shortcuts to the full catalog, your order downloads, shopping cart, and shop account.',
+          helpTiles: [
+            { title: 'Product Catalog', desc: 'Filter by niche & price' },
+            { title: 'Orders & Downloads', desc: '7-day private file links' },
+            { title: 'Your Cart', desc: 'Review selected kits' },
+            { title: 'Shop Account', desc: 'Sign in or create account' },
+          ],
+          ctaBadge: 'Quick 15–30 min setup',
+          ctaNewestBtn: 'View newest packages',
+          openRealPage: 'Open live page',
+          licenseChip: '3-tier verified license',
+        }
+      : locale === 'ru'
+        ? {
+            categoriesSubLead:
+              'Выберите категорию инструментов или фильтр по нише вашего малого магазина (1–3 чел.) в Shopee, TikTok и Facebook.',
+            showcaseSubLead:
+              'Быстрый фильтр по категориям с ценой в VND (~USD), прозрачной лицензией и мгновенным добавлением в корзину.',
+            showcaseViewMore: 'Открыть весь каталог и фильтры',
+            standardsLead:
+              'Каждый комплект проверен на мобильной ширине 375px и снабжён краткой инструкцией и приватной ссылкой.',
+            screensLead:
+              'Пройдите 6 реальных шагов покупки: от фильтра по нише и предпросмотра 1280px ↔ 375px до выдачи файлов.',
+            zoomScreenAria: (t: string) => `Увеличить превью: ${t}`,
+            openPageAria: (t: string) => `Открыть страницу: ${t}`,
+            selectCaseAria: 'Выбрать тестовый сценарий',
+            viewCaseAria: (i: number, p: string) => `Показать кейс ${i}: ${p}`,
+            pauseCarousel: 'Пауза',
+            resumeCarousel: 'Продолжить',
+            prevCase: 'Предыдущий кейс',
+            nextCase: 'Следующий кейс',
+            caseGroupAria: 'Отзывы участников пилотного теста',
+            caseSlideLabel: (i: number, n: number, p: string) => `${i} из ${n}: ${p}`,
+            pilotBadge: 'Отзыв пилотного теста',
+            faqLead:
+              'Ответы о лицензиях 3 уровней, предпросмотре Mobile 375px, сроке скачивания 7 дней и тестовой оплате.',
+            helpHeading: 'Быстрый переход к нужному разделу',
+            helpDesc:
+              'Удобные ссылки на каталог решений, историю заказов со скачиванием, корзину и профиль.',
+            helpTiles: [
+              { title: 'Каталог решений', desc: 'Фильтр по нише и бюджету' },
+              { title: 'Заказы и ссылки', desc: 'Доступ к файлам 7 дней' },
+              { title: 'Ваша корзина', desc: 'Проверка выбранных пакетов' },
+              { title: 'Аккаунт магазина', desc: 'Вход или регистрация' },
+            ],
+            ctaBadge: 'Быстрый запуск 15–30 минут',
+            ctaNewestBtn: 'Смотреть новинки',
+            openRealPage: 'Открыть страницу',
+            licenseChip: 'Лицензия 3 уровней',
+          }
+        : locale === 'zh'
+          ? {
+              categoriesSubLead:
+                '按数字套件类型或 Shopee、TikTok Shop 与 Facebook 微型店铺（1–3人）所属品类快速筛选。',
+              showcaseSubLead:
+                '直观按类别筛选数字套件，明码标示越南盾价格（附约合美元）、授权等级与一键加购。',
+              showcaseViewMore: '打开完整目录与高级筛选',
+              standardsLead:
+                '每套方案均经过 375px 手机端验证，并附带 15 分钟快速配置手册与私密下载链接。',
+              screensLead:
+                '快速预览 DreamTeam 从按品类选品、1280px ↔ 375px 实机查看到下单领文件的 6 个核心环节。',
+              zoomScreenAria: (t: string) => `放大预览：${t}`,
+              openPageAria: (t: string) => `打开页面：${t}`,
+              selectCaseAria: '选择试测场景',
+              viewCaseAria: (i: number, p: string) => `查看案例 ${i}：${p}`,
+              pauseCarousel: '暂停',
+              resumeCarousel: '继续播放',
+              prevCase: '上一个案例',
+              nextCase: '下一个案例',
+              caseGroupAria: '试点反馈案例列表',
+              caseSlideLabel: (i: number, n: number, p: string) => `第 ${i}/${n} 个：${p}`,
+              pilotBadge: '试点试测反馈',
+              faqLead:
+                '透明说明 3 级商业授权、375px 手机预览、7 天下载权限以及零扣费沙盒结账流程。',
+              helpHeading: '直达您需要的店铺入口',
+              helpDesc: '快速跳转至全部数字套件、订单与文件下载库、购物车及店主账户。',
+              helpTiles: [
+                { title: '数字套件库', desc: '按品类与价格区间筛选' },
+                { title: '订单与下载', desc: '7 天有效期专属文件链接' },
+                { title: '我的购物车', desc: '下单前核对已选套件' },
+                { title: '店主账户', desc: '登录或创建新账户' },
+              ],
+              ctaBadge: '15–30 分钟快速上线',
+              ctaNewestBtn: '查看最新套件',
+              openRealPage: '打开真实页面',
+              licenseChip: '三级明确商业授权',
+            }
+          : {
+              categoriesSubLead:
+                'Chọn đúng loại công cụ số hoặc lọc thẳng theo ngành hàng của shop nhỏ 1–3 người đang bán trên Shopee, TikTok Shop và Facebook.',
+              showcaseSubLead:
+                'Lọc nhanh từng nhóm sản phẩm số kèm giá niêm yết VND, phân loại bản quyền minh bạch và nút thêm vào giỏ tức thì.',
+              showcaseViewMore: 'Mở toàn bộ danh mục & bộ lọc nâng cao',
+              standardsLead:
+                'Mỗi sản phẩm trên DreamTeam đều được chuẩn hóa từ bố cục điện thoại 375px đến hướng dẫn cài đặt nhanh và link tải an toàn.',
+              screensLead:
+                'Xem nhanh 6 bước mua hàng thực tế trên DreamTeam: tìm theo ngành, xem thử 1280px ↔ 375px, giỏ hàng, xác nhận đơn và tải file ngay.',
+              zoomScreenAria: (t: string) => `Phóng to xem trước ${t}`,
+              openPageAria: (t: string) => `Mở trang ${t}`,
+              selectCaseAria: 'Chọn trường hợp thử nghiệm',
+              viewCaseAria: (i: number, p: string) => `Xem trường hợp ${i}: ${p}`,
+              pauseCarousel: 'Tạm dừng',
+              resumeCarousel: 'Tiếp tục chuyển',
+              prevCase: 'Trường hợp trước',
+              nextCase: 'Trường hợp tiếp theo',
+              caseGroupAria: 'Danh sách phản hồi thử nghiệm mẫu',
+              caseSlideLabel: (i: number, n: number, p: string) => `${i} trên ${n}: ${p}`,
+              pilotBadge: 'Phản hồi từ đợt chạy thử nghiệm mẫu',
+              faqLead:
+                'Thông tin rõ ràng về cách sử dụng sau khi tải, bản quyền 3 cấp, xem thử Mobile 375px và chế độ đặt hàng thử nghiệm không thu tiền.',
+              helpHeading: 'Đi thẳng tới khu vực bạn cần',
+              helpDesc:
+                'Lối tắt nhanh tới danh mục sản phẩm số, tra cứu đơn hàng & kho link tải, giỏ hàng và tài khoản của bạn.',
+              helpTiles: [
+                { title: 'Kho sản phẩm', desc: 'Lọc theo ngành hàng & giá VND' },
+                { title: 'Đơn hàng & Link tải', desc: 'Xem lại đơn và tải file trong 7 ngày' },
+                { title: 'Giỏ hàng của bạn', desc: 'Kiểm tra gói đã chọn trước khi đặt' },
+                { title: 'Tài khoản cửa hàng', desc: 'Đăng nhập hoặc tạo tài khoản mới' },
+              ],
+              ctaBadge: 'Triển khai nhanh 15–30 phút',
+              ctaNewestBtn: 'Xem gói mới nhất',
+              openRealPage: 'Mở trang thực tế',
+              licenseChip: 'Bản quyền 3 cấp rõ ràng',
+            };
+
+  const previewScreen =
+    previewIndex !== null ? STOREFRONT_SCREENS[previewIndex] : null;
+  const previewCopy =
+    previewIndex !== null ? home.screensItems[previewIndex] : null;
+
   return (
     <>
       {/* 1. Hero + 3D Mockup Stack + Typewriter (#hero) */}
@@ -605,16 +727,14 @@ export function HomeLanding() {
             <div className="dg-hero-copy">
               <div className="dg-hero-badge">
                 <span className="dg-dot" aria-hidden="true" />
-                <span>
-                  DÀNH CHO CHỦ SHOP 1–3 NGƯỜI • SHOPEE / TIKTOK / FACEBOOK
-                </span>
+                <span>{home.heroBadge}</span>
               </div>
 
               <h1 className="text-line-clip">
-                Vận hành nhanh hơn với{' '}
-                <span className="dg-grad-text">DreamTeam</span>
+                {home.heroTitleStart}{' '}
+                <span className="dg-grad-text">{home.heroTitleLead}</span>
                 <br />
-                Chọn đúng{' '}
+                {home.typewriterPrefix}{' '}
                 <span
                   className={`dg-typewriter ${
                     isReducedMotion ? 'is-static' : ''
@@ -624,21 +744,30 @@ export function HomeLanding() {
                 </span>
               </h1>
 
-              <p className="lead">
-                Kho Template Website tinh gọn, bộ Prompt Pack chốt đơn và
-                Workflow tự động hóa minh bạch bản quyền — đi kèm Trợ lý tư vấn
-                lọc đúng gói theo ngành hàng và ngân sách.
-              </p>
+              <p className="lead">{home.heroDesc}</p>
 
               <div className="dg-hero-cta">
                 <Link href="/products" className="dg-btn-purchase">
-                  <span>Khám phá kho sản phẩm</span>
+                  <span>{home.ctaCatalog}</span>
                   <ArrowRight size={17} />
                 </Link>
-                <Link href="/#showcase" className="dg-btn-outline">
-                  <Play size={16} />
-                  <span>Xem mẫu nổi bật</span>
-                </Link>
+                {!isInExperimentOff ? (
+                  <button
+                    type="button"
+                    className="dg-btn-outline"
+                    onClick={() =>
+                      window.dispatchEvent(new CustomEvent('dsa:open-chat'))
+                    }
+                  >
+                    <MessageSquare size={16} />
+                    <span>{home.ctaAskAdvisor}</span>
+                  </button>
+                ) : (
+                  <Link href="/#showcase" className="dg-btn-outline">
+                    <Play size={16} />
+                    <span>{home.featuredHeading}</span>
+                  </Link>
+                )}
               </div>
 
               <div className="dg-hero-trust-v2">
@@ -646,7 +775,7 @@ export function HomeLanding() {
                   <LayoutDashboard size={16} />
                   <span>
                     <strong ref={countTypesRef}>{countTypesDisplay}</strong>{' '}
-                    Nhóm giải pháp
+                    {home.statLabels.packages}
                   </span>
                 </div>
                 <div className="dg-hero-trust-chip">
@@ -655,13 +784,13 @@ export function HomeLanding() {
                     <strong ref={countResponsiveRef}>
                       {countResponsiveDisplay}%
                     </strong>{' '}
-                    Chuẩn Mobile 375px
+                    Mobile 375px
                   </span>
                 </div>
                 <div className="dg-hero-trust-chip">
                   <ShieldCheck size={16} />
                   <span>
-                    <strong>Bản quyền 3 cấp</strong> rõ ràng
+                    <strong>{ui.licenseChip}</strong>
                   </span>
                 </div>
               </div>
@@ -684,24 +813,23 @@ export function HomeLanding() {
               <span className="dg-sub-heading-icon">
                 <Layers size={13} />
               </span>
-              <span>Danh Mục Thực Chiến</span>
+              <span>{home.categoriesEyebrow}</span>
             </div>
             <h2>
-              Một Hệ Thống,{' '}
-              <span className="dg-grad-text">Sáu Lựa Chọn Nhanh</span>
+              <span className="dg-grad-text">{home.categoriesHeading}</span>
             </h2>
-            <p>
-              Chọn đúng loại công cụ số hoặc lọc thẳng theo ngành hàng của shop
-              nhỏ 1–3 người đang bán trên Shopee, TikTok Shop và Facebook.
-            </p>
+            <p>{ui.categoriesSubLead}</p>
           </div>
 
           <div className="dg-categories-grid">
-            {CATEGORY_CARDS.map((card) => {
+            {CATEGORY_CARDS.map((card, idx) => {
               const Icon = card.icon;
+              const catCopy = home.categoriesCards[idx];
+              const cardTitle = catCopy?.title ?? card.title;
+              const cardCta = catCopy?.cta ?? card.cta;
               return (
                 <Link
-                  key={card.title}
+                  key={card.href}
                   href={card.href}
                   className="dg-framework-card"
                 >
@@ -710,7 +838,7 @@ export function HomeLanding() {
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
                         src={card.image}
-                        alt={card.imageAlt ?? card.title}
+                        alt={cardTitle}
                         width={960}
                         height={600}
                         loading="lazy"
@@ -721,9 +849,9 @@ export function HomeLanding() {
                       <Icon size={26} />
                     </div>
                   )}
-                  <span className="dg-framework-name">{card.title}</span>
+                  <span className="dg-framework-name">{cardTitle}</span>
                   <span className="dg-framework-link">
-                    <span>{card.cta}</span>
+                    <span>{cardCta}</span>
                     <ArrowUpRight size={14} />
                   </span>
                 </Link>
@@ -741,28 +869,24 @@ export function HomeLanding() {
               <span className="dg-sub-heading-icon">
                 <LayoutDashboard size={13} />
               </span>
-              <span>Kho Giải Pháp DreamTeam</span>
+              <span>{home.featuredEyebrow}</span>
             </div>
             <h2>
-              Sản Phẩm Sẵn Sàng{' '}
-              <span className="dg-grad-text">Triển Khai Ngay</span>
+              <span className="dg-grad-text">{home.featuredHeading}</span>
             </h2>
-            <p>
-              Lọc nhanh từng nhóm sản phẩm số kèm giá niêm yết VND, phân loại bản
-              quyền minh bạch và nút thêm vào giỏ tức thì.
-            </p>
+            <p>{ui.showcaseSubLead}</p>
           </div>
 
           <div
             className="dg-fw-tabs"
             role="tablist"
-            aria-label="Lọc danh mục sản phẩm số"
+            aria-label={home.featuredEyebrow}
           >
-            {SHOWCASE_TABS.map((tab) => {
+            {home.featuredTabs.map((tab) => {
               const selected = activeFilter === tab.value;
               return (
                 <button
-                  key={tab.label}
+                  key={tab.value || 'all'}
                   type="button"
                   role="tab"
                   aria-selected={selected}
@@ -807,7 +931,8 @@ export function HomeLanding() {
           ) : (
             <div ref={showcaseGridRef} className="dg-showcase-grid">
               {products.map((product) => {
-                const sourceMeta = SOURCE_TYPE_META[product.source_type];
+                const copy = getProductCopy(product);
+                const sourceMeta = getSourceMeta(product.source_type);
                 const isAdding = addingId === product.id;
                 const isAdded = addedId === product.id;
 
@@ -823,7 +948,7 @@ export function HomeLanding() {
                           href={`/products/${product.slug}`}
                           className="dg-btn-purchase"
                         >
-                          <span>Xem chi tiết</span>
+                          <span>{home.featuredDetail}</span>
                           <ArrowRight size={15} />
                         </Link>
                       </div>
@@ -832,8 +957,8 @@ export function HomeLanding() {
                     <div className="dg-showcase-body">
                       <div className="dg-showcase-meta-row">
                         <span className="dg-showcase-category">
-                          {PRODUCT_TYPE_LABELS[product.product_type]} •{' '}
-                          {product.industry}
+                          {getProductTypeLabel(product.product_type)} •{' '}
+                          {getIndustryLabel(product.industry)}
                         </span>
                         <span className={`badge badge--${sourceMeta.badgeTone}`}>
                           {sourceMeta.label}
@@ -842,14 +967,14 @@ export function HomeLanding() {
 
                       <h3 className="text-line-clip">
                         <Link href={`/products/${product.slug}`}>
-                          {product.name}
+                          {copy.name}
                         </Link>
                       </h3>
-                      <p>{product.short_description}</p>
+                      <p>{copy.short_description}</p>
 
                       <div className="dg-showcase-footer">
                         <span className="type-price dg-showcase-price">
-                          {formatVnd(product.price_vnd)}
+                          {formatPrice(product.price_vnd)}
                         </span>
                         <div
                           style={{
@@ -863,7 +988,7 @@ export function HomeLanding() {
                             href={`/products/${product.slug}`}
                             className="dg-btn-outline dg-btn-sm"
                           >
-                            <span>Xem chi tiết</span>
+                            <span>{home.featuredDetail}</span>
                           </Link>
                           <button
                             type="button"
@@ -874,10 +999,10 @@ export function HomeLanding() {
                             <ShoppingBag size={14} />
                             <span>
                               {isAdded
-                                ? 'Đã thêm'
+                                ? home.featuredAdded
                                 : isAdding
-                                  ? 'Đang thêm...'
-                                  : 'Thêm vào giỏ'}
+                                  ? chrome.common.loading
+                                  : home.featuredQuickAdd}
                             </span>
                           </button>
                         </div>
@@ -891,7 +1016,7 @@ export function HomeLanding() {
 
           <div className="dg-showcase-more">
             <Link href="/products" className="dg-btn-purchase">
-              <span>Mở toàn bộ danh mục &amp; bộ lọc nâng cao</span>
+              <span>{ui.showcaseViewMore}</span>
               <ArrowRight size={16} />
             </Link>
           </div>
@@ -913,21 +1038,18 @@ export function HomeLanding() {
               <span className="dg-sub-heading-icon">
                 <Sparkles size={13} />
               </span>
-              <span>Lợi Ích Cho Chủ Shop</span>
+              <span>{home.benefitsEyebrow}</span>
             </div>
             <h2>
-              Giải Pháp Thực Tiễn Cho{' '}
-              <span className="dg-grad-text">Cửa Hàng 1–3 Người</span>
+              <span className="dg-grad-text">{home.benefitsHeading}</span>
             </h2>
-            <p>
-              Tập trung vào những công cụ giúp shop bán nhanh hơn trên di động,
-              giảm thời gian soạn nội dung và hạn chế sót đơn đa kênh.
-            </p>
+            <p>{home.benefitsLead}</p>
           </div>
 
           <div ref={featuresGridRef} className="dg-features-grid">
-            {SHOP_BENEFITS.map((feat) => {
+            {SHOP_BENEFITS.map((feat, idx) => {
               const Icon = feat.icon;
+              const bCopy = home.benefitsItems[idx];
               return (
                 <article
                   key={feat.title}
@@ -936,8 +1058,8 @@ export function HomeLanding() {
                   <div className={`dg-feature-icon ${feat.grad}`}>
                     <Icon size={24} />
                   </div>
-                  <h3>{feat.title}</h3>
-                  <p>{feat.desc}</p>
+                  <h3>{bCopy?.title ?? feat.title}</h3>
+                  <p>{bCopy?.desc ?? feat.desc}</p>
                 </article>
               );
             })}
@@ -959,27 +1081,23 @@ export function HomeLanding() {
               <span className="dg-sub-heading-icon">
                 <ShieldCheck size={13} />
               </span>
-              <span>Tiêu Chuẩn Triển Khai</span>
+              <span>{home.standardsEyebrow}</span>
             </div>
             <h2>
-              12 Cam Kết Chất Lượng{' '}
-              <span className="dg-grad-text">Trên Từng Gói Số</span>
+              <span className="dg-grad-text">{home.standardsHeading}</span>
             </h2>
-            <p>
-              Mỗi sản phẩm trên DreamTeam đều được chuẩn hóa từ bố cục điện
-              thoại 375px đến hướng dẫn cài đặt nhanh và link tải an toàn.
-            </p>
+            <p>{ui.standardsLead}</p>
           </div>
 
           <div className="dg-stack-grid">
-            {QUALITY_STANDARDS.map((tile) => {
+            {QUALITY_STANDARDS.map((tile, idx) => {
               const Icon = tile.icon;
               return (
                 <div key={tile.name} className="dg-stack-tile">
                   <div className={`dg-stack-tile-icon ${tile.grad}`}>
                     <Icon size={22} />
                   </div>
-                  <span>{tile.name}</span>
+                  <span>{home.standardsItems[idx] ?? tile.name}</span>
                 </div>
               );
             })}
@@ -998,58 +1116,61 @@ export function HomeLanding() {
               <span className="dg-sub-heading-icon">
                 <Layers size={13} />
               </span>
-              <span>Hành Trình Mua Sắm</span>
+              <span>{home.screensEyebrow}</span>
             </div>
             <h2>
-              Trải Nghiệm Mượt Mà{' '}
-              <span className="dg-grad-text">Từ Chọn Gói Đến Nhận File</span>
+              <span className="dg-grad-text">{home.screensHeading}</span>
             </h2>
-            <p>
-              Xem nhanh 6 bước mua hàng thực tế trên DreamTeam: tìm theo ngành,
-              xem thử 1280px ↔ 375px, giỏ hàng, xác nhận đơn và tải file ngay.
-            </p>
+            <p>{ui.screensLead}</p>
           </div>
 
           <div className="dg-inner-pages-grid">
-            {STOREFRONT_SCREENS.map((item) => (
-              <article key={item.title} className="dg-ip2-card dg-panel">
-                <div className="dg-ip2-media">
-                  <InnerPageVisual screen={item.screen} />
-                  <div className="dg-ip2-scrim" aria-hidden="true" />
-                  <button
-                    type="button"
-                    className="dg-ip2-zoom"
-                    onClick={() => openScreenPreview(item)}
-                    aria-label={`Phóng to xem trước ${item.title}`}
-                  >
-                    <Expand size={15} />
-                  </button>
-                  <Link
-                    href={item.href}
-                    className="dg-ip2-live"
-                    aria-label={`Mở trang ${item.title}`}
-                  >
-                    <ArrowUpRight size={16} />
-                  </Link>
-                  <div className="dg-ip2-media-text">
-                    <span className="dg-ip2-category">{item.category}</span>
-                    <h3>{item.title}</h3>
+            {STOREFRONT_SCREENS.map((item, idx) => {
+              const scCopy = home.screensItems[idx];
+              const scTitle = scCopy?.title ?? item.title;
+              const scCategory = scCopy?.category ?? item.category;
+              const scDesc = scCopy?.desc ?? item.desc;
+              const scTags = scCopy?.tags ?? item.tags;
+              return (
+                <article key={item.screen} className="dg-ip2-card dg-panel">
+                  <div className="dg-ip2-media">
+                    <InnerPageVisual screen={item.screen} />
+                    <div className="dg-ip2-scrim" aria-hidden="true" />
+                    <button
+                      type="button"
+                      className="dg-ip2-zoom"
+                      onClick={() => openScreenPreview(idx)}
+                      aria-label={ui.zoomScreenAria(scTitle)}
+                    >
+                      <Expand size={15} />
+                    </button>
+                    <Link
+                      href={item.href}
+                      className="dg-ip2-live"
+                      aria-label={ui.openPageAria(scTitle)}
+                    >
+                      <ArrowUpRight size={16} />
+                    </Link>
+                    <div className="dg-ip2-media-text">
+                      <span className="dg-ip2-category">{scCategory}</span>
+                      <h3>{scTitle}</h3>
+                    </div>
                   </div>
-                </div>
 
-                <div className="dg-ip2-body">
-                  <p>{item.desc}</p>
-                  <div className="dg-ip2-tags">
-                    {item.tags.map((tag) => (
-                      <span key={tag} className="dg-ip2-tag">
-                        <CheckCircle2 size={12} />
-                        <span>{tag}</span>
-                      </span>
-                    ))}
+                  <div className="dg-ip2-body">
+                    <p>{scDesc}</p>
+                    <div className="dg-ip2-tags">
+                      {scTags.map((tag) => (
+                        <span key={tag} className="dg-ip2-tag">
+                          <CheckCircle2 size={12} />
+                          <span>{tag}</span>
+                        </span>
+                      ))}
+                    </div>
                   </div>
-                </div>
-              </article>
-            ))}
+                </article>
+              );
+            })}
           </div>
         </div>
       </section>
@@ -1059,7 +1180,7 @@ export function HomeLanding() {
         className="section-padding-lg editorial-reveal"
         id="reviews"
         aria-roledescription="carousel"
-        aria-label="Phản hồi từ đợt chạy thử nghiệm mẫu"
+        aria-label={home.pilotEyebrow}
       >
         <div className="container">
           <div className="dg-section-heading">
@@ -1067,31 +1188,26 @@ export function HomeLanding() {
               <span className="dg-sub-heading-icon">
                 <MessageSquare size={13} />
               </span>
-              <span>Phản Hồi Từ Đợt Chạy Thử Nghiệm Mẫu</span>
+              <span>{home.pilotEyebrow}</span>
             </div>
             <h2>
-              Các Trường Hợp{' '}
-              <span className="dg-grad-text">Chủ Shop Thử Nghiệm Mẫu</span>
+              <span className="dg-grad-text">{home.pilotHeading}</span>
             </h2>
-            <p>
-              Tổng hợp trải nghiệm từ các chủ shop &amp; người dùng thử nghiệm
-              mẫu quy mô 1–3 người theo từng ngành hàng; đây là phản hồi từ đợt
-              chạy thử nghiệm mẫu, không phải đánh giá thương mại tự phát.
-            </p>
+            <p>{home.pilotDisclaimer}</p>
           </div>
 
           <div className="dg-testi-controls-bar">
             <div
               className="dg-testi-dots"
               role="group"
-              aria-label="Chọn trường hợp thử nghiệm"
+              aria-label={ui.selectCaseAria}
             >
-              {PILOT_FEEDBACK_CASES.map((card, idx) => (
+              {home.pilotCases.map((card, idx) => (
                 <button
-                  key={card.persona}
+                  key={card.code}
                   type="button"
                   className="dg-testi-dot-btn"
-                  aria-label={`Xem trường hợp ${idx + 1}: ${card.persona}`}
+                  aria-label={ui.viewCaseAria(idx + 1, card.persona)}
                   aria-current={activeSlide === idx ? 'true' : undefined}
                   onClick={() => scrollToSlide(idx)}
                 />
@@ -1104,7 +1220,7 @@ export function HomeLanding() {
               onClick={() => setIsAutoPaused((prev) => !prev)}
             >
               {isAutoPaused ? <Play size={14} /> : <Pause size={14} />}
-              <span>{isAutoPaused ? 'Tiếp tục chuyển' : 'Tạm dừng'}</span>
+              <span>{isAutoPaused ? ui.resumeCarousel : ui.pauseCarousel}</span>
             </button>
           </div>
 
@@ -1112,7 +1228,7 @@ export function HomeLanding() {
             <button
               type="button"
               className="dg-testi-nav-btn dg-testi-prev"
-              aria-label="Trường hợp trước"
+              aria-label={ui.prevCase}
               onClick={() => scrollToSlide(activeSlide - 1)}
             >
               <ChevronLeft size={18} />
@@ -1123,62 +1239,75 @@ export function HomeLanding() {
               className="dg-scenario-track"
               tabIndex={0}
               role="group"
-              aria-label="Danh sách phản hồi thử nghiệm mẫu"
+              aria-label={ui.caseGroupAria}
             >
-              {PILOT_FEEDBACK_CASES.map((card, idx) => (
-                <article
-                  key={card.persona}
-                  role="group"
-                  aria-roledescription="slide"
-                  aria-label={`${idx + 1} trên ${PILOT_FEEDBACK_CASES.length}: ${card.persona}`}
-                  className={`dg-testi2-card dg-panel ${card.grad} ${
-                    activeSlide === idx ? 'is-active' : ''
-                  }`}
-                >
-                  <div className="dg-testi2-top">
-                    <div className="dg-testi2-user">
-                      <div className="dg-testi2-avatar-wrap">
-                        <span className="dg-scenario-avatar" aria-hidden="true">
-                          {card.code}
-                        </span>
+              {PILOT_FEEDBACK_CASES.map((baseCard, idx) => {
+                const cCopy = home.pilotCases[idx];
+                const code = cCopy?.code ?? baseCard.code;
+                const persona = cCopy?.persona ?? baseCard.persona;
+                const channel = cCopy?.channel ?? baseCard.channel;
+                const budget = cCopy?.budget ?? baseCard.budget;
+                const summary = cCopy?.summary ?? baseCard.summary;
+                const ctaLabel = cCopy?.ctaLabel ?? baseCard.ctaLabel;
+                return (
+                  <article
+                    key={baseCard.code}
+                    role="group"
+                    aria-roledescription="slide"
+                    aria-label={ui.caseSlideLabel(
+                      idx + 1,
+                      PILOT_FEEDBACK_CASES.length,
+                      persona
+                    )}
+                    className={`dg-testi2-card dg-panel ${baseCard.grad} ${
+                      activeSlide === idx ? 'is-active' : ''
+                    }`}
+                  >
+                    <div className="dg-testi2-top">
+                      <div className="dg-testi2-user">
+                        <div className="dg-testi2-avatar-wrap">
+                          <span className="dg-scenario-avatar" aria-hidden="true">
+                            {code}
+                          </span>
+                        </div>
+                        <div className="dg-testi2-body">
+                          <h5>
+                            <span>{persona}</span>
+                            <CheckCircle2 size={14} className="dg-testi-verified" />
+                          </h5>
+                          <span className="dg-testi2-role">{channel}</span>
+                        </div>
                       </div>
-                      <div className="dg-testi2-body">
-                        <h5>
-                          <span>{card.persona}</span>
-                          <CheckCircle2 size={14} className="dg-testi-verified" />
-                        </h5>
-                        <span className="dg-testi2-role">{card.channel}</span>
-                      </div>
+
+                      <span className="dg-testi2-rating type-mono">
+                        {budget}
+                      </span>
                     </div>
 
-                    <span className="dg-testi2-rating type-mono">
-                      {card.budget}
+                    <span className="dg-testi2-quote-bg" aria-hidden="true">
+                      <Quote size={26} />
                     </span>
-                  </div>
+                    <p>{summary}</p>
 
-                  <span className="dg-testi2-quote-bg" aria-hidden="true">
-                    <Quote size={26} />
-                  </span>
-                  <p>{card.summary}</p>
-
-                  <div className="dg-testi-meta">
-                    <span className="badge">Phản hồi từ đợt chạy thử nghiệm mẫu</span>
-                    <Link
-                      href={`/products?industry=${encodeURIComponent(card.industryFilter)}`}
-                      className="dg-scenario-cta"
-                    >
-                      <span>{card.ctaLabel}</span>
-                      <ArrowRight size={14} />
-                    </Link>
-                  </div>
-                </article>
-              ))}
+                    <div className="dg-testi-meta">
+                      <span className="badge">{ui.pilotBadge}</span>
+                      <Link
+                        href={`/products?industry=${encodeURIComponent(baseCard.industryFilter)}`}
+                        className="dg-scenario-cta"
+                      >
+                        <span>{ctaLabel}</span>
+                        <ArrowRight size={14} />
+                      </Link>
+                    </div>
+                  </article>
+                );
+              })}
             </div>
 
             <button
               type="button"
               className="dg-testi-nav-btn dg-testi-next"
-              aria-label="Trường hợp tiếp theo"
+              aria-label={ui.nextCase}
               onClick={() => scrollToSlide(activeSlide + 1)}
             >
               <ChevronRight size={18} />
@@ -1206,25 +1335,21 @@ export function HomeLanding() {
               <span className="dg-sub-heading-icon">
                 <HelpCircle size={13} />
               </span>
-              <span>Hỏi Đáp Thường Gặp</span>
+              <span>{home.faqEyebrow}</span>
             </div>
             <h2>
-              Giải Đáp Nhanh{' '}
-              <span className="dg-grad-text">Trước Khi Chọn Gói</span>
+              <span className="dg-grad-text">{home.faqHeading}</span>
             </h2>
-            <p>
-              Thông tin rõ ràng về cách sử dụng sau khi tải, bản quyền 3 cấp,
-              xem thử Mobile 375px và chế độ đặt hàng thử nghiệm không thu tiền.
-            </p>
+            <p>{ui.faqLead}</p>
           </div>
 
           <div className="dg-faq-grid">
-            {FAQ_ITEMS.map((item, idx) => {
+            {home.faqItems.map((item, idx) => {
               const isOpen = openFaqIndex === idx;
               const panelId = `faq-answer-${idx}`;
               return (
                 <div
-                  key={item.q}
+                  key={idx}
                   className={`dg-faq-item ${isOpen ? 'active' : ''}`}
                 >
                   <button
@@ -1261,11 +1386,8 @@ export function HomeLanding() {
                 <Sparkles size={24} />
               </div>
               <div>
-                <h3>Đi thẳng tới khu vực bạn cần</h3>
-                <p>
-                  Lối tắt nhanh tới danh mục sản phẩm số, tra cứu đơn hàng &amp;
-                  kho link tải, giỏ hàng và tài khoản của bạn.
-                </p>
+                <h3>{ui.helpHeading}</h3>
+                <p>{ui.helpDesc}</p>
               </div>
             </div>
 
@@ -1274,32 +1396,32 @@ export function HomeLanding() {
                 <div className="dg-faq-help-tile-icon grad-indigo">
                   <LayoutDashboard size={17} />
                 </div>
-                <h4>Kho sản phẩm</h4>
-                <p>Lọc theo ngành hàng &amp; giá VND</p>
+                <h4>{ui.helpTiles[0].title}</h4>
+                <p>{ui.helpTiles[0].desc}</p>
               </Link>
 
               <Link href="/orders" className="dg-faq-help-tile">
                 <div className="dg-faq-help-tile-icon grad-cyan">
                   <Download size={17} />
                 </div>
-                <h4>Đơn hàng &amp; Link tải</h4>
-                <p>Xem lại đơn và tải file trong 7 ngày</p>
+                <h4>{ui.helpTiles[1].title}</h4>
+                <p>{ui.helpTiles[1].desc}</p>
               </Link>
 
               <Link href="/cart" className="dg-faq-help-tile">
                 <div className="dg-faq-help-tile-icon grad-emerald">
                   <ShoppingBag size={17} />
                 </div>
-                <h4>Giỏ hàng của bạn</h4>
-                <p>Kiểm tra gói đã chọn trước khi đặt</p>
+                <h4>{ui.helpTiles[2].title}</h4>
+                <p>{ui.helpTiles[2].desc}</p>
               </Link>
 
               <Link href="/auth" className="dg-faq-help-tile">
                 <div className="dg-faq-help-tile-icon grad-copper">
                   <Lock size={17} />
                 </div>
-                <h4>Tài khoản cửa hàng</h4>
-                <p>Đăng nhập hoặc tạo tài khoản mới</p>
+                <h4>{ui.helpTiles[3].title}</h4>
+                <p>{ui.helpTiles[3].desc}</p>
               </Link>
             </div>
           </div>
@@ -1315,19 +1437,13 @@ export function HomeLanding() {
               <div className="dg-cta-dark-copy">
                 <span className="dg-cta-dark-badge">
                   <Rocket size={14} />
-                  <span>Triển khai nhanh 15–30 phút</span>
+                  <span>{ui.ctaBadge}</span>
                 </span>
-                <h2>
-                  Sẵn sàng chọn bộ công cụ số phù hợp cho shop nhỏ của bạn?
-                </h2>
-                <p>
-                  Xem thử trực tiếp giao diện trên máy tính 1280px và điện thoại
-                  375px trước khi quyết định, hoặc nhờ Trợ lý tư vấn gợi ý theo
-                  đúng ngân sách.
-                </p>
+                <h2>{home.ctaBandHeading}</h2>
+                <p>{home.ctaBandDesc}</p>
                 <div className="dg-hero-cta" style={{ marginBottom: 0 }}>
                   <Link href="/products" className="dg-btn-purchase">
-                    <span>Khám phá toàn bộ sản phẩm</span>
+                    <span>{home.ctaBandPrimary}</span>
                     <ArrowRight size={16} />
                   </Link>
                   {!isInExperimentOff ? (
@@ -1339,12 +1455,12 @@ export function HomeLanding() {
                       }
                     >
                       <MessageSquare size={15} />
-                      <span>Mở Trợ lý tư vấn</span>
+                      <span>{home.ctaBandSecondary}</span>
                     </button>
                   ) : (
                     <Link href="/products?sort=newest" className="dg-btn-outline">
                       <Play size={15} />
-                      <span>Xem gói mới nhất</span>
+                      <span>{ui.ctaNewestBtn}</span>
                     </Link>
                   )}
                 </div>
@@ -1365,24 +1481,24 @@ export function HomeLanding() {
         aria-labelledby="inner-preview-title"
         {...DIALOG_LIGHT_DISMISS}
       >
-        {previewScreen && (
+        {previewScreen && previewCopy && (
           <div className="dg-preview-dialog-body">
             <div className="dg-preview-dialog-head">
               <div>
-                <span className="type-eyebrow">{previewScreen.category}</span>
+                <span className="type-eyebrow">{previewCopy.category}</span>
                 <h2
                   id="inner-preview-title"
                   className="type-h3"
                   style={{ margin: '4px 0 0' }}
                 >
-                  {previewScreen.title}
+                  {previewCopy.title}
                 </h2>
               </div>
               <button
                 type="button"
                 className="icon-btn"
                 onClick={() => previewDialogRef.current?.close()}
-                aria-label="Đóng xem trước"
+                aria-label={chrome.common.close}
                 autoFocus
               >
                 <X size={18} />
@@ -1394,7 +1510,7 @@ export function HomeLanding() {
             </div>
 
             <p className="type-body-sm" style={{ margin: 0 }}>
-              {previewScreen.desc}
+              {previewCopy.desc}
             </p>
 
             <div className="dg-preview-dialog-actions">
@@ -1403,14 +1519,14 @@ export function HomeLanding() {
                 className="btn btn--secondary"
                 onClick={() => previewDialogRef.current?.close()}
               >
-                Đóng
+                {chrome.common.close}
               </button>
               <Link
                 href={previewScreen.href}
                 className="dg-btn-purchase dg-btn-sm"
                 onClick={() => previewDialogRef.current?.close()}
               >
-                <span>Mở trang thực tế</span>
+                <span>{ui.openRealPage}</span>
                 <ArrowUpRight size={15} />
               </Link>
             </div>

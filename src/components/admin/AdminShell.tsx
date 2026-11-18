@@ -18,7 +18,9 @@ import {
   User,
   X,
 } from '@/components/icons/DreamIcons';
+import { LanguageSwitcher } from '@/components/layout/LanguageSwitcher';
 import { useAuth } from '@/components/providers/AuthProvider';
+import { useLocale } from '@/components/providers/LocaleProvider';
 import { useTheme } from '@/components/providers/ThemeProvider';
 import { DreamTeamBrandMark } from '@/components/visual/DreamTeamBrandMark';
 
@@ -59,12 +61,15 @@ interface AdminNavLinksProps {
 }
 
 function AdminNavLinks({ pathname, onNavigate }: AdminNavLinksProps) {
+  const { admin } = useLocale();
+  const shellCopy = admin.shell;
   return (
-    <nav className="admin-sidebar__nav" aria-label="Điều hướng khu vực quản trị">
-      {ADMIN_NAV_ITEMS.map((item) => {
+    <nav className="admin-sidebar__nav" aria-label={shellCopy.navAria}>
+      {ADMIN_NAV_ITEMS.map((item, idx) => {
         const Icon = item.icon;
         const isActive =
           pathname === item.href || pathname.startsWith(`${item.href}/`);
+        const navText = shellCopy.navItems[idx]?.label ?? item.label;
         return (
           <Link
             key={item.href}
@@ -74,7 +79,7 @@ function AdminNavLinks({ pathname, onNavigate }: AdminNavLinksProps) {
             onClick={onNavigate}
           >
             <Icon size={17} />
-            <span>{item.label}</span>
+            <span>{navText}</span>
           </Link>
         );
       })}
@@ -99,6 +104,9 @@ function AdminSidebarFooter({
   onNavigate,
   onLogout,
 }: AdminSidebarFooterProps) {
+  const { admin, chrome } = useLocale();
+  const shellCopy = admin.shell;
+  const commonCopy = chrome.common;
   return (
     <div className="admin-sidebar__foot">
       <div
@@ -129,7 +137,7 @@ function AdminSidebarFooter({
               whiteSpace: 'nowrap',
             }}
           >
-            {fullName ?? 'Quản trị viên'}
+            {fullName ?? shellCopy.fallbackName}
           </span>
         </div>
         <span
@@ -153,8 +161,8 @@ function AdminSidebarFooter({
         {theme === 'light' ? <Moon size={15} /> : <Sun size={15} />}
         <span>
           {theme === 'light'
-            ? 'Đổi Giao diện Tối'
-            : 'Đổi Giao diện Sáng'}
+            ? commonCopy.switchToDark
+            : commonCopy.switchToLight}
         </span>
       </button>
 
@@ -164,7 +172,7 @@ function AdminSidebarFooter({
         style={{ justifyContent: 'space-between' }}
         onClick={onNavigate}
       >
-        <span>Xem Mặt tiền Cửa hàng</span>
+        <span>{shellCopy.viewStorefront}</span>
         <ArrowUpRight size={14} />
       </Link>
 
@@ -177,7 +185,7 @@ function AdminSidebarFooter({
         }}
         onClick={onLogout}
       >
-        Đăng xuất
+        {commonCopy.logout}
       </button>
     </div>
   );
@@ -188,6 +196,8 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const { user, isLoading: isAuthLoading, logoutUser } = useAuth();
   const { theme, toggleTheme } = useTheme();
+  const { admin, chrome } = useLocale();
+  const shellCopy = admin.shell;
 
   const [drawerOpen, setDrawerOpen] = useState(false);
   const mobileDrawerRef = useRef<HTMLDialogElement | null>(null);
@@ -271,25 +281,26 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
             className="surface-card dg-panel"
             style={{ display: 'grid', gap: '16px' }}
           >
-            <span className="badge badge--warning" style={{ width: 'fit-content' }}>
-              <Lock size={13} />
-              <span>Khu vực Bảo vệ • Chỉ dành cho Quản trị viên</span>
-            </span>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+              <span className="badge badge--warning" style={{ width: 'fit-content' }}>
+                <Lock size={13} />
+                <span>{shellCopy.adminBadge}</span>
+              </span>
+              <LanguageSwitcher />
+            </div>
             <h1 className="type-h2" style={{ margin: 0 }}>
-              Yêu cầu đăng nhập tài khoản Quản trị
+              {shellCopy.deniedTitle}
             </h1>
             <p className="type-body-sm" style={{ margin: 0 }}>
-              Không gian điều hành <code className="type-mono">/admin/*</code>{' '}
-              (phân tích A/B, CRUD sản phẩm, đơn hàng và nhật ký Trợ lý AI) chỉ
-              mở cho tài khoản có quyền quản trị viên.
+              {user ? shellCopy.deniedDescNotAdmin : shellCopy.deniedDescLoggedOut}
             </p>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
               <Link href="/auth" className="dg-btn-purchase">
-                <span>Đi tới trang Đăng nhập</span>
+                <span>{shellCopy.deniedLoginBtn}</span>
                 <ArrowRight size={15} />
               </Link>
               <Link href="/" className="btn btn--secondary">
-                <span>Xem Mặt tiền Cửa hàng</span>
+                <span>{shellCopy.deniedBackStoreBtn}</span>
               </Link>
             </div>
           </div>
@@ -298,24 +309,27 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
     );
   }
 
-  const activeNav =
-    ADMIN_NAV_ITEMS.find(
+  const activeIdx = Math.max(
+    0,
+    ADMIN_NAV_ITEMS.findIndex(
       (item) => pathname === item.href || pathname.startsWith(`${item.href}/`)
-    ) ?? ADMIN_NAV_ITEMS[0];
+    )
+  );
+  const activeNavCopy = shellCopy.navItems[activeIdx] ?? shellCopy.navItems[0];
 
   return (
     <div className="admin-shell">
       {/* Desktop Sticky Sidebar */}
-      <aside className="admin-sidebar" aria-label="Thanh bên quản trị">
+      <aside className="admin-sidebar" aria-label={shellCopy.navAria}>
         <div className="admin-sidebar__brand">
-          <Link href="/admin/analytics" aria-label="DreamTeam Admin">
+          <Link href="/admin/analytics" aria-label={shellCopy.topbarTitle}>
             <DreamTeamBrandMark
               size={30}
               showWordmark
-              subtitle="Buồng điều hành"
+              subtitle={shellCopy.sidebarSubtitle}
             />
           </Link>
-          <span className="badge badge--accent type-mono">Admin</span>
+          <span className="badge badge--accent type-mono">{shellCopy.adminBadge}</span>
         </div>
 
         <AdminNavLinks pathname={pathname} />
@@ -336,7 +350,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
               type="button"
               className="icon-btn admin-mobile-menu-btn"
               onClick={openMobileDrawer}
-              aria-label="Mở menu điều hướng quản trị"
+              aria-label={shellCopy.openDrawerAria}
               aria-expanded={drawerOpen}
               aria-controls="admin-mobile-drawer"
             >
@@ -345,27 +359,28 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
 
             <div style={{ display: 'grid', gap: '2px' }}>
               <span className="type-caption" style={{ fontWeight: 700 }}>
-                DreamTeam Admin • {activeNav.label}
+                {shellCopy.topbarTitle} • {activeNavCopy.label}
               </span>
-              <span className="type-caption">{activeNav.description}</span>
+              <span className="type-caption">{activeNavCopy.description}</span>
             </div>
           </div>
 
           <div className="admin-topbar__right">
+            <LanguageSwitcher />
             <button
               type="button"
               className="icon-btn"
               onClick={toggleTheme}
               aria-label={
                 theme === 'light'
-                  ? 'Chuyển sang giao diện Tối'
-                  : 'Chuyển sang giao diện Sáng'
+                  ? chrome.common.switchToDark
+                  : chrome.common.switchToLight
               }
             >
               {theme === 'light' ? <Moon size={16} /> : <Sun size={16} />}
             </button>
             <Link href="/" className="btn btn--secondary btn--sm">
-              <span>Xem Mặt tiền Cửa hàng</span>
+              <span>{shellCopy.viewStorefront}</span>
               <ArrowUpRight size={14} />
             </Link>
           </div>
@@ -387,14 +402,14 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
             <DreamTeamBrandMark
               size={28}
               showWordmark
-              subtitle="Buồng điều hành"
+              subtitle={shellCopy.sidebarSubtitle}
             />
           </div>
           <button
             type="button"
             className="icon-btn"
             onClick={closeMobileDrawer}
-            aria-label="Đóng menu quản trị"
+            aria-label={shellCopy.closeDrawerAria}
             autoFocus
           >
             <X size={18} />
@@ -403,6 +418,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
 
         <div className="admin-drawer__body">
           <AdminNavLinks pathname={pathname} onNavigate={closeMobileDrawer} />
+          <LanguageSwitcher variant="inline" onSelectLocale={closeMobileDrawer} />
           <AdminSidebarFooter
             fullName={user.full_name}
             email={user.email}

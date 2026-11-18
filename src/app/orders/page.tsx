@@ -3,7 +3,9 @@
 import Link from 'next/link';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
+import { useLocale } from '@/components/providers/LocaleProvider';
 import { ShopDashboardPanel } from '@/components/analytics/ShopDashboardPanel';
+import { EditorialEmptyIllustration } from '@/components/visual/EditorialEmptyIllustration';
 import {
   ArrowRight,
   CheckCircle2,
@@ -11,27 +13,25 @@ import {
   RefreshCw,
   ShoppingBag,
 } from '@/components/icons/DreamIcons';
-import {
-  formatDateTimeVi,
-  formatVnd,
-  ORDER_STATUS_META,
-} from '@/components/shared/formatters';
-import { EditorialEmptyIllustration } from '@/components/visual/EditorialEmptyIllustration';
 import { listOrders, listProducts } from '@/services';
 import { useExperiment } from '@/state';
 import type { OrderDto, OrderStatus, ProductSummaryDto } from '@/types/api';
 
 type OrderFilterValue = 'all' | 'paid' | 'pending' | 'failed';
 
-const STATUS_FILTERS: Array<{ value: OrderFilterValue; label: string }> = [
-  { value: 'all', label: 'Tất cả' },
-  { value: 'paid', label: 'Đã thanh toán' },
-  { value: 'pending', label: 'Chờ thanh toán' },
-  { value: 'failed', label: 'Thất bại' },
-];
-
 export default function OrdersLedgerPage() {
+  const { commerce, chrome, formatPrice, formatDate, getOrderStatusMeta } =
+    useLocale();
+  const od = commerce.orders;
+  const sd = commerce.shopDashboard;
   const { visitorId } = useExperiment();
+
+  const statusFilters: Array<{ value: OrderFilterValue; label: string }> = [
+    { value: 'all', label: od.filterAll },
+    { value: 'paid', label: od.filterPaid },
+    { value: 'pending', label: od.filterPending },
+    { value: 'failed', label: od.filterFailed },
+  ];
 
   const [orders, setOrders] = useState<OrderDto[]>([]);
   const [products, setProducts] = useState<ProductSummaryDto[]>([]);
@@ -106,12 +106,9 @@ export default function OrdersLedgerPage() {
       <div className="container orders-ledger">
         <div className="section-header" style={{ marginBottom: 0 }}>
           <div className="section-header__copy">
-            <span className="type-eyebrow">Thư viện đơn hàng &amp; Tải file</span>
-            <h1 className="type-h1">Lịch sử đơn hàng đã mua</h1>
-            <p className="type-body-sm">
-              Theo dõi các đơn hàng thử nghiệm và mở kho link tải an toàn (hạn 7
-              ngày, tối đa 5 lượt tải cho mỗi gói).
-            </p>
+            <span className="type-eyebrow">{od.eyebrow}</span>
+            <h1 className="type-h1">{od.title}</h1>
+            <p className="type-body-sm">{od.subtitle}</p>
           </div>
           <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
             <button
@@ -121,38 +118,34 @@ export default function OrdersLedgerPage() {
               onClick={() => void loadOrders()}
             >
               <RefreshCw size={14} />
-              <span>Làm mới</span>
+              <span>{chrome.common.refresh}</span>
             </button>
             <Link href="/products" className="dg-btn-purchase dg-btn-sm">
               <ShoppingBag size={14} />
-              <span>Khám phá sản phẩm</span>
+              <span>{chrome.common.products}</span>
             </Link>
           </div>
         </div>
 
         <div className="callout callout--info">
-          <span>
-            Hệ thống đang chạy chế độ đặt hàng thử nghiệm (Sandbox) — mọi đơn
-            hàng đều phục vụ kiểm tra quy trình và nhận file ngay mà không bị
-            trừ tiền thật.
-          </span>
+          <span>{od.sandboxNote}</span>
         </div>
 
         <ShopDashboardPanel
           orders={orders}
           products={products}
           isLoading={isLoading}
-          title="Thống kê Đơn hàng & Gói số"
-          subtitle="Tổng hợp tỷ lệ hoàn tất, chi tiêu đã thanh toán, phân loại gói sở hữu và lượt tải còn lại của shop."
+          title={sd.ordersTitle}
+          subtitle={sd.ordersSubtitle}
         />
 
         <div className="orders-ledger__filters">
           <div
             className="chip-row"
             role="group"
-            aria-label="Lọc đơn hàng theo trạng thái"
+            aria-label={od.eyebrow}
           >
-            {STATUS_FILTERS.map((item) => (
+            {statusFilters.map((item) => (
               <button
                 key={item.value}
                 type="button"
@@ -172,7 +165,7 @@ export default function OrdersLedgerPage() {
           </div>
 
           <span className="type-caption type-mono">
-            Hiển thị {filteredOrders.length} / {orders.length} đơn
+            {od.showingCount(filteredOrders.length, orders.length)}
           </span>
         </div>
 
@@ -193,7 +186,7 @@ export default function OrdersLedgerPage() {
                 className="btn btn--secondary btn--sm"
                 onClick={() => void loadOrders()}
               >
-                Thử tải lại
+                {chrome.common.retry}
               </button>
             </div>
           </div>
@@ -220,20 +213,18 @@ export default function OrdersLedgerPage() {
               justifyItems: 'center',
             }}
           >
-            <EditorialEmptyIllustration title="Chưa có đơn hàng phù hợp" />
+            <EditorialEmptyIllustration
+              title={orders.length === 0 ? od.emptyAllTitle : od.emptyFilteredTitle}
+            />
             <h2 className="type-h3" style={{ margin: 0 }}>
-              {orders.length === 0
-                ? 'Bạn chưa có đơn hàng nào trong phiên này'
-                : 'Không có đơn hàng nào thuộc trạng thái đang chọn'}
+              {orders.length === 0 ? od.emptyAllTitle : od.emptyFilteredTitle}
             </h2>
             <p className="type-body-sm" style={{ margin: 0, maxWidth: '46ch' }}>
-              {orders.length === 0
-                ? 'Hãy chọn gói Template Website, Prompt Pack AI hoặc Workflow tự động và thử xác nhận đơn để nhận link tải file ngay.'
-                : 'Bấm chọn Tất cả để xem toàn bộ lịch sử đơn hàng của bạn.'}
+              {orders.length === 0 ? od.emptyAllDesc : od.emptyFilteredDesc}
             </p>
             <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
               <Link href="/products" className="dg-btn-purchase">
-                <span>Khám phá sản phẩm</span>
+                <span>{chrome.common.products}</span>
                 <ArrowRight size={15} />
               </Link>
               {orders.length > 0 && statusFilter !== 'all' && (
@@ -242,7 +233,7 @@ export default function OrdersLedgerPage() {
                   className="btn btn--secondary"
                   onClick={() => setStatusFilter('all')}
                 >
-                  Xem tất cả đơn hàng
+                  {od.viewAllBtn}
                 </button>
               )}
             </div>
@@ -250,7 +241,7 @@ export default function OrdersLedgerPage() {
         ) : (
           <div className="orders-ledger__list">
             {filteredOrders.map((order) => {
-              const statusMeta = ORDER_STATUS_META[order.status];
+              const statusMeta = getOrderStatusMeta(order.status);
               return (
                 <article key={order.id} className="orders-ledger__row dg-panel">
                   <div style={{ display: 'grid', gap: '8px', minWidth: 0 }}>
@@ -273,7 +264,7 @@ export default function OrdersLedgerPage() {
                         <span>{statusMeta.label}</span>
                       </span>
                       <span className="type-caption">
-                        {formatDateTimeVi(order.created_at)}
+                        {formatDate(order.created_at)}
                       </span>
                     </div>
 
@@ -301,16 +292,16 @@ export default function OrdersLedgerPage() {
                   </div>
 
                   <div style={{ display: 'grid', gap: '4px' }}>
-                    <span className="type-caption">Tổng giá trị đơn</span>
+                    <span className="type-caption">{od.totalOrderValue}</span>
                     <strong
                       className="type-price"
                       style={{ fontSize: '1.25rem', color: 'var(--accent)' }}
                     >
-                      {formatVnd(order.total_vnd)}
+                      {formatPrice(order.total_vnd)}
                     </strong>
                     {order.status === 'paid' && order.download_grants && (
                       <span className="type-caption type-mono">
-                        {order.download_grants.length} gói sẵn sàng tải
+                        {od.readyPackages(order.download_grants.length)}
                       </span>
                     )}
                   </div>
@@ -329,7 +320,7 @@ export default function OrdersLedgerPage() {
                       ) : (
                         <ArrowRight size={14} />
                       )}
-                      <span>Xem đơn &amp; Tải file</span>
+                      <span>{od.viewAndDownload}</span>
                     </Link>
                   </div>
                 </article>

@@ -1,8 +1,7 @@
+'use client';
+
 import { Lock } from '@/components/icons/DreamIcons';
-import {
-  PRODUCT_TYPE_LABELS,
-  SOURCE_TYPE_META,
-} from '@/components/shared/formatters';
+import { useLocale } from '@/components/providers/LocaleProvider';
 import type { ProductSourceType, ProductType } from '@/types/api';
 
 interface ProductPlaceholderFrameProps {
@@ -22,8 +21,28 @@ export function ProductPlaceholderFrame({
   aspect = '4/3',
   slug,
 }: ProductPlaceholderFrameProps) {
-  const typeLabel = PRODUCT_TYPE_LABELS[productType];
-  const sourceMeta = sourceType ? SOURCE_TYPE_META[sourceType] : null;
+  const { locale, getProductTypeLabel, getSourceMeta, getIndustryLabel } =
+    useLocale();
+  const typeLabel = getProductTypeLabel(productType);
+  const sourceMeta = sourceType ? getSourceMeta(sourceType) : null;
+  const industryLabel = getIndustryLabel(industry);
+
+  const flowStep1 =
+    locale === 'en'
+      ? 'New Order'
+      : locale === 'ru'
+        ? 'Заказ'
+        : locale === 'zh'
+          ? '新订单'
+          : 'Đơn mới';
+  const flowStep2 =
+    locale === 'en'
+      ? 'Sync'
+      : locale === 'ru'
+        ? 'Синхрон'
+        : locale === 'zh'
+          ? '自动同步'
+          : 'Đồng bộ';
 
   return (
     <div
@@ -54,7 +73,7 @@ export function ProductPlaceholderFrame({
       <div className="product-frame__inner">
         <div className="product-frame__top">
           <span className="badge badge--accent">{typeLabel}</span>
-          {!compact && <span className="badge">{industry}</span>}
+          {!compact && <span className="badge">{industryLabel}</span>}
         </div>
 
         <div className="product-frame__canvas">
@@ -65,7 +84,7 @@ export function ProductPlaceholderFrame({
                 <i />
                 <i />
                 <span className="type-caption" style={{ marginLeft: 'auto' }}>
-                  {industry} • 375px–1440px
+                  {industryLabel} • 375px–1440px
                 </span>
               </div>
               <div className="wireframe-body">
@@ -98,8 +117,8 @@ export function ProductPlaceholderFrame({
                     gap: '6px',
                   }}
                 >
-                  <span className="prompt-token">{'{{nganh_hang}}'}</span>
-                  <span className="type-caption">{industry}</span>
+                  <span className="prompt-token">{'{{category}}'}</span>
+                  <span className="type-caption">{industryLabel}</span>
                 </div>
                 {!compact && (
                   <div
@@ -110,7 +129,7 @@ export function ProductPlaceholderFrame({
               </div>
               {!compact && (
                 <div className="prompt-card-mini">
-                  <span className="prompt-token">{'{{loi_ich_chinh}}'}</span>
+                  <span className="prompt-token">{'{{key_benefit}}'}</span>
                   <div
                     className="wireframe-block"
                     style={{ height: '10px', width: '74%' }}
@@ -122,11 +141,11 @@ export function ProductPlaceholderFrame({
 
           {productType === 'workflow' && (
             <div className="workflow-nodes">
-              <div className="workflow-node">Đơn mới</div>
+              <div className="workflow-node">{flowStep1}</div>
               <div className="workflow-arrow" />
-              <div className="workflow-node workflow-node--accent">Đồng bộ</div>
+              <div className="workflow-node workflow-node--accent">{flowStep2}</div>
               <div className="workflow-arrow" />
-              <div className="workflow-node">Sheets/Zalo</div>
+              <div className="workflow-node">Sheets/Alert</div>
             </div>
           )}
         </div>

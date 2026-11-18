@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
+import { useLocale } from '@/components/providers/LocaleProvider';
 import { AdminVisualDashboard } from '@/components/analytics/AdminVisualDashboard';
 import {
   AlertTriangle,
@@ -20,11 +21,6 @@ import {
   User,
 } from '@/components/icons/DreamIcons';
 import { useAuth } from '@/components/providers/AuthProvider';
-import {
-  formatDateTimeVi,
-  formatVnd,
-  ORDER_STATUS_META,
-} from '@/components/shared/formatters';
 import { EVENT_CATALOG, EVENT_NAMES } from '@/lib/tracking/events';
 import {
   adminExportDatasetJson,
@@ -68,6 +64,8 @@ const EXPORT_DATASETS: Array<{
 ];
 
 export default function AdminAnalyticsPage() {
+  const { admin, formatPrice, formatDate, getOrderStatusMeta } = useLocale();
+  const aa = admin.analytics;
   const { user, isLoading: isAuthLoading } = useAuth();
 
   const [includeSimulated, setIncludeSimulated] = useState(false);
@@ -242,26 +240,17 @@ export default function AdminAnalyticsPage() {
               <div className="dg-exec-pills">
                 <span className="dg-exec-pill">
                   <span className="dg-dot" />
-                  <span>Live Telemetry • Admin</span>
+                  <span>{aa.pillLive}</span>
                 </span>
                 <span className="dg-exec-pill">
                   <Sparkles size={12} />
                   <span>
-                    {includeSimulated
-                      ? 'Đang gộp is_simulated = true'
-                      : 'Chỉ dữ liệu thật (is_simulated = false)'}
+                    {includeSimulated ? aa.pillSim : aa.pillReal}
                   </span>
                 </span>
               </div>
-              <h1>
-                Bảng Điều Hành Phân Tích A/B &amp; Kinh Tế RAG — DreamTeam
-              </h1>
-              <p>
-                Đối chứng trực tiếp hiệu quả nhánh{' '}
-                <code className="type-mono">chatbot_on</code> so với{' '}
-                <code className="type-mono">chatbot_off</code>, phễu 14 sự kiện
-                và chi phí truy vấn Gemini RAG.
-              </p>
+              <h1>{aa.heroTitle}</h1>
+              <p>{aa.heroDesc}</p>
             </div>
 
             <div className="dg-exec-actions">
@@ -272,7 +261,7 @@ export default function AdminAnalyticsPage() {
                 disabled={isLoading}
               >
                 <RefreshCw size={14} />
-                <span>{isLoading ? 'Đang tải...' : 'Làm mới dữ liệu'}</span>
+                <span>{isLoading ? aa.refreshingBtn : aa.refreshBtn}</span>
               </button>
             </div>
           </div>
@@ -281,7 +270,7 @@ export default function AdminAnalyticsPage() {
             <div
               className="dg-exec-segmented"
               role="group"
-              aria-label="Lọc dữ liệu mô phỏng"
+              aria-label={aa.kpiSource}
             >
               <button
                 type="button"
@@ -289,7 +278,7 @@ export default function AdminAnalyticsPage() {
                 className={!includeSimulated ? 'is-active' : ''}
                 onClick={() => handleToggleSimulated(false)}
               >
-                Chỉ dữ liệu thật (is_simulated = false)
+                {aa.toggleRealOnly}
               </button>
               <button
                 type="button"
@@ -297,7 +286,7 @@ export default function AdminAnalyticsPage() {
                 className={includeSimulated ? 'is-active' : ''}
                 onClick={() => handleToggleSimulated(true)}
               >
-                Bao gồm dữ liệu mô phỏng
+                {aa.toggleWithSim}
               </button>
             </div>
           </div>
@@ -309,12 +298,9 @@ export default function AdminAnalyticsPage() {
         <div className="callout callout--warning" role="alert">
           <strong style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
             <AlertTriangle size={16} />
-            <span>ĐANG HIỂN THỊ DỮ LIỆU MÔ PHỎNG (is_simulated = true)</span>
+            <span>{aa.simWarningTitle}</span>
           </strong>
-          <span>
-            Tuyệt đối không dùng bộ số liệu mô phỏng này để kết luận báo cáo
-            thí nghiệm đồ án tốt nghiệp.
-          </span>
+          <span>{aa.simWarningDesc}</span>
         </div>
       )}
 
@@ -344,24 +330,24 @@ export default function AdminAnalyticsPage() {
                   <User size={18} />
                 </span>
                 <span className="badge badge--accent type-mono">
-                  {consentRate}% Consent
+                  {aa.kpiConsentTag(consentRate)}
                 </span>
               </div>
-              <span className="dg-kpi-label">Tổng người tham gia</span>
+              <span className="dg-kpi-label">{aa.kpiParticipants}</span>
               <strong className="dg-kpi-value type-mono">
                 {summary.total_participants}
               </strong>
               <ul className="dg-kpi-meta">
                 <li>
-                  <span>Đã đồng ý (Consent)</span>
+                  <span>{aa.kpiConsented}</span>
                   <strong className="type-mono">
                     {summary.consented_participants}
                   </strong>
                 </li>
                 <li>
-                  <span>Nguồn dữ liệu</span>
+                  <span>{aa.kpiSource}</span>
                   <strong className="type-mono">
-                    {summary.include_simulated ? 'Thật + Mẫu' : 'Thật 100%'}
+                    {summary.include_simulated ? aa.kpiSourceSim : aa.kpiSourceReal}
                   </strong>
                 </li>
               </ul>
@@ -374,17 +360,17 @@ export default function AdminAnalyticsPage() {
                 </span>
                 <span className="badge badge--success">AB / BA</span>
               </div>
-              <span className="dg-kpi-label">Lượt hoàn thành khảo sát</span>
+              <span className="dg-kpi-label">{aa.kpiCompletedRuns}</span>
               <strong className="dg-kpi-value type-mono">
                 {summary.total_completed_runs}
               </strong>
               <ul className="dg-kpi-meta">
                 <li>
-                  <span>Bảng ghi nhận</span>
+                  <span>Table</span>
                   <strong className="type-mono">scenario_runs</strong>
                 </li>
                 <li>
-                  <span>Phương pháp</span>
+                  <span>{aa.kpiMethod}</span>
                   <strong>Within-subject</strong>
                 </li>
               </ul>
@@ -397,20 +383,20 @@ export default function AdminAnalyticsPage() {
                 </span>
                 <span className="badge badge--info">Sandbox</span>
               </div>
-              <span className="dg-kpi-label">Đơn hàng Sandbox (Paid)</span>
+              <span className="dg-kpi-label">{aa.kpiOrdersTitle}</span>
               <strong className="dg-kpi-value type-mono">
                 {summary.orders_summary.paid_orders} /{' '}
                 {summary.orders_summary.total_orders}
               </strong>
               <ul className="dg-kpi-meta">
                 <li>
-                  <span>Tổng giá trị ý định</span>
+                  <span>{aa.kpiSandboxValue}</span>
                   <strong className="type-price">
-                    {formatVnd(summary.orders_summary.total_sandbox_value_vnd)}
+                    {formatPrice(summary.orders_summary.total_sandbox_value_vnd)}
                   </strong>
                 </li>
                 <li>
-                  <span>Cổng giả lập</span>
+                  <span>{aa.kpiGateway}</span>
                   <strong className="type-mono">mock_sandbox</strong>
                 </li>
               </ul>
@@ -425,19 +411,19 @@ export default function AdminAnalyticsPage() {
                   P95 {summary.rag_metrics.p95_latency_ms}ms
                 </span>
               </div>
-              <span className="dg-kpi-label">Chi phí &amp; Độ trễ AI</span>
+              <span className="dg-kpi-label">{aa.kpiAiTitle}</span>
               <strong className="dg-kpi-value type-mono">
                 ${summary.rag_metrics.total_cost_usd.toFixed(4)}
               </strong>
               <ul className="dg-kpi-meta">
                 <li>
-                  <span>Cost / Query TB</span>
+                  <span>{aa.kpiAvgCost}</span>
                   <strong className="type-mono">
                     ${summary.rag_metrics.avg_cost_per_message_usd.toFixed(6)}
                   </strong>
                 </li>
                 <li>
-                  <span>Tổng tokens</span>
+                  <span>{aa.kpiTotalTokens}</span>
                   <strong className="type-mono">
                     {summary.rag_metrics.total_tokens_used}
                   </strong>
@@ -470,26 +456,26 @@ export default function AdminAnalyticsPage() {
                 }}
               >
                 <BarChart3 size={18} style={{ color: 'var(--accent)' }} />
-                <span>So sánh hiệu quả hai nhánh: chatbot_on vs chatbot_off</span>
+                <span>{aa.compareTableTitle}</span>
               </h2>
-              <span className="badge">Đơn vị đo: scenario_runs</span>
+              <span className="badge">{aa.compareTableUnit}</span>
             </div>
             <div
               tabIndex={0}
               role="region"
-              aria-label="Bảng so sánh hiệu quả hai nhánh A/B"
+              aria-label={aa.compareTableTitle}
               className="data-table-wrap"
             >
               <table className="data-table">
                 <thead>
                   <tr>
-                    <th scope="col">Biến thể</th>
-                    <th scope="col">Số lượt hoàn thành</th>
-                    <th scope="col">Chọn đúng đáp án</th>
-                    <th scope="col">Tỉ lệ đúng</th>
-                    <th scope="col">Thời gian TB (giây)</th>
-                    <th scope="col">Độ tự tin TB (1–5)</th>
-                    <th scope="col">Ý định mua Sandbox</th>
+                    <th scope="col">{aa.colVariant}</th>
+                    <th scope="col">{aa.colCompleted}</th>
+                    <th scope="col">{aa.colCorrect}</th>
+                    <th scope="col">{aa.colAccuracy}</th>
+                    <th scope="col">{aa.colDuration}</th>
+                    <th scope="col">{aa.colConfidence}</th>
+                    <th scope="col">{aa.colPurchase}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -537,24 +523,24 @@ export default function AdminAnalyticsPage() {
               style={{ display: 'grid', gap: '14px' }}
             >
               <h2 className="type-h3" style={{ margin: 0 }}>
-                Phễu 14 sự kiện chuẩn (Tracking Spec)
+                {aa.eventsTitle}
               </h2>
               <div style={{ display: 'grid', gap: '8px' }}>
                 <span className="type-caption">
-                  11 sự kiện chung cho cả hai nhóm ({coreEvents.length})
+                  {aa.eventsCoreSub(coreEvents.length)}
                 </span>
                 <div
                   tabIndex={0}
                   role="region"
-                  aria-label="11 sự kiện hành vi chung"
+                  aria-label={aa.eventsCoreSub(coreEvents.length)}
                   className="data-table-wrap"
                 >
                   <table className="data-table">
                     <thead>
                       <tr>
-                        <th scope="col">Tên sự kiện</th>
-                        <th scope="col">Số lần ghi nhận</th>
-                        <th scope="col">Thời điểm kích hoạt</th>
+                        <th scope="col">{aa.colEventName}</th>
+                        <th scope="col">{aa.colEventCount}</th>
+                        <th scope="col">{aa.colEventTrigger}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -572,13 +558,12 @@ export default function AdminAnalyticsPage() {
                 </div>
 
                 <span className="type-caption" style={{ marginTop: '8px' }}>
-                  3 sự kiện chỉ phát sinh khi chatbot_on (
-                  {chatOnlyEvents.length})
+                  {aa.eventsChatSub(chatOnlyEvents.length)}
                 </span>
                 <div
                   tabIndex={0}
                   role="region"
-                  aria-label="3 sự kiện dành riêng cho chatbot_on"
+                  aria-label={aa.eventsChatSub(chatOnlyEvents.length)}
                   className="data-table-wrap"
                 >
                   <table className="data-table">
@@ -621,46 +606,46 @@ export default function AdminAnalyticsPage() {
                   }}
                 >
                   <CheckCircle2 size={18} style={{ color: 'var(--accent)' }} />
-                  <span>Unit Economics AI (RAG)</span>
+                  <span>{aa.unitEconTitle}</span>
                 </h2>
                 <Link href="/admin/chat-logs" className="btn btn--secondary btn--sm">
-                  Xem Nhật ký AI
+                  {aa.unitEconBtn}
                 </Link>
               </div>
               <div
                 tabIndex={0}
                 role="region"
-                aria-label="Chỉ số hiệu năng và chi phí RAG"
+                aria-label={aa.unitEconTitle}
                 className="data-table-wrap"
               >
                 <table className="data-table">
                   <tbody>
                     <tr>
-                      <td>Tổng lượt bot trả lời</td>
+                      <td>{aa.ueTotalReplies}</td>
                       <td className="type-mono">
                         {summary.rag_metrics.total_assistant_messages}
                       </td>
                     </tr>
                     <tr>
-                      <td>Độ trễ trung bình</td>
+                      <td>{aa.ueAvgLatency}</td>
                       <td className="type-mono">
                         {summary.rag_metrics.avg_latency_ms} ms
                       </td>
                     </tr>
                     <tr>
-                      <td>Độ trễ P95</td>
+                      <td>{aa.ueP95Latency}</td>
                       <td className="type-mono">
                         {summary.rag_metrics.p95_latency_ms} ms
                       </td>
                     </tr>
                     <tr>
-                      <td>Tổng Token đã dùng</td>
+                      <td>{aa.ueTotalTokens}</td>
                       <td className="type-mono">
                         {summary.rag_metrics.total_tokens_used}
                       </td>
                     </tr>
                     <tr>
-                      <td>Chi phí TB / tin nhắn</td>
+                      <td>{aa.ueAvgCost}</td>
                       <td className="type-mono">
                         ${summary.rag_metrics.avg_cost_per_message_usd.toFixed(6)}
                       </td>
@@ -693,38 +678,31 @@ export default function AdminAnalyticsPage() {
                   }}
                 >
                   <Database size={18} style={{ color: 'var(--accent)' }} />
-                  <span>Xuất Dữ liệu Nghiên cứu Ẩn danh (CSV / JSON)</span>
+                  <span>{aa.exportTitle}</span>
                 </h2>
                 <p className="type-body-sm" style={{ margin: 0 }}>
-                  0 PII — chỉ xuất{' '}
-                  <code className="type-mono">participant_code</code>,{' '}
-                  <code className="type-mono">assignment_id</code>,{' '}
-                  <code className="type-mono">visitor_id</code>; tự động loại bỏ
-                  email, họ tên và khóa phiên.
+                  {aa.exportDesc}
                 </p>
               </div>
 
               <div className="chip-row">
                 <span className="badge badge--accent">
                   <ShieldCheck size={13} />
-                  <span>0 PII • Ẩn danh nghiên cứu</span>
+                  <span>{aa.exportAnonymizedBadge}</span>
                 </span>
                 <span
                   className={`badge ${
                     includeSimulated ? 'badge--warning' : 'badge--success'
                   }`}
                 >
-                  {includeSimulated
-                    ? 'include_simulated = true (Có dữ liệu mẫu)'
-                    : 'include_simulated = false (Chỉ dữ liệu thật)'}
+                  {includeSimulated ? aa.pillSim : aa.pillReal}
                 </span>
               </div>
             </div>
 
             {exportError && (
               <div className="callout callout--danger" role="alert">
-                <strong>Không thể xuất dữ liệu JSON</strong>
-                <span>{exportError}</span>
+                <strong>{exportError}</strong>
               </div>
             )}
 
@@ -742,12 +720,13 @@ export default function AdminAnalyticsPage() {
                 gap: '16px',
               }}
             >
-              {EXPORT_DATASETS.map((item) => {
+              {EXPORT_DATASETS.map((item, idx) => {
                 const isExporting = Boolean(exportingByDataset[item.dataset]);
                 const csvUrl = adminGetExportCsvUrl({
                   dataset: item.dataset,
                   include_simulated: includeSimulated,
                 });
+                const dsCopy = aa.datasets[idx];
 
                 return (
                   <article
@@ -785,10 +764,10 @@ export default function AdminAnalyticsPage() {
                           color: 'var(--ink)',
                         }}
                       >
-                        {item.title}
+                        {dsCopy?.title ?? item.title}
                       </h3>
                       <p className="type-body-sm" style={{ margin: 0 }}>
-                        {item.description}
+                        {dsCopy?.description ?? item.description}
                       </p>
                     </div>
 
@@ -807,7 +786,7 @@ export default function AdminAnalyticsPage() {
                         className="btn btn--secondary btn--sm"
                       >
                         <Download size={14} />
-                        <span>Tải CSV</span>
+                        <span>{aa.exportCsvBtn}</span>
                       </a>
                       <button
                         type="button"
@@ -817,7 +796,7 @@ export default function AdminAnalyticsPage() {
                       >
                         <FileCode2 size={14} />
                         <span>
-                          {isExporting ? 'Đang xuất JSON...' : 'Tải JSON'}
+                          {isExporting ? aa.exportingJsonBtn : aa.exportJsonBtn}
                         </span>
                       </button>
                     </div>
@@ -839,37 +818,37 @@ export default function AdminAnalyticsPage() {
               }}
             >
               <h2 className="type-h3" style={{ margin: 0 }}>
-                Đơn hàng Sandbox gần đây
+                {aa.recentOrdersTitle}
               </h2>
               <Link href="/admin/orders" className="btn btn--secondary btn--sm">
-                Mở Quản lý đơn hàng
+                {aa.openOrdersBtn}
               </Link>
             </div>
             {orders.length === 0 ? (
               <p className="type-body-sm" style={{ margin: 0 }}>
-                Chưa có đơn hàng nào khớp bộ lọc hiện tại.
+                {aa.noOrders}
               </p>
             ) : (
               <div
                 tabIndex={0}
                 role="region"
-                aria-label="Đơn hàng Sandbox gần đây"
+                aria-label={aa.recentOrdersTitle}
                 className="data-table-wrap"
               >
                 <table className="data-table">
                   <thead>
                     <tr>
-                      <th scope="col">Mã đơn</th>
-                      <th scope="col">Trạng thái</th>
-                      <th scope="col">Tổng tiền</th>
-                      <th scope="col">Loại dữ liệu</th>
-                      <th scope="col">Ngày tạo</th>
-                      <th scope="col">Mở</th>
+                      <th scope="col">{aa.colOrderCode}</th>
+                      <th scope="col">{aa.colOrderStatus}</th>
+                      <th scope="col">{aa.colOrderTotal}</th>
+                      <th scope="col">{aa.colOrderDataType}</th>
+                      <th scope="col">{aa.colOrderDate}</th>
+                      <th scope="col">{aa.colOrderOpen}</th>
                     </tr>
                   </thead>
                   <tbody>
                     {orders.map((order) => {
-                      const statusMeta = ORDER_STATUS_META[order.status];
+                      const statusMeta = getOrderStatusMeta(order.status);
                       return (
                         <tr key={order.id}>
                           <td className="type-mono">{order.order_code}</td>
@@ -879,7 +858,7 @@ export default function AdminAnalyticsPage() {
                             </span>
                           </td>
                           <td className="type-price">
-                            {formatVnd(order.total_vnd)}
+                            {formatPrice(order.total_vnd)}
                           </td>
                           <td>
                             <span
@@ -889,18 +868,20 @@ export default function AdminAnalyticsPage() {
                                   : 'badge--success'
                               }`}
                             >
-                              {order.is_simulated ? 'Mô phỏng' : 'Thật'}
+                              {order.is_simulated
+                                ? aa.dataSimLabel
+                                : aa.dataRealLabel}
                             </span>
                           </td>
                           <td className="type-caption">
-                            {formatDateTimeVi(order.created_at)}
+                            {formatDate(order.created_at)}
                           </td>
                           <td>
                             <Link
                               href={`/orders/${order.id}`}
                               className="btn btn--secondary btn--sm"
                             >
-                              Xem
+                              {aa.viewBtn}
                             </Link>
                           </td>
                         </tr>

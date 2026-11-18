@@ -1,8 +1,14 @@
+'use client';
+
+import { useLocale } from '@/components/providers/LocaleProvider';
+
 export function EditorialEmptyIllustration({
-  title = 'Chưa có dữ liệu',
+  title,
 }: {
   title?: string;
 }) {
+  const { chrome } = useLocale();
+  const label = title ?? chrome.common.noData;
   return (
     <svg
       width="96"
@@ -10,7 +16,7 @@ export function EditorialEmptyIllustration({
       viewBox="0 0 96 96"
       fill="none"
       role="img"
-      aria-label={title}
+      aria-label={label}
       style={{ marginInline: 'auto' }}
     >
       <rect

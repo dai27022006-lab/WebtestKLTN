@@ -11,15 +11,11 @@ import {
   Search,
   ShoppingBag,
 } from '@/components/icons/DreamIcons';
-import {
-  formatVnd,
-  PRODUCT_TYPE_LABELS,
-  SOURCE_TYPE_META,
-} from '@/components/shared/formatters';
 import { EditorialEmptyIllustration } from '@/components/visual/EditorialEmptyIllustration';
 import { ProductPlaceholderFrame } from '@/components/visual/ProductPlaceholderFrame';
 import { useSpecularSpotlight } from '@/motion/useSpecularSpotlight';
 import { listProducts } from '@/services';
+import { useLocale } from '@/components/providers/LocaleProvider';
 import { useCart, useExperiment } from '@/state';
 import type {
   PaginationMeta,
@@ -53,7 +49,9 @@ function parseInitialProductType(val: string | null): '' | ProductType {
 }
 
 function CatalogThumbnail({ product }: { product: ProductSummaryDto }) {
+  const { getProductCopy, getProductTypeLabel } = useLocale();
   const [imgFailed, setImgFailed] = useState(false);
+  const copy = getProductCopy(product);
 
   if (!product.thumbnail_url || imgFailed) {
     return (
@@ -71,7 +69,7 @@ function CatalogThumbnail({ product }: { product: ProductSummaryDto }) {
     /* eslint-disable-next-line @next/next/no-img-element */
     <img
       src={product.thumbnail_url}
-      alt={`${product.name} (${PRODUCT_TYPE_LABELS[product.product_type]})`}
+      alt={`${copy.name} (${getProductTypeLabel(product.product_type)})`}
       width={960}
       height={600}
       loading="lazy"
@@ -83,6 +81,16 @@ function CatalogThumbnail({ product }: { product: ProductSummaryDto }) {
 }
 
 function ProductsCatalogContent() {
+  const {
+    commerce,
+    chrome,
+    formatPrice,
+    getProductCopy,
+    getProductTypeLabel,
+    getSourceMeta,
+    getIndustryLabel,
+  } = useLocale();
+  const c = commerce.catalog;
   const router = useRouter();
   const searchParams = useSearchParams();
   const { addItem } = useCart();
@@ -252,12 +260,9 @@ function ProductsCatalogContent() {
       <div className="container">
         <div className="section-header" style={{ marginBottom: '24px' }}>
           <div className="section-header__copy">
-            <span className="type-eyebrow">Kho Sản Phẩm Số DreamTeam</span>
-            <h1 className="type-h1">Tìm kiếm &amp; Lọc theo nhu cầu shop</h1>
-            <p className="type-body-sm">
-              Lọc theo loại sản phẩm, ngành hàng và ngân sách tối đa để chọn đúng
-              gói công cụ tối ưu cho cửa hàng 1–3 người.
-            </p>
+            <span className="type-eyebrow">{c.eyebrow}</span>
+            <h1 className="type-h1">{c.title}</h1>
+            <p className="type-body-sm">{c.subtitle}</p>
           </div>
           <div
             style={{
@@ -270,7 +275,7 @@ function ProductsCatalogContent() {
             {meta && (
               <span className="badge badge--accent type-mono">
                 <Filter size={12} />
-                <span>{meta.total} gói sản phẩm</span>
+                <span>{c.showingRange(products.length, meta.total)}</span>
               </span>
             )}
             {hasActiveFilter && (
@@ -279,7 +284,7 @@ function ProductsCatalogContent() {
                 className="btn btn--ghost btn--sm"
                 onClick={handleResetFilters}
               >
-                Đặt lại bộ lọc
+                {c.filterReset}
               </button>
             )}
           </div>
@@ -290,13 +295,16 @@ function ProductsCatalogContent() {
           <div
             className="dg-fw-tabs dg-fw-tabs--inline"
             role="tablist"
-            aria-label="Lọc theo loại sản phẩm"
+            aria-label={c.eyebrow}
           >
             {PRODUCT_TYPES.map((item) => {
               const selected = productType === item.value;
+              const tabLabel = item.value
+                ? getProductTypeLabel(item.value)
+                : c.typeAll;
               return (
                 <button
-                  key={item.label}
+                  key={item.value || 'all'}
                   type="button"
                   role="tab"
                   aria-selected={selected}
@@ -307,7 +315,7 @@ function ProductsCatalogContent() {
                     trackFilterChange({ product_type: item.value || null });
                   }}
                 >
-                  {item.label}
+                  {tabLabel}
                 </button>
               );
             })}
@@ -331,8 +339,8 @@ function ProductsCatalogContent() {
               <input
                 type="search"
                 className="input dg-input-has-left"
-                aria-label="Tìm kiếm gói giải pháp theo tên hoặc mô tả"
-                placeholder="Tìm theo từ khóa (vd: mỹ phẩm, TikTok Shop, bảng size, Google Sheets)..."
+                aria-label={c.searchBtn}
+                placeholder={c.searchPlaceholder}
                 value={searchInput}
                 onChange={(e) => setSearchInput(e.target.value)}
               />
@@ -340,7 +348,7 @@ function ProductsCatalogContent() {
 
             <select
               className="select"
-              aria-label="Lọc mức ngân sách tối đa"
+              aria-label={c.anyBudget}
               value={maxPrice}
               onChange={(e) => {
                 const val = e.target.value;
@@ -350,15 +358,17 @@ function ProductsCatalogContent() {
               }}
             >
               {MAX_PRICE_OPTIONS.map((opt) => (
-                <option key={opt.label} value={opt.value}>
-                  {opt.label}
+                <option key={opt.value || 'any'} value={opt.value}>
+                  {opt.value
+                    ? c.underVnd(formatPrice(Number(opt.value)))
+                    : c.anyBudget}
                 </option>
               ))}
             </select>
 
             <select
               className="select"
-              aria-label="Sắp xếp kết quả"
+              aria-label={c.sortNewest}
               value={sort}
               onChange={(e) => {
                 const val = e.target.value as
@@ -370,14 +380,14 @@ function ProductsCatalogContent() {
                 trackFilterChange({ sort: val });
               }}
             >
-              <option value="newest">Mới nhất</option>
-              <option value="price_asc">Giá tăng dần</option>
-              <option value="price_desc">Giá giảm dần</option>
+              <option value="newest">{c.sortNewest}</option>
+              <option value="price_asc">{c.sortPriceAsc}</option>
+              <option value="price_desc">{c.sortPriceDesc}</option>
             </select>
           </form>
 
           <div className="catalog-filters-row">
-            <div className="chip-row" role="group" aria-label="Ngành hàng">
+            <div className="chip-row" role="group" aria-label={c.industryAll}>
               {INDUSTRIES.map((ind) => (
                 <button
                   key={ind}
@@ -392,12 +402,18 @@ function ProductsCatalogContent() {
                     });
                   }}
                 >
-                  {ind}
+                  {ind === 'Tất cả' ? c.industryAll : getIndustryLabel(ind)}
                 </button>
               ))}
             </div>
           </div>
         </div>
+
+        {hasOpenScenario && (
+          <div className="callout callout--info" style={{ marginBottom: '20px' }}>
+            <span>{c.surveyReturnBanner}</span>
+          </div>
+        )}
 
         {errorMessage && (
           <div
@@ -420,7 +436,7 @@ function ProductsCatalogContent() {
                 className="btn btn--secondary btn--sm"
                 onClick={() => void fetchProducts()}
               >
-                Thử tải lại
+                {chrome.common.retry}
               </button>
             </div>
           </div>
@@ -456,27 +472,27 @@ function ProductsCatalogContent() {
               justifyItems: 'center',
             }}
           >
-            <EditorialEmptyIllustration title="Không tìm thấy gói phù hợp" />
+            <EditorialEmptyIllustration title={c.emptyTitle} />
             <h2 className="type-h3" style={{ margin: 0 }}>
-              Chưa tìm thấy gói phù hợp với bộ lọc hiện tại
+              {c.emptyTitle}
             </h2>
             <p className="type-body-sm" style={{ margin: 0, maxWidth: '42ch' }}>
-              Thử nới mức ngân sách tối đa hoặc xóa từ khóa tìm kiếm để xem toàn
-              bộ sản phẩm đang mở bán.
+              {c.emptyDesc}
             </p>
             <button
               type="button"
               className="dg-btn-purchase"
               onClick={handleResetFilters}
             >
-              Xóa toàn bộ bộ lọc
+              {c.filterReset}
             </button>
           </div>
         ) : (
           <>
             <div ref={spotlightGridRef} className="dg-showcase-grid">
               {products.map((product) => {
-                const sourceMeta = SOURCE_TYPE_META[product.source_type];
+                const copy = getProductCopy(product);
+                const sourceMeta = getSourceMeta(product.source_type);
                 const isAdded = addedProductId === product.id;
                 return (
                   <article
@@ -490,7 +506,7 @@ function ProductsCatalogContent() {
                           href={`/products/${product.slug}`}
                           className="dg-btn-purchase"
                         >
-                          <span>Xem chi tiết</span>
+                          <span>{c.details}</span>
                           <ArrowRight size={15} />
                         </Link>
                       </div>
@@ -499,8 +515,8 @@ function ProductsCatalogContent() {
                     <div className="dg-showcase-body">
                       <div className="dg-showcase-meta-row">
                         <span className="dg-showcase-category">
-                          {PRODUCT_TYPE_LABELS[product.product_type]} •{' '}
-                          {product.industry}
+                          {getProductTypeLabel(product.product_type)} •{' '}
+                          {getIndustryLabel(product.industry)}
                         </span>
                         <span className={`badge badge--${sourceMeta.badgeTone}`}>
                           {sourceMeta.label}
@@ -516,14 +532,14 @@ function ProductsCatalogContent() {
                         }}
                       >
                         <Link href={`/products/${product.slug}`}>
-                          {product.name}
+                          {copy.name}
                         </Link>
                       </h2>
-                      <p>{product.short_description}</p>
+                      <p>{copy.short_description}</p>
 
                       <div className="dg-showcase-footer">
                         <span className="type-price dg-showcase-price">
-                          {formatVnd(product.price_vnd)}
+                          {formatPrice(product.price_vnd)}
                         </span>
                         <div
                           style={{
@@ -536,7 +552,7 @@ function ProductsCatalogContent() {
                             href={`/products/${product.slug}`}
                             className="btn btn--secondary btn--sm"
                           >
-                            Chi tiết
+                            {c.details}
                           </Link>
                           <button
                             type="button"
@@ -547,15 +563,15 @@ function ProductsCatalogContent() {
                             {isAdded ? (
                               <>
                                 <CheckCircle2 size={14} />
-                                <span>Đã thêm</span>
+                                <span>{c.added}</span>
                               </>
                             ) : (
                               <>
                                 <ShoppingBag size={14} />
                                 <span>
                                   {addingId === product.id
-                                    ? 'Đang thêm...'
-                                    : 'Thêm giỏ'}
+                                    ? chrome.common.loading
+                                    : c.addToCart}
                                 </span>
                               </>
                             )}
@@ -574,7 +590,7 @@ function ProductsCatalogContent() {
                             )
                           }
                         >
-                          <span>Chọn gói này cho nhiệm vụ</span>
+                          <span>{c.surveySelectTip}</span>
                           <ArrowRight size={14} />
                         </button>
                       )}
@@ -600,10 +616,10 @@ function ProductsCatalogContent() {
                   disabled={page <= 1}
                   onClick={() => setPage((p) => Math.max(1, p - 1))}
                 >
-                  Trang trước
+                  {c.prevPage}
                 </button>
                 <span className="type-mono type-body-sm">
-                  Trang {meta.page} / {meta.totalPages}
+                  {c.pageOf(meta.page, meta.totalPages)}
                 </span>
                 <button
                   type="button"
@@ -611,7 +627,7 @@ function ProductsCatalogContent() {
                   disabled={page >= meta.totalPages}
                   onClick={() => setPage((p) => p + 1)}
                 >
-                  Trang sau
+                  {c.nextPage}
                 </button>
               </div>
             )}

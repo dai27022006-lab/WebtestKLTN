@@ -14,6 +14,7 @@ export const sendChatMessageSchema = z
     visitor_id: visitorIdSchema.optional(),
     scenario_run_id: uuidSchema.optional(),
     message: nonEmptyTrimmedString(1500, 'Nội dung tin nhắn'),
+    locale: z.enum(['vi', 'en', 'ru', 'zh']).default('vi'),
     is_simulated: z.boolean().default(false),
   })
   .superRefine((data, ctx) => {

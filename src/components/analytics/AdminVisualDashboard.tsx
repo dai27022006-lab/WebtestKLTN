@@ -10,7 +10,7 @@ import {
   ShieldCheck,
   Zap,
 } from '@/components/icons/DreamIcons';
-import { formatVnd } from '@/components/shared/formatters';
+import { useLocale } from '@/components/providers/LocaleProvider';
 import type { AdminDashboardSummaryDto, OrderDto } from '@/types/api';
 
 import { ProgressRing } from './ProgressRing';
@@ -24,12 +24,16 @@ export function AdminVisualDashboard({
   summary,
   recentOrders,
 }: AdminVisualDashboardProps) {
+  const { admin, formatPrice, getIndustryLabel } = useLocale();
+  const aa = admin.analytics;
+
   const onVariant = summary.variants.find((v) => v.variant === 'chatbot_on');
   const offVariant = summary.variants.find((v) => v.variant === 'chatbot_off');
 
   const onAccuracyPct = onVariant ? Math.round(onVariant.accuracy_rate * 100) : 0;
   const offAccuracyPct = offVariant ? Math.round(offVariant.accuracy_rate * 100) : 0;
   const accuracyDelta = onAccuracyPct - offAccuracyPct;
+  const deltaStr = `${accuracyDelta >= 0 ? `+${accuracyDelta}` : accuracyDelta}`;
 
   const consentPct =
     summary.total_participants > 0
@@ -49,30 +53,30 @@ export function AdminVisualDashboard({
 
   const comparisonMetrics = [
     {
-      label: 'Tỉ lệ chọn đúng (%)',
+      label: aa.dashEl2MetricAcc,
       onLabel: `${onAccuracyPct}%`,
       offLabel: `${offAccuracyPct}%`,
       onPct: onAccuracyPct,
       offPct: offAccuracyPct,
     },
     {
-      label: 'Thời gian TB (giây)',
+      label: aa.dashEl2MetricDur,
       onLabel: `${(onVariant?.avg_duration_seconds ?? 0).toFixed(1)}s`,
       offLabel: `${(offVariant?.avg_duration_seconds ?? 0).toFixed(1)}s`,
       onPct: Math.round(((onVariant?.avg_duration_seconds ?? 0) / maxDuration) * 100),
       offPct: Math.round(((offVariant?.avg_duration_seconds ?? 0) / maxDuration) * 100),
     },
     {
-      label: 'Độ tự tin (1–5)',
+      label: aa.dashEl2MetricConf,
       onLabel: `${(onVariant?.avg_confidence_score ?? 0).toFixed(2)} / 5`,
       offLabel: `${(offVariant?.avg_confidence_score ?? 0).toFixed(2)} / 5`,
       onPct: Math.round(((onVariant?.avg_confidence_score ?? 0) / 5) * 100),
       offPct: Math.round(((offVariant?.avg_confidence_score ?? 0) / 5) * 100),
     },
     {
-      label: 'Ý định mua Sandbox',
-      onLabel: `${onVariant?.sandbox_purchase_count ?? 0} đơn`,
-      offLabel: `${offVariant?.sandbox_purchase_count ?? 0} đơn`,
+      label: aa.dashEl2MetricBuy,
+      onLabel: `${onVariant?.sandbox_purchase_count ?? 0} ${aa.dashEl2UnitOrder}`,
+      offLabel: `${offVariant?.sandbox_purchase_count ?? 0} ${aa.dashEl2UnitOrder}`,
       onPct: Math.round(((onVariant?.sandbox_purchase_count ?? 0) / maxPurchases) * 100),
       offPct: Math.round(((offVariant?.sandbox_purchase_count ?? 0) / maxPurchases) * 100),
     },
@@ -95,19 +99,19 @@ export function AdminVisualDashboard({
   const totalOrders = Math.max(1, summary.orders_summary.total_orders);
   const orderMix = [
     {
-      label: 'Đã thanh toán',
+      label: aa.dashEl5Paid,
       count: summary.orders_breakdown.paid,
       pct: Math.round((summary.orders_breakdown.paid / totalOrders) * 100),
       toneClass: 'is-emerald',
     },
     {
-      label: 'Chờ thanh toán',
+      label: aa.dashEl5Pending,
       count: summary.orders_breakdown.pending,
       pct: Math.round((summary.orders_breakdown.pending / totalOrders) * 100),
       toneClass: 'is-copper',
     },
     {
-      label: 'Thất bại / Hủy',
+      label: aa.dashEl5Failed,
       count: summary.orders_breakdown.failed_or_cancelled,
       pct: Math.round(
         (summary.orders_breakdown.failed_or_cancelled / totalOrders) * 100
@@ -117,14 +121,14 @@ export function AdminVisualDashboard({
   ];
 
   return (
-    <section aria-label="Bảng biểu đồ thống kê 5 yếu tố Admin" className="dg-dash-bento">
-      {/* Yếu tố 1: Ring Đối chứng A/B & Tỉ lệ Đồng ý */}
+    <section aria-label={aa.dashEl1Title} className="dg-dash-bento">
+      {/* Element 1 */}
       <article className="surface-card dg-panel dg-dash-card dg-dash-span-5">
         <div className="dg-dash-card__head">
           <div className="dg-dash-card__title-wrap">
-            <span className="dg-dash-eyebrow">Yếu tố 1 • Độ chính xác &amp; Đồng thuận</span>
+            <span className="dg-dash-eyebrow">{aa.dashEl1Eyebrow}</span>
             <h2 className="type-h3" style={{ margin: 0 }}>
-              Hiệu quả Trợ lý &amp; Tỉ lệ Tham gia
+              {aa.dashEl1Title}
             </h2>
           </div>
           <span
@@ -136,27 +140,27 @@ export function AdminVisualDashboard({
                   : 'badge--info'
             } type-mono`}
           >
-            Δ {accuracyDelta >= 0 ? `+${accuracyDelta}` : accuracyDelta} điểm %
+            {aa.dashEl1Delta(deltaStr)}
           </span>
         </div>
 
         <div className="dg-ring-pair">
           <ProgressRing
             value={onAccuracyPct}
-            label="Đúng (Có Trợ lý)"
+            label={aa.dashEl1RingAcc}
             centerPrimary={`${onAccuracyPct}%`}
             centerSecondary={`${onVariant?.correct_runs ?? 0}/${onVariant?.completed_runs ?? 0}`}
-            valueText={`Độ chính xác Có Trợ lý ${onAccuracyPct}%`}
+            valueText={`${aa.dashEl1RingAcc} ${onAccuracyPct}%`}
             tone="accent"
             size={112}
             thickness={11}
           />
           <ProgressRing
             value={consentPct}
-            label="Tỉ lệ Consent"
+            label={aa.dashEl1RingConsent}
             centerPrimary={`${consentPct}%`}
             centerSecondary={`${summary.consented_participants}/${summary.total_participants}`}
-            valueText={`Tỉ lệ đồng ý tham gia ${consentPct}%`}
+            valueText={`${aa.dashEl1RingConsent} ${consentPct}%`}
             tone="copper"
             size={112}
             thickness={11}
@@ -164,19 +168,19 @@ export function AdminVisualDashboard({
         </div>
 
         <p className="type-caption" style={{ margin: 0 }}>
-          Đối chứng: nhánh <code className="type-mono">chatbot_off</code> đạt{' '}
+          {aa.dashEl1ControlNote}:{' '}
           <strong className="type-mono">{offAccuracyPct}%</strong> (
-          {offVariant?.correct_runs ?? 0}/{offVariant?.completed_runs ?? 0} lượt).
+          {offVariant?.correct_runs ?? 0}/{offVariant?.completed_runs ?? 0})
         </p>
       </article>
 
-      {/* Yếu tố 2: Biểu đồ Cột Đôi So sánh Hai Nhánh A/B */}
+      {/* Element 2 */}
       <article className="surface-card dg-panel dg-dash-card dg-dash-span-7">
         <div className="dg-dash-card__head">
           <div className="dg-dash-card__title-wrap">
-            <span className="dg-dash-eyebrow">Yếu tố 2 • So sánh Hai Nhánh AB / BA</span>
+            <span className="dg-dash-eyebrow">{aa.dashEl2Eyebrow}</span>
             <h2 className="type-h3" style={{ margin: 0 }}>
-              Tương quan chatbot_on vs chatbot_off
+              {aa.dashEl2Title}
             </h2>
           </div>
           <div className="dg-dash-legend">
@@ -199,7 +203,9 @@ export function AdminVisualDashboard({
                 <span className="type-caption type-mono">
                   <strong style={{ color: 'var(--accent)' }}>{metric.onLabel}</strong>
                   {' • '}
-                  <strong style={{ color: 'var(--accent-copper)' }}>{metric.offLabel}</strong>
+                  <strong style={{ color: 'var(--accent-copper)' }}>
+                    {metric.offLabel}
+                  </strong>
                 </span>
               </div>
               <div className="dg-compare-bars" aria-hidden="true">
@@ -221,13 +227,13 @@ export function AdminVisualDashboard({
         </div>
       </article>
 
-      {/* Yếu tố 3: Phễu Chuyển đổi 6 Chặng */}
+      {/* Element 3 */}
       <article className="surface-card dg-panel dg-dash-card dg-dash-span-4">
         <div className="dg-dash-card__head">
           <div className="dg-dash-card__title-wrap">
-            <span className="dg-dash-eyebrow">Yếu tố 3 • Phễu Hành Vi Thật</span>
+            <span className="dg-dash-eyebrow">{aa.dashEl3Eyebrow}</span>
             <h2 className="type-h3" style={{ margin: 0 }}>
-              Chuyển đổi 6 Chặng
+              {aa.dashEl3Title}
             </h2>
           </div>
           <BarChart3 size={18} style={{ color: 'var(--accent)' }} />
@@ -241,7 +247,7 @@ export function AdminVisualDashboard({
                   <span className="type-mono" style={{ opacity: 0.72, marginRight: '6px' }}>
                     {index + 1}.
                   </span>
-                  {stage.label}
+                  {aa.funnelLabels[stage.key] ?? stage.label}
                 </span>
                 <strong className="type-mono">
                   {stage.count} ({stage.pct_of_top}%)
@@ -261,30 +267,27 @@ export function AdminVisualDashboard({
         </div>
       </article>
 
-      {/* Yếu tố 4: Kinh tế AI (Gemini vs Stub) & Xu hướng 7 ngày */}
+      {/* Element 4 */}
       <article className="surface-card dg-panel dg-dash-card dg-dash-span-4">
         <div className="dg-dash-card__head">
           <div className="dg-dash-card__title-wrap">
-            <span className="dg-dash-eyebrow">Yếu tố 4 • Xu hướng &amp; Kinh tế AI</span>
+            <span className="dg-dash-eyebrow">{aa.dashEl4Eyebrow}</span>
             <h2 className="type-h3" style={{ margin: 0 }}>
-              Hoạt động 7 ngày &amp; LLM Mix
+              {aa.dashEl4Title}
             </h2>
           </div>
           <Link href="/admin/chat-logs" className="btn btn--secondary btn--sm">
             <Cpu size={13} />
-            <span>Nhật ký AI</span>
+            <span>{aa.dashEl4LogsBtn}</span>
           </Link>
         </div>
 
-        {/* AI Mix Split Bar */}
         <div style={{ display: 'grid', gap: '8px' }}>
           <div className="dg-compare-row__labels">
-            <span className="type-caption">
-              Tỉ lệ phản hồi ({totalAiMsgs} lượt)
-            </span>
+            <span className="type-caption">{aa.dashEl4ReplyRatio(totalAiMsgs)}</span>
             <span className="badge badge--success type-mono">
               <ShieldCheck size={12} />
-              <span>Grounding {groundingPct}%</span>
+              <span>{aa.dashEl4Grounding(groundingPct)}</span>
             </span>
           </div>
           <div className="dg-split-bar" aria-label={`Gemini ${geminiSharePct}%, Stub ${stubSharePct}%`}>
@@ -314,15 +317,14 @@ export function AdminVisualDashboard({
           </div>
         </div>
 
-        {/* 7-Day Column Trend */}
         <div style={{ display: 'grid', gap: '8px' }}>
           <div className="dg-compare-row__labels">
             <span className="type-caption" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
               <Rocket size={13} />
-              <span>Hoạt động theo ngày (Lượt xong + Chat + Đơn)</span>
+              <span>{aa.dashEl4TrendLabel}</span>
             </span>
           </div>
-          <div className="dg-col-chart" role="list" aria-label="Biểu đồ hoạt động theo ngày">
+          <div className="dg-col-chart" role="list" aria-label={aa.dashEl4TrendLabel}>
             {trendPoints.map((pt) => {
               const total = pt.completed_runs + pt.assistant_messages + pt.orders_count;
               const heightPct = total > 0 ? Math.max(10, Math.round((total / maxDailyActivity) * 100)) : 4;
@@ -331,7 +333,7 @@ export function AdminVisualDashboard({
                   key={pt.date}
                   role="listitem"
                   className="dg-col-item"
-                  title={`${pt.date}: ${pt.completed_runs} lượt A/B, ${pt.assistant_messages} chat AI, ${pt.orders_count} đơn (${formatVnd(pt.paid_revenue_vnd)})`}
+                  title={`${pt.date}: ${pt.completed_runs} A/B, ${pt.assistant_messages} AI, ${pt.orders_count} (${formatPrice(pt.paid_revenue_vnd)})`}
                 >
                   <span className="dg-col-value type-mono">{total}</span>
                   <div className="dg-col-track">
@@ -348,13 +350,13 @@ export function AdminVisualDashboard({
         </div>
       </article>
 
-      {/* Yếu tố 5: Cơ cấu Ngành Shop & Trạng thái Đơn Hàng */}
+      {/* Element 5 */}
       <article className="surface-card dg-panel dg-dash-card dg-dash-span-4">
         <div className="dg-dash-card__head">
           <div className="dg-dash-card__title-wrap">
-            <span className="dg-dash-eyebrow">Yếu tố 5 • Phân Khúc &amp; Giao Dịch</span>
+            <span className="dg-dash-eyebrow">{aa.dashEl5Eyebrow}</span>
             <h2 className="type-h3" style={{ margin: 0 }}>
-              Ngành Shop &amp; Trạng thái Đơn
+              {aa.dashEl5Title}
             </h2>
           </div>
           <Layers size={18} style={{ color: 'var(--accent)' }} />
@@ -362,18 +364,18 @@ export function AdminVisualDashboard({
 
         <div style={{ display: 'grid', gap: '10px' }}>
           <span className="type-caption" style={{ fontWeight: 700 }}>
-            Ngành hàng tham gia khảo sát
+            {aa.dashEl5Industries}
           </span>
           {summary.industry_breakdown.length === 0 ? (
             <p className="type-caption" style={{ margin: 0 }}>
-              Chưa có dữ liệu hồ sơ ngành hàng từ phiên khảo sát.
+              {aa.dashEl5IndustriesEmpty}
             </p>
           ) : (
             <div className="dg-funnel-list">
               {summary.industry_breakdown.map((ind) => (
                 <div key={ind.key} className="dg-funnel-step">
                   <div className="dg-funnel-step__meta">
-                    <span>{ind.label}</span>
+                    <span>{getIndustryLabel(ind.label)}</span>
                     <strong className="type-mono">
                       {ind.count} ({ind.share_pct}%)
                     </strong>
@@ -401,10 +403,15 @@ export function AdminVisualDashboard({
           <div className="dg-compare-row__labels">
             <span className="type-caption" style={{ fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: '5px' }}>
               <Zap size={13} />
-              <span>Đơn Sandbox ({summary.orders_summary.total_orders}) • {formatVnd(summary.orders_summary.total_sandbox_value_vnd)}</span>
+              <span>
+                {aa.dashEl5OrdersLabel(
+                  summary.orders_summary.total_orders,
+                  formatPrice(summary.orders_summary.total_sandbox_value_vnd)
+                )}
+              </span>
             </span>
             <Link href="/admin/orders" className="type-caption" style={{ color: 'var(--accent)', fontWeight: 700 }}>
-              Chi tiết →
+              {aa.dashEl5DetailsLink}
             </Link>
           </div>
           <div className="dg-chip-metrics">
@@ -422,9 +429,11 @@ export function AdminVisualDashboard({
           </div>
           {recentOrders.length > 0 && (
             <p className="type-caption" style={{ margin: 0 }}>
-              Đơn mới nhất:{' '}
+              {aa.dashEl5LatestOrder}:{' '}
               <code className="type-mono">{recentOrders[0].order_code}</code> —{' '}
-              <strong className="type-price">{formatVnd(recentOrders[0].total_vnd)}</strong>
+              <strong className="type-price">
+                {formatPrice(recentOrders[0].total_vnd)}
+              </strong>
             </p>
           )}
         </div>

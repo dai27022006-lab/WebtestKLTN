@@ -10,12 +10,7 @@ import {
   Rocket,
   ShoppingBag,
 } from '@/components/icons/DreamIcons';
-import {
-  formatDateTimeVi,
-  formatVnd,
-  ORDER_STATUS_META,
-  PRODUCT_TYPE_LABELS,
-} from '@/components/shared/formatters';
+import { useLocale } from '@/components/providers/LocaleProvider';
 import type { OrderDto, ProductSummaryDto, ProductType } from '@/types/api';
 
 import { ProgressRing } from './ProgressRing';
@@ -43,10 +38,19 @@ export function ShopDashboardPanel({
   orders,
   products,
   isLoading = false,
-  title = 'Bảng Thống Kê Tài Khoản Shop',
-  subtitle = 'Theo dõi tiến độ đơn hàng, tổng chi tiêu, cơ cấu gói số và lượt tải còn lại của bạn.',
+  title,
+  subtitle,
 }: ShopDashboardPanelProps) {
+  const {
+    commerce,
+    formatPrice,
+    formatDate,
+    getProductTypeLabel,
+    getOrderStatusMeta,
+  } = useLocale();
+  const sd = commerce.shopDashboard;
   const [referenceNowMs] = useState<number>(() => Date.now());
+
   const stats = useMemo(() => {
     const productTypeMap = new Map<string, ProductType>();
     for (const prod of products) {
@@ -91,7 +95,6 @@ export function ShopDashboardPanel({
     const quotaRemainingPct =
       totalQuota > 0 ? Math.round((remainingDownloads / totalQuota) * 100) : 0;
 
-    // Element 4: Daily order buckets (rolling 7 VN days or active order dates)
     const dailyMap = new Map<
       string,
       { label: string; count: number; totalVnd: number }
@@ -115,7 +118,9 @@ export function ShopDashboardPanel({
     const nowVnMs = referenceNowMs + 7 * 60 * 60 * 1000;
     const rollingDays: string[] = [];
     for (let offset = 6; offset >= 0; offset -= 1) {
-      rollingDays.push(new Date(nowVnMs - offset * 86_400_000).toISOString().slice(0, 10));
+      rollingDays.push(
+        new Date(nowVnMs - offset * 86_400_000).toISOString().slice(0, 10)
+      );
     }
     const hasRolling = rollingDays.some((d) => dailyMap.has(d));
     const targetDays =
@@ -177,30 +182,33 @@ export function ShopDashboardPanel({
   }> = [
     {
       type: 'template',
-      label: PRODUCT_TYPE_LABELS.template,
+      label: getProductTypeLabel('template'),
       count: stats.typeCounts.template,
       pct: Math.round((stats.typeCounts.template / totalTypeUnits) * 100),
       toneClass: 'is-emerald',
     },
     {
       type: 'prompt_pack',
-      label: PRODUCT_TYPE_LABELS.prompt_pack,
+      label: getProductTypeLabel('prompt_pack'),
       count: stats.typeCounts.prompt_pack,
       pct: Math.round((stats.typeCounts.prompt_pack / totalTypeUnits) * 100),
       toneClass: 'is-copper',
     },
     {
       type: 'workflow',
-      label: PRODUCT_TYPE_LABELS.workflow,
+      label: getProductTypeLabel('workflow'),
       count: stats.typeCounts.workflow,
       pct: Math.round((stats.typeCounts.workflow / totalTypeUnits) * 100),
       toneClass: 'is-info',
     },
   ];
 
+  const resolvedTitle = title ?? sd.titleDefault;
+  const resolvedSubtitle = subtitle ?? sd.subtitleDefault;
+
   if (isLoading) {
     return (
-      <div className="dg-dash-bento" aria-busy="true" aria-label="Đang tải thống kê shop">
+      <div className="dg-dash-bento" aria-busy="true" aria-label={resolvedTitle}>
         <div className="skeleton-box dg-dash-span-5" style={{ height: '210px' }} />
         <div className="skeleton-box dg-dash-span-7" style={{ height: '210px' }} />
         <div className="skeleton-box dg-dash-span-4" style={{ height: '190px' }} />
@@ -212,7 +220,7 @@ export function ShopDashboardPanel({
 
   return (
     <section
-      aria-label={title}
+      aria-label={resolvedTitle}
       style={{ display: 'grid', gap: 'var(--space-4)' }}
     >
       <div
@@ -225,53 +233,57 @@ export function ShopDashboardPanel({
         }}
       >
         <div style={{ display: 'grid', gap: '4px' }}>
-          <span className="type-eyebrow">Tổng quan hoạt động shop (5 chỉ số)</span>
+          <span className="type-eyebrow">{sd.eyebrow}</span>
           <h2 className="type-h2" style={{ margin: 0 }}>
-            {title}
+            {resolvedTitle}
           </h2>
           <p className="type-body-sm" style={{ margin: 0 }}>
-            {subtitle}
+            {resolvedSubtitle}
           </p>
         </div>
 
         <Link href="/products" className="btn btn--secondary btn--sm">
           <ShoppingBag size={14} />
-          <span>Chọn thêm gói mới</span>
+          <span>{sd.chooseMoreBtn}</span>
         </Link>
       </div>
 
       <div className="dg-dash-bento">
-        {/* Yếu tố 1: Vòng tròn Tỉ lệ Hoàn tất Đơn & Hạn mức Tải */}
+        {/* Element 1 */}
         <article className="surface-card dg-panel dg-dash-card dg-dash-span-5">
           <div className="dg-dash-card__head">
             <div className="dg-dash-card__title-wrap">
-              <span className="dg-dash-eyebrow">Yếu tố 1 • Trạng thái Sở hữu</span>
+              <span className="dg-dash-eyebrow">{sd.el1Eyebrow}</span>
               <h3 className="type-h3" style={{ margin: 0 }}>
-                Hoàn tất Đơn &amp; Lượt tải
+                {sd.el1Title}
               </h3>
             </div>
             <span className="badge badge--accent type-mono">
-              {stats.paidCount}/{stats.totalOrders} đơn
+              {sd.el1OrdersBadge(stats.paidCount, stats.totalOrders)}
             </span>
           </div>
 
           <div className="dg-ring-pair">
             <ProgressRing
               value={stats.completionRate}
-              label="Tỉ lệ thanh toán"
+              label={sd.el1RingPay}
               centerPrimary={`${stats.completionRate}%`}
               centerSecondary={`${stats.paidCount}/${stats.totalOrders}`}
-              valueText={`Đã thanh toán ${stats.paidCount} trên ${stats.totalOrders} đơn`}
+              valueText={`${sd.el1RingPay} ${stats.completionRate}%`}
               tone="accent"
               size={104}
               thickness={10}
             />
             <ProgressRing
               value={stats.quotaRemainingPct}
-              label="Lượt tải còn lại"
+              label={sd.el1RingQuota}
               centerPrimary={`${stats.remainingDownloads}`}
-              centerSecondary={stats.totalQuota > 0 ? `/ ${stats.totalQuota} lượt` : 'Chưa có'}
-              valueText={`Còn ${stats.remainingDownloads} trên tổng ${stats.totalQuota} lượt tải`}
+              centerSecondary={
+                stats.totalQuota > 0
+                  ? sd.el1QuotaSub(stats.totalQuota)
+                  : sd.el1None
+              }
+              valueText={`${sd.el1RingQuota} ${stats.remainingDownloads}`}
               tone="info"
               size={104}
               thickness={10}
@@ -279,56 +291,61 @@ export function ShopDashboardPanel({
           </div>
         </article>
 
-        {/* Yếu tố 2: Tổng Chi tiêu & Giá trị Đơn Hàng */}
+        {/* Element 2 */}
         <article className="surface-card dg-panel dg-dash-card dg-dash-span-7">
           <div className="dg-dash-card__head">
             <div className="dg-dash-card__title-wrap">
-              <span className="dg-dash-eyebrow">Yếu tố 2 • Ngân sách Đầu tư Công cụ</span>
+              <span className="dg-dash-eyebrow">{sd.el2Eyebrow}</span>
               <h3 className="type-h3" style={{ margin: 0 }}>
-                Tổng Chi tiêu &amp; Quy mô Đơn
+                {sd.el2Title}
               </h3>
             </div>
             <span className="badge badge--success">
-              Đã chi trả {stats.paidCount} đơn
+              {sd.el2PaidBadge(stats.paidCount)}
             </span>
           </div>
 
           <div className="dg-spend-hero">
             <div className="dg-spend-main">
-              <span className="type-caption">Tổng giá trị đã thanh toán</span>
-              <strong className="dg-kpi-value type-price" style={{ color: 'var(--accent)' }}>
-                {formatVnd(stats.totalPaidVnd)}
+              <span className="type-caption">{sd.el2TotalPaid}</span>
+              <strong
+                className="dg-kpi-value type-price"
+                style={{ color: 'var(--accent)' }}
+              >
+                {formatPrice(stats.totalPaidVnd)}
               </strong>
             </div>
 
             <div className="dg-chip-metrics">
               <div className="dg-mini-stat">
-                <span className="type-caption">TB mỗi đơn</span>
+                <span className="type-caption">{sd.el2AvgOrder}</span>
                 <strong className="type-price">
-                  {formatVnd(stats.avgPaidOrderVnd)}
+                  {formatPrice(stats.avgPaidOrderVnd)}
                 </strong>
               </div>
               <div className="dg-mini-stat">
-                <span className="type-caption">Tổng gói số</span>
-                <strong className="type-mono">{stats.totalItemsQty} gói</strong>
+                <span className="type-caption">{sd.el2TotalItems}</span>
+                <strong className="type-mono">
+                  {stats.totalItemsQty} {sd.el2UnitPkg}
+                </strong>
               </div>
               <div className="dg-mini-stat">
-                <span className="type-caption">Đang chờ</span>
-                <strong className="type-mono">{stats.pendingCount} đơn</strong>
+                <span className="type-caption">{sd.el2Pending}</span>
+                <strong className="type-mono">
+                  {stats.pendingCount} {sd.el2UnitOrder}
+                </strong>
               </div>
             </div>
           </div>
-
-          {/* Yếu tố 3 inline-paired or separate card below — wait, let's give Element 3 its own clear Bento card below so all 5 cards are unmistakably distinct! */}
         </article>
 
-        {/* Yếu tố 3: Cơ cấu Gói Số Theo Danh mục */}
+        {/* Element 3 */}
         <article className="surface-card dg-panel dg-dash-card dg-dash-span-4">
           <div className="dg-dash-card__head">
             <div className="dg-dash-card__title-wrap">
-              <span className="dg-dash-eyebrow">Yếu tố 3 • Phân Bổ Danh Mục</span>
+              <span className="dg-dash-eyebrow">{sd.el3Eyebrow}</span>
               <h3 className="type-h3" style={{ margin: 0 }}>
-                Loại Gói Đã Chọn
+                {sd.el3Title}
               </h3>
             </div>
             <Layers size={18} style={{ color: 'var(--accent)' }} />
@@ -354,19 +371,19 @@ export function ShopDashboardPanel({
           </div>
         </article>
 
-        {/* Yếu tố 4: Biểu đồ Xu hướng Đặt đơn 7 Ngày */}
+        {/* Element 4 */}
         <article className="surface-card dg-panel dg-dash-card dg-dash-span-4">
           <div className="dg-dash-card__head">
             <div className="dg-dash-card__title-wrap">
-              <span className="dg-dash-eyebrow">Yếu tố 4 • Tần suất Giao dịch</span>
+              <span className="dg-dash-eyebrow">{sd.el4Eyebrow}</span>
               <h3 className="type-h3" style={{ margin: 0 }}>
-                Đơn hàng Theo Ngày
+                {sd.el4Title}
               </h3>
             </div>
             <Rocket size={18} style={{ color: 'var(--accent)' }} />
           </div>
 
-          <div className="dg-col-chart" role="list" aria-label="Biểu đồ đơn hàng theo ngày">
+          <div className="dg-col-chart" role="list" aria-label={sd.el4Title}>
             {stats.dailyTrend.map((pt) => {
               const heightPct =
                 pt.count > 0
@@ -377,7 +394,7 @@ export function ShopDashboardPanel({
                   key={pt.date}
                   role="listitem"
                   className="dg-col-item"
-                  title={`${pt.date}: ${pt.count} đơn (${formatVnd(pt.totalVnd)})`}
+                  title={`${pt.date}: ${pt.count} (${formatPrice(pt.totalVnd)})`}
                 >
                   <span className="dg-col-value type-mono">{pt.count}</span>
                   <div className="dg-col-track">
@@ -393,13 +410,13 @@ export function ShopDashboardPanel({
           </div>
         </article>
 
-        {/* Yếu tố 5: Hoạt động & Truy cập Tải file Gần nhất */}
+        {/* Element 5 */}
         <article className="surface-card dg-panel dg-dash-card dg-dash-span-4">
           <div className="dg-dash-card__head">
             <div className="dg-dash-card__title-wrap">
-              <span className="dg-dash-eyebrow">Yếu tố 5 • Tải Nhanh Gần Nhất</span>
+              <span className="dg-dash-eyebrow">{sd.el5Eyebrow}</span>
               <h3 className="type-h3" style={{ margin: 0 }}>
-                Giao dịch &amp; Hạn tải
+                {sd.el5Title}
               </h3>
             </div>
             <Download size={18} style={{ color: 'var(--accent)' }} />
@@ -407,16 +424,19 @@ export function ShopDashboardPanel({
 
           {stats.recentOrders.length === 0 ? (
             <p className="type-body-sm" style={{ margin: 0 }}>
-              Chưa có đơn hàng nào. Chọn một gói tại{' '}
-              <Link href="/products" style={{ color: 'var(--accent)', fontWeight: 700 }}>
-                Danh mục sản phẩm
-              </Link>{' '}
-              để bắt đầu.
+              {sd.el5EmptyPrefix}
+              <Link
+                href="/products"
+                style={{ color: 'var(--accent)', fontWeight: 700 }}
+              >
+                {sd.el5EmptyLink}
+              </Link>
+              {sd.el5EmptySuffix}
             </p>
           ) : (
             <div className="dg-recent-feed">
               {stats.recentOrders.map((order) => {
-                const statusMeta = ORDER_STATUS_META[order.status];
+                const statusMeta = getOrderStatusMeta(order.status);
                 const grantCount = order.download_grants?.length ?? 0;
                 const usedCount =
                   order.download_grants?.reduce((s, g) => s + g.download_count, 0) ?? 0;
@@ -440,15 +460,31 @@ export function ShopDashboardPanel({
                       >
                         {order.order_code}
                       </span>
-                      <span className="type-caption" style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                        {formatDateTimeVi(order.created_at)}
-                        {grantCount > 0 ? ` • Đã tải ${usedCount}/${maxCount}` : ''}
+                      <span
+                        className="type-caption"
+                        style={{
+                          whiteSpace: 'nowrap',
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                        }}
+                      >
+                        {formatDate(order.created_at)}
+                        {grantCount > 0
+                          ? ` • ${sd.el5Downloaded(usedCount, maxCount)}`
+                          : ''}
                       </span>
                     </div>
 
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
+                    <div
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '8px',
+                        flexShrink: 0,
+                      }}
+                    >
                       <span className={`badge badge--${statusMeta.tone}`}>
-                        {order.status === 'paid' ? 'Sẵn sàng' : statusMeta.label}
+                        {order.status === 'paid' ? sd.el5Ready : statusMeta.label}
                       </span>
                       <ArrowRight size={14} style={{ color: 'var(--ink-soft)' }} />
                     </div>

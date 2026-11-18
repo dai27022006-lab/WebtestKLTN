@@ -12,11 +12,7 @@ import {
   RefreshCw,
   ShieldCheck,
 } from '@/components/icons/DreamIcons';
-import {
-  formatDateTimeVi,
-  formatVnd,
-  PRODUCT_TYPE_LABELS,
-} from '@/components/shared/formatters';
+import { useLocale } from '@/components/providers/LocaleProvider';
 import { adminListChatLogs } from '@/services';
 import type { AdminChatLogItemDto } from '@/types/api';
 
@@ -136,6 +132,18 @@ export default function AdminChatLogsPage() {
     );
   }, [activeSession]);
 
+  const {
+    admin,
+    chrome,
+    formatPrice,
+    formatDate,
+    getProductCopy,
+    getProductTypeLabel,
+    getIndustryLabel,
+  } = useLocale();
+  const ac = admin.chatLogs;
+  const aa = admin.analytics;
+
   return (
     <div style={{ display: 'grid', gap: '20px' }}>
       {/* Header */}
@@ -150,16 +158,12 @@ export default function AdminChatLogsPage() {
         }}
       >
         <div style={{ display: 'grid', gap: '4px' }}>
-          <span className="type-eyebrow">
-            Nhật ký Trợ lý AI &amp; Kiểm định Grounding DB
-          </span>
+          <span className="type-eyebrow">{ac.groundingHeading}</span>
           <h1 className="type-h2" style={{ margin: 0 }}>
-            Log Hội thoại RAG ({filteredSessions.length} phiên)
+            {ac.title} ({ac.sessionsCount(filteredSessions.length)})
           </h1>
           <p className="type-body-sm" style={{ margin: 0 }}>
-            Theo dõi <code className="type-mono">model_name</code> (Gemini LLM
-            hay Stub/Fallback), độ trễ, chi phí USD, ID sản phẩm truy xuất và
-            ID gợi ý đối chiếu DB (0 PII).
+            {ac.subtitle}
           </p>
         </div>
 
@@ -170,7 +174,7 @@ export default function AdminChatLogsPage() {
           onClick={() => void loadChatLogs(includeSimulated)}
         >
           <RefreshCw size={14} />
-          <span>Làm mới</span>
+          <span>{chrome.common.refresh}</span>
         </button>
       </div>
 
@@ -189,11 +193,11 @@ export default function AdminChatLogsPage() {
           }}
         >
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', alignItems: 'center' }}>
-            <div className="chip-row" role="group" aria-label="Lọc theo nguồn model">
+            <div className="chip-row" role="group" aria-label={ac.modelAll}>
               {[
-                { value: 'all', label: 'Tất cả model' },
-                { value: 'gemini', label: 'Gemini LLM' },
-                { value: 'stub', label: 'Stub/Fallback' },
+                { value: 'all', label: ac.modelAll },
+                { value: 'gemini', label: ac.modelGemini },
+                { value: 'stub', label: ac.modelStub },
               ].map((item) => (
                 <button
                   key={item.value}
@@ -212,15 +216,15 @@ export default function AdminChatLogsPage() {
             <select
               className="select"
               style={{ width: 'auto', minWidth: '200px' }}
-              aria-label="Lọc theo kết quả gợi ý"
+              aria-label={ac.suggAll}
               value={suggestionFilter}
               onChange={(e) =>
                 setSuggestionFilter(e.target.value as SuggestionFilter)
               }
             >
-              <option value="all">Tất cả kết quả gợi ý</option>
-              <option value="with_suggestions">Có gợi ý sản phẩm</option>
-              <option value="no_suggestions">Không có gợi ý / Từ chối</option>
+              <option value="all">{ac.suggAll}</option>
+              <option value="with_suggestions">{ac.suggYes}</option>
+              <option value="no_suggestions">{ac.suggNo}</option>
             </select>
           </div>
 
@@ -240,7 +244,7 @@ export default function AdminChatLogsPage() {
               onChange={(e) => setIncludeSimulated(e.target.checked)}
               style={{ width: '18px', height: '18px' }}
             />
-            <span>Bao gồm phiên mô phỏng (is_simulated)</span>
+            <span>{aa.toggleWithSim}</span>
           </label>
         </div>
       </div>
@@ -249,7 +253,7 @@ export default function AdminChatLogsPage() {
         <div className="callout callout--warning" role="alert">
           <strong style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
             <AlertTriangle size={15} />
-            <span>Đang gộp cả hội thoại mô phỏng (is_simulated = true)</span>
+            <span>{aa.simWarningTitle}</span>
           </strong>
         </div>
       )}
@@ -265,9 +269,7 @@ export default function AdminChatLogsPage() {
       ) : filteredSessions.length === 0 ? (
         <div className="surface-card dg-panel">
           <p className="type-body-sm" style={{ margin: 0 }}>
-            Chưa có phiên hội thoại nào khớp bộ lọc hiện tại. Thử bật &ldquo;Bao
-            gồm phiên mô phỏng&rdquo; hoặc trò chuyện với Trợ lý từ cửa hàng để
-            sinh log mới.
+            {ac.selectSessionPrompt}
           </p>
         </div>
       ) : (
@@ -278,7 +280,7 @@ export default function AdminChatLogsPage() {
             style={{ display: 'grid', gap: '10px', alignContent: 'start' }}
           >
             <span className="type-eyebrow">
-              Danh sách phiên ({filteredSessions.length})
+              {ac.sessionsCount(filteredSessions.length)}
             </span>
             <div style={{ display: 'grid', gap: '8px', maxHeight: '680px', overflowY: 'auto' }}>
               {filteredSessions.map((session) => {
@@ -330,10 +332,10 @@ export default function AdminChatLogsPage() {
                             source === 'gemini' ? 'badge--success' : 'badge--info'
                           }`}
                         >
-                          {source === 'gemini' ? 'Gemini LLM' : 'Stub/Fallback'}
+                          {source === 'gemini' ? ac.modelGemini : ac.modelStub}
                         </span>
                         {session.is_simulated && (
-                          <span className="badge badge--warning">Mô phỏng</span>
+                          <span className="badge badge--warning">{aa.dataSimLabel}</span>
                         )}
                       </div>
                     </div>
@@ -348,9 +350,7 @@ export default function AdminChatLogsPage() {
                         whiteSpace: 'nowrap',
                       }}
                     >
-                      {firstUserMsg?.content ??
-                        session.title ??
-                        'Phiên tư vấn DreamTeam'}
+                      {firstUserMsg?.content ?? session.title ?? ac.title}
                     </div>
 
                     <div
@@ -361,10 +361,10 @@ export default function AdminChatLogsPage() {
                       }}
                     >
                       <span className="type-caption type-mono">
-                        {session.messages.length} tin nhắn
+                        #{session.messages.length}
                       </span>
                       <span className="type-caption">
-                        {formatDateTimeVi(session.created_at)}
+                        {formatDate(session.created_at)}
                       </span>
                     </div>
                   </button>
@@ -392,10 +392,10 @@ export default function AdminChatLogsPage() {
               >
                 <div style={{ display: 'grid', gap: '4px' }}>
                   <span className="type-eyebrow">
-                    Chi tiết phiên • {activeSession.participant_code}
+                    {activeSession.participant_code}
                   </span>
                   <h2 className="type-h3" style={{ margin: 0 }}>
-                    {activeSession.title ?? 'Luồng hội thoại Tư vấn AI'}
+                    {activeSession.title ?? ac.title}
                   </h2>
                   <code className="type-caption type-mono">
                     session_id: {activeSession.session_id}
@@ -438,10 +438,10 @@ export default function AdminChatLogsPage() {
                         >
                           <span className="badge">
                             <MessageSquare size={12} />
-                            <span>Người dùng hỏi</span>
+                            <span>User</span>
                           </span>
                           <span className="type-caption">
-                            {formatDateTimeVi(msg.created_at)}
+                            {formatDate(msg.created_at)}
                           </span>
                         </div>
                         <p className="type-body-sm" style={{ margin: 0, color: 'var(--ink)' }}>
@@ -483,7 +483,7 @@ export default function AdminChatLogsPage() {
                                 : 'badge--info'
                             }`}
                           >
-                            {source === 'gemini' ? 'Gemini LLM' : 'Stub/Fallback'}
+                            {source === 'gemini' ? ac.modelGemini : ac.modelStub}
                           </span>
                           {msg.model_name && (
                             <code className="badge type-mono">
@@ -535,19 +535,18 @@ export default function AdminChatLogsPage() {
                           }}
                         >
                           <span className="type-caption" style={{ fontWeight: 700 }}>
-                            Kiểm định Grounding DB
+                            {ac.groundingHeading}
                           </span>
                           {msg.suggested_products.length > 0 ? (
                             <span className="badge badge--success">
                               <ShieldCheck size={12} />
                               <span>
-                                Đã đối chiếu DB ({msg.suggested_products.length}{' '}
-                                gói)
+                                {ac.groundedBadge(msg.suggested_products.length)}
                               </span>
                             </span>
                           ) : (
                             <span className="badge">
-                              Không có sản phẩm gợi ý
+                              {ac.noSuggestionsBadge}
                             </span>
                           )}
                         </div>
@@ -555,10 +554,7 @@ export default function AdminChatLogsPage() {
                         {retrievedIds.length > 0 && (
                           <div style={{ display: 'grid', gap: '4px' }}>
                             <span className="type-caption">
-                              <code className="type-mono">
-                                retrieved_product_ids
-                              </code>{' '}
-                              ({retrievedIds.length}):
+                              {ac.retrievedLabel} ({retrievedIds.length}):
                             </span>
                             <div className="chip-row">
                               {retrievedIds.map((pid) => (
@@ -573,58 +569,62 @@ export default function AdminChatLogsPage() {
                         {msg.suggested_products.length > 0 && (
                           <div style={{ display: 'grid', gap: '6px' }}>
                             <span className="type-caption">
-                              <code className="type-mono">
-                                suggested_products
-                              </code>{' '}
-                              đã khớp kho DB:
+                              {ac.suggestedLabel}:
                             </span>
-                            {msg.suggested_products.map((prod) => (
-                              <div
-                                key={prod.id}
-                                style={{
-                                  display: 'flex',
-                                  flexWrap: 'wrap',
-                                  alignItems: 'center',
-                                  justifyContent: 'space-between',
-                                  gap: '8px',
-                                  padding: '8px 10px',
-                                  borderRadius: 'var(--radius-xs)',
-                                  backgroundColor: 'var(--bg-surface)',
-                                  border: '1px solid var(--border-hairline)',
-                                }}
-                              >
-                                <div style={{ display: 'grid', gap: '2px' }}>
-                                  <strong style={{ fontSize: '0.84rem' }}>
-                                    <CheckCircle2
-                                      size={12}
-                                      style={{
-                                        color: 'var(--status-success)',
-                                        display: 'inline',
-                                        marginRight: '4px',
-                                      }}
-                                    />
-                                    {prod.name}
-                                  </strong>
-                                  <span className="type-caption">
-                                    {PRODUCT_TYPE_LABELS[prod.product_type]} •{' '}
-                                    {prod.industry} •{' '}
-                                    <strong className="type-mono">
-                                      {formatVnd(prod.price_vnd)}
-                                    </strong>
-                                  </span>
-                                  <code className="type-caption type-mono">
-                                    id: {prod.id}
-                                  </code>
-                                </div>
-                                <Link
-                                  href={`/products/${prod.slug}`}
-                                  className="btn btn--secondary btn--sm"
+                            {msg.suggested_products.map((prod) => {
+                              const pCopy = getProductCopy({
+                                slug: prod.slug,
+                                name: prod.name,
+                                short_description: prod.reason,
+                              });
+                              return (
+                                <div
+                                  key={prod.id}
+                                  style={{
+                                    display: 'flex',
+                                    flexWrap: 'wrap',
+                                    alignItems: 'center',
+                                    justifyContent: 'space-between',
+                                    gap: '8px',
+                                    padding: '8px 10px',
+                                    borderRadius: 'var(--radius-xs)',
+                                    backgroundColor: 'var(--bg-surface)',
+                                    border: '1px solid var(--border-hairline)',
+                                  }}
                                 >
-                                  <span>Mở gói</span>
-                                  <ArrowUpRight size={13} />
-                                </Link>
-                              </div>
-                            ))}
+                                  <div style={{ display: 'grid', gap: '2px' }}>
+                                    <strong style={{ fontSize: '0.84rem' }}>
+                                      <CheckCircle2
+                                        size={12}
+                                        style={{
+                                          color: 'var(--status-success)',
+                                          display: 'inline',
+                                          marginRight: '4px',
+                                        }}
+                                      />
+                                      {pCopy.name}
+                                    </strong>
+                                    <span className="type-caption">
+                                      {getProductTypeLabel(prod.product_type)} •{' '}
+                                      {getIndustryLabel(prod.industry)} •{' '}
+                                      <strong className="type-mono">
+                                        {formatPrice(prod.price_vnd)}
+                                      </strong>
+                                    </span>
+                                    <code className="type-caption type-mono">
+                                      id: {prod.id}
+                                    </code>
+                                  </div>
+                                  <Link
+                                    href={`/products/${prod.slug}`}
+                                    className="btn btn--secondary btn--sm"
+                                  >
+                                    <span>{aa.viewBtn}</span>
+                                    <ArrowUpRight size={13} />
+                                  </Link>
+                                </div>
+                              );
+                            })}
                           </div>
                         )}
                       </div>

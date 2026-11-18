@@ -5,7 +5,8 @@ import { usePathname } from 'next/navigation';
 import { useEffect, useRef } from 'react';
 
 import { ArrowRight, Timer, X } from '@/components/icons/DreamIcons';
-import { formatDurationMmSs, formatVnd } from '@/components/shared/formatters';
+import { useLocale } from '@/components/providers/LocaleProvider';
+import { formatDurationMmSs } from '@/components/shared/formatters';
 import { useElapsedTimer } from '@/motion/useElapsedTimer';
 import { useExperiment } from '@/state';
 
@@ -16,6 +17,7 @@ const DIALOG_LIGHT_DISMISS = {
 export function ScenarioContextBar() {
   const pathname = usePathname();
   const { assignment, scenarioState, resetSession } = useExperiment();
+  const { chrome, formatPrice, getIndustryLabel, getScenarioCopy } = useLocale();
   const dialogRef = useRef<HTMLDialogElement | null>(null);
 
   const isVisible = Boolean(
@@ -68,23 +70,26 @@ export function ScenarioContextBar() {
   }
 
   const { scenario, step_order, total_steps } = scenarioState;
+  const localizedScenario = getScenarioCopy(scenario);
 
   return (
-    <aside className="scenario-bar" aria-label="Nhiệm vụ trải nghiệm đang mở">
+    <aside className="scenario-bar" aria-label={chrome.scenarioBar.ariaLabel}>
       <div className="container scenario-bar__inner">
         <div className="scenario-bar__info">
           <span className="badge badge--accent">
-            Nhiệm vụ {step_order}/{total_steps}
+            {chrome.scenarioBar.taskBadge(step_order, total_steps)}
           </span>
-          <span className="scenario-bar__title" title={scenario.title}>
-            {scenario.title}
+          <span className="scenario-bar__title" title={localizedScenario.title}>
+            {localizedScenario.title}
           </span>
         </div>
 
         <div className="scenario-bar__actions">
           <span
             className="badge type-timer"
-            aria-label={`Thời gian đã trôi qua ${formatDurationMmSs(elapsedSeconds)}`}
+            aria-label={chrome.scenarioBar.timerAria(
+              formatDurationMmSs(elapsedSeconds)
+            )}
           >
             <Timer size={13} />
             <span>{formatDurationMmSs(elapsedSeconds)}</span>
@@ -94,10 +99,10 @@ export function ScenarioContextBar() {
             className="btn btn--ghost btn--sm"
             onClick={() => dialogRef.current?.showModal()}
           >
-            Xem đề bài
+            {chrome.scenarioBar.viewBrief}
           </button>
           <Link href="/experiment" className="dg-btn-purchase dg-btn-sm">
-            <span>Chốt lựa chọn</span>
+            <span>{chrome.scenarioBar.submitChoice}</span>
             <ArrowRight size={14} />
           </Link>
           <button
@@ -105,7 +110,7 @@ export function ScenarioContextBar() {
             className="btn btn--secondary btn--sm"
             onClick={resetSession}
           >
-            Thoát khảo sát
+            {chrome.scenarioBar.exitSurvey}
           </button>
         </div>
       </div>
@@ -126,13 +131,13 @@ export function ScenarioContextBar() {
             }}
           >
             <span className="type-eyebrow">
-              Nhiệm vụ {step_order}/{total_steps}
+              {chrome.scenarioBar.taskBadge(step_order, total_steps)}
             </span>
             <button
               type="button"
               className="icon-btn"
               onClick={() => dialogRef.current?.close()}
-              aria-label="Đóng đề bài"
+              aria-label={chrome.scenarioBar.closeBrief}
               autoFocus
             >
               <X size={16} />
@@ -140,16 +145,18 @@ export function ScenarioContextBar() {
           </div>
 
           <h2 id="scenario-bar-dialog-title" style={{ margin: 0 }}>
-            {scenario.title}
+            {localizedScenario.title}
           </h2>
           <p className="type-body" style={{ margin: 0 }}>
-            {scenario.prompt_text}
+            {localizedScenario.prompt_text}
           </p>
 
           <div className="chip-row">
-            <span className="badge">Ngành: {scenario.industry}</span>
+            <span className="badge">
+              {chrome.scenarioBar.industry}: {getIndustryLabel(localizedScenario.industry)}
+            </span>
             <span className="badge type-mono">
-              Ngân sách tối đa: {formatVnd(scenario.budget_vnd)}
+              {chrome.scenarioBar.maxBudget}: {formatPrice(localizedScenario.budget_vnd)}
             </span>
           </div>
 
@@ -166,14 +173,14 @@ export function ScenarioContextBar() {
               className="btn btn--secondary"
               onClick={() => dialogRef.current?.close()}
             >
-              Tiếp tục duyệt gói
+              {chrome.scenarioBar.browseWithBar}
             </button>
             <Link
               href="/experiment"
               className="dg-btn-purchase dg-btn-sm"
               onClick={() => dialogRef.current?.close()}
             >
-              <span>Chốt lựa chọn</span>
+              <span>{chrome.scenarioBar.submitChoice}</span>
               <ArrowRight size={14} />
             </Link>
           </div>

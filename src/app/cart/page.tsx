@@ -10,12 +10,7 @@ import {
   ShoppingBag,
   X,
 } from '@/components/icons/DreamIcons';
-import {
-  formatDateTimeVi,
-  formatVnd,
-  ORDER_STATUS_META,
-  PRODUCT_TYPE_LABELS,
-} from '@/components/shared/formatters';
+import { useLocale } from '@/components/providers/LocaleProvider';
 import { EditorialEmptyIllustration } from '@/components/visual/EditorialEmptyIllustration';
 import { ProductPlaceholderFrame } from '@/components/visual/ProductPlaceholderFrame';
 import { listOrders } from '@/services';
@@ -23,13 +18,19 @@ import { useCart, useExperiment } from '@/state';
 import type { CartItemDto, OrderDto } from '@/types/api';
 
 function CartItemThumb({ item }: { item: CartItemDto }) {
+  const { getProductCopy, getProductTypeLabel } = useLocale();
   const [imgFailed, setImgFailed] = useState(false);
+  const copy = getProductCopy({
+    slug: item.slug,
+    name: item.name,
+    short_description: '',
+  });
 
   if (!item.thumbnail_url || imgFailed) {
     return (
       <ProductPlaceholderFrame
         productType={item.product_type}
-        industry="Shop nhỏ"
+        industry="Đa ngành"
         compact
         aspect="16/10"
       />
@@ -50,7 +51,7 @@ function CartItemThumb({ item }: { item: CartItemDto }) {
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={item.thumbnail_url}
-        alt={`${item.name} (${PRODUCT_TYPE_LABELS[item.product_type]})`}
+        alt={`${copy.name} (${getProductTypeLabel(item.product_type)})`}
         width={480}
         height={300}
         loading="lazy"
@@ -63,6 +64,17 @@ function CartItemThumb({ item }: { item: CartItemDto }) {
 }
 
 export default function CartPage() {
+  const {
+    commerce,
+    chrome,
+    formatPrice,
+    formatDate,
+    getProductCopy,
+    getProductTypeLabel,
+    getOrderStatusMeta,
+  } = useLocale();
+  const ct = commerce.cart;
+  const co = commerce.checkout;
   const { cart, isLoading, errorMessage, removeItem, clearAll } = useCart();
   const { visitorId } = useExperiment();
   const [recentOrders, setRecentOrders] = useState<OrderDto[]>([]);
@@ -84,36 +96,32 @@ export default function CartPage() {
   return (
     <section className="section section--compact">
       <div className="container">
-        <div className="stepper" aria-label="Tiến trình đặt hàng thử nghiệm">
+        <div className="stepper" aria-label={ct.eyebrow}>
           <div className="stepper__item stepper__item--active">
             <span className="badge badge--accent">
               <ShoppingBag size={12} /> 1
             </span>
-            <span>Giỏ hàng</span>
+            <span>{ct.step1}</span>
           </div>
           <div className="stepper__item">
             <span className="badge">
               <Lock size={12} /> 2
             </span>
-            <span>Xác nhận đơn thử nghiệm</span>
+            <span>{ct.step2}</span>
           </div>
           <div className="stepper__item">
             <span className="badge">
               <Download size={12} /> 3
             </span>
-            <span>Nhận file ngay</span>
+            <span>{ct.step3}</span>
           </div>
         </div>
 
         <div className="section-header" style={{ marginBottom: '24px' }}>
           <div className="section-header__copy">
-            <span className="type-eyebrow">Giỏ hàng của bạn</span>
-            <h1 className="type-h1">Kiểm tra các gói giải pháp đã chọn</h1>
-            <p className="type-body-sm">
-              Hệ thống đang chạy chế độ đặt hàng thử nghiệm (Sandbox) — bạn có
-              thể kiểm tra quy trình tạo đơn và nhận file ngay mà không bị trừ
-              tiền thật.
-            </p>
+            <span className="type-eyebrow">{ct.eyebrow}</span>
+            <h1 className="type-h1">{ct.title}</h1>
+            <p className="type-body-sm">{ct.subtitle}</p>
           </div>
           {cart.items.length > 0 && (
             <button
@@ -123,7 +131,7 @@ export default function CartPage() {
               onClick={() => void clearAll()}
             >
               <X size={14} />
-              <span>Xóa toàn bộ giỏ</span>
+              <span>{ct.clearAll}</span>
             </button>
           )}
         </div>
@@ -149,28 +157,33 @@ export default function CartPage() {
               justifyItems: 'center',
             }}
           >
-            <EditorialEmptyIllustration title="Giỏ hàng trống" />
+            <EditorialEmptyIllustration title={ct.emptyTitle} />
             <h2 className="type-h3" style={{ margin: 0 }}>
-              Giỏ hàng hiện chưa có gói sản phẩm nào
+              {ct.emptyTitle}
             </h2>
             <p className="type-body-sm" style={{ margin: 0, maxWidth: '46ch' }}>
-              Khám phá danh mục Template Website, Prompt Pack AI hoặc Workflow tự
-              động để thêm vào giỏ và trải nghiệm quy trình nhận file tức thì.
+              {ct.emptyDesc}
             </p>
             <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
               <Link href="/products" className="dg-btn-purchase">
-                <span>Xem danh mục sản phẩm</span>
+                <span>{ct.browseBtn}</span>
                 <ArrowRight size={15} />
               </Link>
               <Link href="/orders" className="btn btn--secondary">
-                Thư viện đơn hàng đã mua
+                {commerce.orders.title}
               </Link>
             </div>
           </div>
         ) : (
           <div className="two-col-ops">
             <div style={{ display: 'grid', gap: '16px', minWidth: 0 }}>
-              {cart.items.map((item) => (
+              {cart.items.map((item) => {
+                const copy = getProductCopy({
+                  slug: item.slug,
+                  name: item.name,
+                  short_description: '',
+                });
+                return (
                 <article
                   key={item.product_id}
                   className="surface-card dg-panel cart-item-card"
@@ -182,17 +195,16 @@ export default function CartPage() {
                       className="type-caption"
                       style={{ color: 'var(--accent)', fontWeight: 700 }}
                     >
-                      {PRODUCT_TYPE_LABELS[item.product_type]}
+                      {getProductTypeLabel(item.product_type)}
                     </span>
                     <Link href={`/products/${item.slug}`}>
-                      <strong style={{ fontSize: '1rem' }}>{item.name}</strong>
+                      <strong style={{ fontSize: '1rem' }}>{copy.name}</strong>
                     </Link>
                     <div className="type-body-sm">
-                      Đơn giá:{' '}
                       <span className="type-mono">
-                        {formatVnd(item.price_vnd)}
+                        {formatPrice(item.price_vnd)}
                       </span>{' '}
-                      • Số lượng:{' '}
+                      ×{' '}
                       <span className="type-mono">{item.quantity}</span>
                     </div>
                   </div>
@@ -202,7 +214,7 @@ export default function CartPage() {
                       className="type-price"
                       style={{ color: 'var(--accent)' }}
                     >
-                      {formatVnd(item.line_total_vnd)}
+                      {formatPrice(item.line_total_vnd)}
                     </strong>
                     <button
                       type="button"
@@ -210,11 +222,12 @@ export default function CartPage() {
                       disabled={isLoading}
                       onClick={() => void removeItem(item.product_id)}
                     >
-                      Xóa
+                      {ct.removeItem}
                     </button>
                   </div>
                 </article>
-              ))}
+                );
+              })}
             </div>
 
             <aside
@@ -222,7 +235,7 @@ export default function CartPage() {
               style={{ display: 'grid', gap: '16px' }}
             >
               <h2 className="type-h3" style={{ margin: 0 }}>
-                Tóm tắt đơn hàng
+                {ct.summaryHeading}
               </h2>
 
               <div
@@ -235,13 +248,13 @@ export default function CartPage() {
                 }}
               >
                 <span className="type-body-sm">
-                  Tổng ({cart.item_count} gói)
+                  {ct.totalItemsLabel(cart.item_count)}
                 </span>
                 <strong
                   className="type-price"
                   style={{ fontSize: '1.5rem', color: 'var(--accent)' }}
                 >
-                  {formatVnd(cart.subtotal_vnd)}
+                  {formatPrice(cart.subtotal_vnd)}
                 </strong>
               </div>
 
@@ -250,14 +263,12 @@ export default function CartPage() {
                 className="dg-btn-purchase btn--block"
                 style={{ justifyContent: 'center' }}
               >
-                <span>Tiếp tục xác nhận đơn thử nghiệm</span>
+                <span>{ct.checkoutBtn}</span>
                 <ArrowRight size={16} />
               </Link>
 
               <p className="type-caption" style={{ margin: 0 }}>
-                Hệ thống đang chạy chế độ đặt hàng thử nghiệm (Sandbox) — bạn
-                có thể kiểm tra quy trình tạo đơn và nhận file ngay mà không bị
-                trừ tiền thật.
+                {co.sandboxHint}
               </p>
             </aside>
           </div>
@@ -275,31 +286,31 @@ export default function CartPage() {
               }}
             >
               <h2 className="type-h3" style={{ margin: 0 }}>
-                Đơn hàng gần đây của bạn
+                {ct.recentOrdersTitle}
               </h2>
               <Link href="/orders" className="btn btn--secondary btn--sm">
-                Xem tất cả đơn hàng
+                {commerce.orders.viewAllBtn}
               </Link>
             </div>
             <div
               tabIndex={0}
               role="region"
-              aria-label="Danh sách đơn hàng gần đây"
+              aria-label={ct.recentOrdersTitle}
               className="data-table-wrap dg-panel"
             >
               <table className="data-table">
                 <thead>
                   <tr>
-                    <th scope="col">Mã đơn</th>
-                    <th scope="col">Trạng thái</th>
-                    <th scope="col">Tổng tiền</th>
-                    <th scope="col">Thời gian tạo</th>
-                    <th scope="col">Chi tiết</th>
+                    <th scope="col">#</th>
+                    <th scope="col">{commerce.orders.statusLabel}</th>
+                    <th scope="col">{commerce.orders.totalOrderValue}</th>
+                    <th scope="col">{commerce.orders.createdAtLabel}</th>
+                    <th scope="col">{chrome.common.orders}</th>
                   </tr>
                 </thead>
                 <tbody>
                   {recentOrders.map((order) => {
-                    const statusMeta = ORDER_STATUS_META[order.status];
+                    const statusMeta = getOrderStatusMeta(order.status);
                     return (
                       <tr key={order.id}>
                         <td className="type-mono">{order.order_code}</td>
@@ -309,17 +320,17 @@ export default function CartPage() {
                           </span>
                         </td>
                         <td className="type-price">
-                          {formatVnd(order.total_vnd)}
+                          {formatPrice(order.total_vnd)}
                         </td>
                         <td className="type-caption">
-                          {formatDateTimeVi(order.created_at)}
+                          {formatDate(order.created_at)}
                         </td>
                         <td>
                           <Link
                             href={`/orders/${order.id}`}
                             className="btn btn--secondary btn--sm"
                           >
-                            Xem đơn &amp; Tải file
+                            {commerce.orders.viewAndDownload}
                           </Link>
                         </td>
                       </tr>

@@ -317,6 +317,7 @@ export interface SendChatMessageRequest {
   visitor_id?: string;
   scenario_run_id?: string;
   message: string;
+  locale?: 'vi' | 'en' | 'ru' | 'zh';
   is_simulated?: boolean;
 }
 

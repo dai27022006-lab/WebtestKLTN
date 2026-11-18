@@ -12,11 +12,7 @@ import {
   ShoppingBag,
   X,
 } from '@/components/icons/DreamIcons';
-import {
-  formatDateTimeVi,
-  formatVnd,
-  ORDER_STATUS_META,
-} from '@/components/shared/formatters';
+import { useLocale } from '@/components/providers/LocaleProvider';
 import { adminListOrders } from '@/services';
 import type { OrderDto, OrderStatus, PaginationMeta } from '@/types/api';
 
@@ -33,6 +29,17 @@ const DIALOG_LIGHT_DISMISS = {
 } as unknown as React.DialogHTMLAttributes<HTMLDialogElement>;
 
 export default function AdminOrdersPage() {
+  const {
+    admin,
+    chrome,
+    commerce,
+    formatPrice,
+    formatDate,
+    getOrderStatusMeta,
+  } = useLocale();
+  const ao = admin.orders;
+  const aa = admin.analytics;
+  const co = commerce.orders;
   const [orders, setOrders] = useState<OrderDto[]>([]);
   const [meta, setMeta] = useState<PaginationMeta | null>(null);
   const [statusFilter, setStatusFilter] = useState<'' | OrderStatus>('');
@@ -148,13 +155,12 @@ export default function AdminOrdersPage() {
         }}
       >
         <div style={{ display: 'grid', gap: '4px' }}>
-          <span className="type-eyebrow">Quản lý Đơn hàng &amp; Cấp quyền tải</span>
+          <span className="type-eyebrow">{ao.title}</span>
           <h1 id="admin-orders-table-title" className="type-h2" style={{ margin: 0 }}>
-            Danh sách Đơn hàng ({meta?.total ?? orders.length})
+            {ao.title} ({meta?.total ?? orders.length})
           </h1>
           <p className="type-body-sm" style={{ margin: 0 }}>
-            Kiểm tra trạng thái thanh toán Sandbox, nguồn dữ liệu và số lượt
-            tải còn lại trong từng <code className="type-mono">download_grants</code>.
+            {ao.subtitle}
           </p>
         </div>
 
@@ -165,7 +171,7 @@ export default function AdminOrdersPage() {
           onClick={() => void loadOrders(statusFilter, includeSimulated, page)}
         >
           <RefreshCw size={14} />
-          <span>Làm mới</span>
+          <span>{chrome.common.refresh}</span>
         </button>
       </div>
 
@@ -183,11 +189,11 @@ export default function AdminOrdersPage() {
         <div
           className="chip-row"
           role="group"
-          aria-label="Lọc đơn hàng theo trạng thái"
+          aria-label={ao.title}
         >
           {STATUS_FILTERS.map((item) => (
             <button
-              key={item.label}
+              key={item.value || 'all'}
               type="button"
               className="chip"
               aria-pressed={statusFilter === item.value}
@@ -196,7 +202,9 @@ export default function AdminOrdersPage() {
                 setPage(1);
               }}
             >
-              {item.label}
+              {item.value === ''
+                ? ao.statusAll
+                : getOrderStatusMeta(item.value).label}
             </button>
           ))}
         </div>
@@ -220,7 +228,7 @@ export default function AdminOrdersPage() {
             }}
             style={{ width: '18px', height: '18px' }}
           />
-          <span>Bao gồm dữ liệu mô phỏng (is_simulated)</span>
+          <span>{aa.toggleWithSim}</span>
         </label>
       </div>
 
@@ -228,7 +236,7 @@ export default function AdminOrdersPage() {
         <div className="callout callout--warning" role="alert">
           <strong style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
             <AlertTriangle size={15} />
-            <span>Đang gộp cả đơn hàng mô phỏng (is_simulated = true)</span>
+            <span>{aa.simWarningTitle}</span>
           </strong>
         </div>
       )}
@@ -252,26 +260,26 @@ export default function AdminOrdersPage() {
           <table className="admin-table">
             <thead>
               <tr>
-                <th scope="col">Mã đơn</th>
-                <th scope="col">Ngày tạo</th>
-                <th scope="col">Gói sản phẩm</th>
-                <th scope="col">Tổng tiền VND</th>
-                <th scope="col">Cổng thanh toán</th>
-                <th scope="col">Nguồn</th>
-                <th scope="col">Trạng thái</th>
-                <th scope="col">Chi tiết &amp; Quyền tải</th>
+                <th scope="col">{ao.colCode}</th>
+                <th scope="col">{ao.colCreated}</th>
+                <th scope="col">{ao.colItems}</th>
+                <th scope="col">{ao.colTotal}</th>
+                <th scope="col">{co.paymentMethodLabel}</th>
+                <th scope="col">{ao.colType}</th>
+                <th scope="col">{ao.colStatus}</th>
+                <th scope="col">{ao.colDetail}</th>
               </tr>
             </thead>
             <tbody>
               {orders.length === 0 ? (
                 <tr>
                   <td colSpan={8} style={{ textAlign: 'center', padding: '32px' }}>
-                    Chưa có đơn hàng nào khớp bộ lọc hiện tại.
+                    {aa.noOrders}
                   </td>
                 </tr>
               ) : (
                 orders.map((order) => {
-                  const statusMeta = ORDER_STATUS_META[order.status];
+                  const statusMeta = getOrderStatusMeta(order.status);
                   const firstItem = order.items[0]?.product_name_snapshot ?? '—';
                   const extraCount = Math.max(0, order.items.length - 1);
                   return (
@@ -280,20 +288,18 @@ export default function AdminOrdersPage() {
                         {order.order_code}
                       </td>
                       <td className="type-caption" style={{ whiteSpace: 'nowrap' }}>
-                        {formatDateTimeVi(order.created_at)}
+                        {formatDate(order.created_at)}
                       </td>
                       <td style={{ minWidth: '220px' }}>
                         <strong style={{ display: 'block', color: 'var(--ink)' }}>
-                          {order.items.length} món: {firstItem}
+                          {order.items.length} × {firstItem}
                         </strong>
                         {extraCount > 0 && (
-                          <span className="type-caption">
-                            +{extraCount} gói khác
-                          </span>
+                          <span className="type-caption">+{extraCount}</span>
                         )}
                       </td>
                       <td className="type-price" style={{ whiteSpace: 'nowrap' }}>
-                        {formatVnd(order.total_vnd)}
+                        {formatPrice(order.total_vnd)}
                       </td>
                       <td className="type-mono type-caption">
                         {order.payment_provider}
@@ -306,7 +312,7 @@ export default function AdminOrdersPage() {
                               : 'badge--success'
                           }`}
                         >
-                          {order.is_simulated ? 'Mô phỏng' : 'Thật'}
+                          {order.is_simulated ? aa.dataSimLabel : aa.dataRealLabel}
                         </span>
                       </td>
                       <td>
@@ -321,7 +327,7 @@ export default function AdminOrdersPage() {
                           onClick={() => openOrderDrawer(order)}
                         >
                           <Download size={13} />
-                          <span>Xem chi tiết &amp; Quyền tải</span>
+                          <span>{aa.viewBtn}</span>
                         </button>
                       </td>
                     </tr>
@@ -348,10 +354,10 @@ export default function AdminOrdersPage() {
             disabled={page <= 1}
             onClick={() => setPage((p) => Math.max(1, p - 1))}
           >
-            Trang trước
+            {commerce.catalog.prevPage}
           </button>
           <span className="type-mono type-body-sm">
-            Trang {meta.page} / {meta.totalPages}
+            {commerce.catalog.pageOf(meta.page, meta.totalPages)}
           </span>
           <button
             type="button"
@@ -359,7 +365,7 @@ export default function AdminOrdersPage() {
             disabled={page >= meta.totalPages}
             onClick={() => setPage((p) => p + 1)}
           >
-            Trang sau
+            {commerce.catalog.nextPage}
           </button>
         </div>
       )}
@@ -373,13 +379,13 @@ export default function AdminOrdersPage() {
       >
         <div className="admin-drawer__head">
           <div>
-            <span className="type-eyebrow">Chi tiết Đơn hàng &amp; Quyền tải</span>
+            <span className="type-eyebrow">{ao.drawerTitle}</span>
             <h2
               id="admin-order-drawer-title"
               className="type-h3 type-mono"
               style={{ margin: '2px 0 0' }}
             >
-              {selectedOrder?.order_code ?? 'Đơn hàng'}
+              {selectedOrder?.order_code ?? ao.colCode}
             </h2>
           </div>
 
@@ -387,7 +393,7 @@ export default function AdminOrdersPage() {
             type="button"
             className="icon-btn"
             onClick={closeOrderDrawer}
-            aria-label="Đóng ngăn chi tiết đơn hàng"
+            aria-label={chrome.common.close}
             autoFocus
           >
             <X size={18} />
@@ -408,32 +414,32 @@ export default function AdminOrdersPage() {
               }}
             >
               <div>
-                <div className="type-caption">Trạng thái</div>
+                <div className="type-caption">{ao.colStatus}</div>
                 <span
                   className={`badge badge--${
-                    ORDER_STATUS_META[selectedOrder.status].tone
+                    getOrderStatusMeta(selectedOrder.status).tone
                   }`}
                 >
-                  {ORDER_STATUS_META[selectedOrder.status].label}
+                  {getOrderStatusMeta(selectedOrder.status).label}
                 </span>
               </div>
               <div>
-                <div className="type-caption">Tổng giá trị</div>
+                <div className="type-caption">{ao.colTotal}</div>
                 <strong
                   className="type-price"
                   style={{ color: 'var(--accent)', fontSize: '1.15rem' }}
                 >
-                  {formatVnd(selectedOrder.total_vnd)}
+                  {formatPrice(selectedOrder.total_vnd)}
                 </strong>
               </div>
               <div>
-                <div className="type-caption">Cổng thanh toán</div>
+                <div className="type-caption">{co.paymentMethodLabel}</div>
                 <code className="type-caption type-mono">
                   {selectedOrder.payment_provider}
                 </code>
               </div>
               <div>
-                <div className="type-caption">Nguồn dữ liệu</div>
+                <div className="type-caption">{ao.colType}</div>
                 <span
                   className={`badge ${
                     selectedOrder.is_simulated
@@ -441,26 +447,26 @@ export default function AdminOrdersPage() {
                       : 'badge--success'
                   }`}
                 >
-                  {selectedOrder.is_simulated ? 'Mô phỏng' : 'Thật'}
+                  {selectedOrder.is_simulated ? aa.dataSimLabel : aa.dataRealLabel}
                 </span>
               </div>
               <div>
-                <div className="type-caption">Ngày tạo</div>
+                <div className="type-caption">{ao.colCreated}</div>
                 <span className="type-caption">
-                  {formatDateTimeVi(selectedOrder.created_at)}
+                  {formatDate(selectedOrder.created_at)}
                 </span>
               </div>
               <div>
-                <div className="type-caption">Thanh toán lúc</div>
+                <div className="type-caption">{co.paidAtLabel}</div>
                 <span className="type-caption">
-                  {formatDateTimeVi(selectedOrder.paid_at)}
+                  {formatDate(selectedOrder.paid_at)}
                 </span>
               </div>
             </div>
 
             <div style={{ display: 'grid', gap: '8px' }}>
               <strong className="type-body-sm">
-                Danh sách sản phẩm ({selectedOrder.items.length})
+                {co.itemsTitle} ({selectedOrder.items.length})
               </strong>
               {selectedOrder.items.map((item) => (
                 <div
@@ -480,11 +486,11 @@ export default function AdminOrdersPage() {
                       {item.product_name_snapshot}
                     </strong>
                     <span className="type-caption type-mono">
-                      {formatVnd(item.unit_price_vnd)} × {item.quantity}
+                      {formatPrice(item.unit_price_vnd)} × {item.quantity}
                     </span>
                   </div>
                   <strong className="type-price">
-                    {formatVnd(item.line_total_vnd)}
+                    {formatPrice(item.line_total_vnd)}
                   </strong>
                 </div>
               ))}
@@ -492,16 +498,12 @@ export default function AdminOrdersPage() {
 
             <div style={{ display: 'grid', gap: '8px' }}>
               <strong className="type-body-sm">
-                Quyền tải file (<code className="type-mono">download_grants</code>)
+                {co.downloadsTitle} (<code className="type-mono">download_grants</code>)
               </strong>
               {!selectedOrder.download_grants ||
               selectedOrder.download_grants.length === 0 ? (
                 <div className="callout">
-                  <span>
-                    {selectedOrder.status === 'paid'
-                      ? 'Không tìm thấy bản ghi cấp quyền tải cho đơn này.'
-                      : 'Chỉ cấp download_grants khi đơn đạt trạng thái paid.'}
-                  </span>
+                  <span>{chrome.common.noData}</span>
                 </div>
               ) : (
                 selectedOrder.download_grants.map((grant) => {
@@ -535,12 +537,15 @@ export default function AdminOrdersPage() {
                         <span className="badge badge--success type-mono">
                           <CheckCircle2 size={12} />
                           <span>
-                            {grant.download_count}/{grant.max_downloads} lượt
+                            {co.downloadsUsed(
+                              grant.download_count,
+                              grant.max_downloads
+                            )}
                           </span>
                         </span>
                       </div>
                       <span className="type-caption type-mono">
-                        Hết hạn: {formatDateTimeVi(grant.expires_at)}
+                        {co.expiresAt}: {formatDate(grant.expires_at)}
                       </span>
                       <span
                         className="type-caption type-mono"
@@ -562,7 +567,7 @@ export default function AdminOrdersPage() {
             className="btn btn--secondary btn--sm"
             onClick={closeOrderDrawer}
           >
-            Đóng
+            {chrome.common.close}
           </button>
           {selectedOrder && (
             <Link
@@ -570,7 +575,7 @@ export default function AdminOrdersPage() {
               className="dg-btn-purchase dg-btn-sm"
             >
               <ShoppingBag size={14} />
-              <span>Mở trang Đơn hàng khách</span>
+              <span>{co.viewAndDownload}</span>
               <ArrowUpRight size={14} />
             </Link>
           )}

@@ -11,20 +11,11 @@ import {
   Sparkles,
   X,
 } from '@/components/icons/DreamIcons';
-import {
-  formatVnd,
-  PRODUCT_TYPE_LABELS,
-} from '@/components/shared/formatters';
+import { useLocale } from '@/components/providers/LocaleProvider';
 import { ProductPlaceholderFrame } from '@/components/visual/ProductPlaceholderFrame';
 import { getChatSessions, sendChatMessage } from '@/services';
 import { useExperiment } from '@/state';
 import type { ChatMessageDto } from '@/types/api';
-
-const QUICK_PROMPTS = [
-  'Shop mỹ phẩm 2 người trên TikTok Shop, ngân sách dưới 1 triệu cần landing page.',
-  'Mình bán thời trang local cần trang lookbook kèm bảng size dưới 700k.',
-  'Cần gói prompt trả lời inbox và chốt đơn đa kênh chi phí thấp.',
-];
 
 interface AdvisorChatDrawerInnerProps {
   isSurveyActive: boolean;
@@ -41,6 +32,14 @@ function AdvisorChatDrawerInner({
   currentRunId,
   track,
 }: AdvisorChatDrawerInnerProps) {
+  const {
+    locale,
+    chrome,
+    getProductCopy,
+    getProductTypeLabel,
+    getIndustryLabel,
+    formatPrice,
+  } = useLocale();
   const [isOpen, setIsOpen] = useState(false);
   const [sessionId, setSessionId] = useState<string | undefined>(undefined);
   const [messages, setMessages] = useState<ChatMessageDto[]>([]);
@@ -148,10 +147,12 @@ function AdvisorChatDrawerInner({
             visitor_id: visitorId,
             scenario_run_id: currentRunId,
             message: trimmed,
+            locale,
           }
         : {
             session_id: sessionId,
             message: trimmed,
+            locale,
           }
     );
 
@@ -190,17 +191,17 @@ function AdvisorChatDrawerInner({
           type="button"
           className="chat-fab"
           onClick={handleOpen}
-          aria-label="Mở Trợ lý tư vấn gói sản phẩm"
+          aria-label={chrome.chat.fabAria}
         >
           <Sparkles size={17} />
-          <span>Trợ lý tư vấn</span>
+          <span>{chrome.chat.fabLabel}</span>
         </button>
       )}
 
       {isOpen && (
         <aside
           className="chat-drawer"
-          aria-label="Trợ lý Tư vấn DreamTeam"
+          aria-label={chrome.chat.drawerAria}
         >
           <div className="chat-drawer__head">
             <div
@@ -217,10 +218,12 @@ function AdvisorChatDrawerInner({
                 </span>
                 <div>
                   <strong style={{ fontSize: '0.95rem', display: 'block' }}>
-                    Trợ lý Tư vấn DreamTeam
+                    {chrome.chat.title}
                   </strong>
                   <div className="type-caption">
-                    Gợi ý sản phẩm phù hợp theo ngành hàng &amp; ngân sách
+                    {isSurveyActive
+                      ? chrome.chat.subtitleSurvey
+                      : chrome.chat.subtitleStorefront}
                   </div>
                 </div>
               </div>
@@ -228,7 +231,7 @@ function AdvisorChatDrawerInner({
                 type="button"
                 className="icon-btn"
                 onClick={() => setIsOpen(false)}
-                aria-label="Đóng khung trợ lý tư vấn"
+                aria-label={chrome.chat.closeAria}
               >
                 <X size={18} />
               </button>
@@ -236,28 +239,27 @@ function AdvisorChatDrawerInner({
 
             <span className="badge badge--success">
               <ShieldCheck size={12} />
-              <span>Trực tuyến • Tư vấn từ kho sản phẩm</span>
+              <span>{chrome.chat.subtitleStorefront}</span>
             </span>
           </div>
 
           <div className="chat-drawer__messages">
             {isLoadingHistory && (
               <p className="type-body-sm" style={{ margin: 0 }}>
-                Đang tải lịch sử hội thoại...
+                {chrome.chat.loadingHistory}
               </p>
             )}
 
             {messages.length === 0 && !isLoadingHistory && (
               <div style={{ display: 'grid', gap: '12px' }}>
                 <div className="chat-bubble chat-bubble--assistant">
-                  Chào bạn! Mình là Trợ lý DreamTeam hỗ trợ chủ shop nhỏ. Hãy
-                  cho mình biết ngành hàng, kênh bán và ngân sách dự kiến để
-                  mình lọc đúng gói phù hợp nhất trong cửa hàng.
+                  <strong>{chrome.chat.emptyTitle}</strong>{' '}
+                  {chrome.chat.emptyDesc}
                 </div>
 
                 <div style={{ display: 'grid', gap: '6px' }}>
-                  <span className="type-caption">Gợi ý câu hỏi nhanh:</span>
-                  {QUICK_PROMPTS.map((prompt) => (
+                  <span className="type-caption">{chrome.chat.suggestedHeading}</span>
+                  {chrome.chat.quickPrompts.map((prompt) => (
                     <button
                       key={prompt}
                       type="button"
@@ -299,7 +301,13 @@ function AdvisorChatDrawerInner({
                 </div>
 
                 {msg.role === 'assistant' &&
-                  msg.suggested_products.slice(0, 3).map((product) => (
+                  msg.suggested_products.slice(0, 3).map((product) => {
+                    const localizedProduct = getProductCopy({
+                      slug: product.slug,
+                      name: product.name,
+                      short_description: product.reason,
+                    });
+                    return (
                     <Link
                       key={product.id}
                       href={`/products/${product.slug}`}
@@ -336,7 +344,7 @@ function AdvisorChatDrawerInner({
                             {/* eslint-disable-next-line @next/next/no-img-element */}
                             <img
                               src={product.thumbnail_url}
-                              alt={`Ảnh minh họa ${product.name}`}
+                              alt={localizedProduct.name}
                               width={76}
                               height={48}
                               loading="lazy"
@@ -356,17 +364,17 @@ function AdvisorChatDrawerInner({
                         )}
                         <div style={{ display: 'grid', gap: '4px', minWidth: 0 }}>
                           <span className="type-caption">
-                            {PRODUCT_TYPE_LABELS[product.product_type]} •{' '}
-                            {product.industry}
+                            {getProductTypeLabel(product.product_type)} •{' '}
+                            {getIndustryLabel(product.industry)}
                           </span>
                           <strong style={{ fontSize: '0.875rem' }}>
-                            {product.name}
+                            {localizedProduct.name}
                           </strong>
                           <span
                             className="type-price"
                             style={{ fontSize: '0.875rem', color: 'var(--accent)' }}
                           >
-                            {formatVnd(product.price_vnd)}
+                            {formatPrice(product.price_vnd)}
                           </span>
                         </div>
                       </div>
@@ -377,13 +385,14 @@ function AdvisorChatDrawerInner({
                         {product.reason}
                       </p>
                     </Link>
-                  ))}
+                    );
+                  })}
               </div>
             ))}
 
             {isSending && (
               <div className="chat-bubble chat-bubble--assistant">
-                Đang tra cứu sản phẩm phù hợp...
+                {chrome.chat.thinking}
               </div>
             )}
 
@@ -404,7 +413,7 @@ function AdvisorChatDrawerInner({
             }}
           >
             <label htmlFor="advisor-chat-input" className="type-caption">
-              Mô tả nhu cầu &amp; ngân sách của shop (tối đa 1.500 ký tự)
+              {chrome.chat.inputPlaceholder}
             </label>
             <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-end' }}>
               <textarea
@@ -420,7 +429,7 @@ function AdvisorChatDrawerInner({
                     void handleSend();
                   }
                 }}
-                placeholder="Ví dụ: Shop mỹ phẩm ngân sách 1 triệu cần trang bán hàng..."
+                placeholder={chrome.chat.inputPlaceholder}
                 style={{ minHeight: '48px', maxHeight: '112px' }}
               />
               <button
@@ -429,7 +438,7 @@ function AdvisorChatDrawerInner({
                 style={{ minHeight: '48px', paddingInline: '16px' }}
                 disabled={isSending || !inputText.trim()}
               >
-                <span>Gửi</span>
+                <span>{isSending ? chrome.chat.sending : chrome.chat.send}</span>
                 <ArrowRight size={14} />
               </button>
             </div>

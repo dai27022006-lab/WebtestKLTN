@@ -4,10 +4,12 @@ import { usePathname } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 
 import { ArrowUp } from '@/components/icons/DreamIcons';
+import { useLocale } from '@/components/providers/LocaleProvider';
 import { useExperiment } from '@/state';
 
 export function BackToTopProgress() {
   const pathname = usePathname();
+  const { chrome } = useLocale();
   const { assignment, scenarioState, activeVariant, isScenarioSynced } =
     useExperiment();
   const [visible, setVisible] = useState(false);
@@ -96,8 +98,8 @@ export function BackToTopProgress() {
     <button
       type="button"
       onClick={handleBackToTop}
-      aria-label={`Cuộn về đầu trang (${scrollPct}%)`}
-      title={`Về đầu trang (${scrollPct}%)`}
+      aria-label={chrome.footer.scrollAria(scrollPct)}
+      title={`${chrome.footer.backToTop} (${scrollPct}%)`}
       className={`dg-back-to-top ${visible ? 'show' : ''} ${
         isChatFabVisible ? 'is-chat-offset' : ''
       }`}

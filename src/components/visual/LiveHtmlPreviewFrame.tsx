@@ -11,7 +11,7 @@ import {
   Smartphone,
   X,
 } from '@/components/icons/DreamIcons';
-import { PRODUCT_TYPE_LABELS } from '@/components/shared/formatters';
+import { useLocale } from '@/components/providers/LocaleProvider';
 import { ProductPlaceholderFrame } from '@/components/visual/ProductPlaceholderFrame';
 import type { ProductSourceType, ProductType } from '@/types/api';
 
@@ -51,6 +51,7 @@ function DemoIframeCanvas({
   productName: string;
   viewportMode: 'desktop' | 'mobile';
 }) {
+  const { chrome } = useLocale();
   const stageRef = useRef<HTMLDivElement | null>(null);
   const [stageSize, setStageSize] = useState<{ width: number; height: number }>({
     width: viewportMode === 'mobile' ? 375 : 700,
@@ -118,8 +119,10 @@ function DemoIframeCanvas({
       >
         <iframe
           src={demoUrl}
-          title={`Xem thử trực tiếp ${productName} (${
-            viewportMode === 'desktop' ? 'Desktop 1280px' : 'Mobile 375px'
+          title={`${chrome.preview.fallbackEyebrow}: ${productName} (${
+            viewportMode === 'desktop'
+              ? chrome.preview.viewportDesktop
+              : chrome.preview.viewportMobile
           })`}
           sandbox="allow-scripts allow-same-origin"
           className="viewport-iframe"
@@ -144,6 +147,7 @@ function FallbackMediaBody({
   shortDescription,
   deliverables,
 }: Omit<LiveHtmlPreviewFrameProps, 'demoUrl'>) {
+  const { chrome, getProductTypeLabel } = useLocale();
   const [imgFailed, setImgFailed] = useState(false);
 
   return (
@@ -153,7 +157,7 @@ function FallbackMediaBody({
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={thumbnailUrl}
-            alt={`Ảnh minh họa ${productName} (${PRODUCT_TYPE_LABELS[productType]})`}
+            alt={`${productName} (${getProductTypeLabel(productType)})`}
             width={960}
             height={600}
             onError={() => setImgFailed(true)}
@@ -172,7 +176,7 @@ function FallbackMediaBody({
       {deliverables && deliverables.length > 0 && (
         <div className="viewport-deliverables">
           <strong style={{ fontSize: '0.875rem' }}>
-            Cấu trúc tài liệu &amp; thành phần bàn giao
+            {chrome.preview.deliverablesHeading}
           </strong>
           <ul className="viewport-deliverables__list">
             {deliverables.slice(0, 4).map((item) => (
@@ -218,6 +222,7 @@ export function LiveHtmlPreviewFrame({
   shortDescription,
   deliverables,
 }: LiveHtmlPreviewFrameProps) {
+  const { chrome, getProductTypeLabel, getIndustryLabel } = useLocale();
   const [viewportMode, setViewportMode] = useState<'desktop' | 'mobile'>(
     'desktop'
   );
@@ -282,7 +287,7 @@ export function LiveHtmlPreviewFrame({
     <div
       className="chip-row"
       role="group"
-      aria-label={`${labelPrefix}: Chọn kích thước màn hình`}
+      aria-label={`${labelPrefix}: Viewport`}
     >
       <button
         type="button"
@@ -291,7 +296,7 @@ export function LiveHtmlPreviewFrame({
         onClick={() => setViewportMode('desktop')}
       >
         <LayoutDashboard size={14} style={{ marginRight: '6px' }} />
-        <span>Desktop 1280px</span>
+        <span>{chrome.preview.desktopBtn}</span>
       </button>
       <button
         type="button"
@@ -300,7 +305,7 @@ export function LiveHtmlPreviewFrame({
         onClick={() => setViewportMode('mobile')}
       >
         <Smartphone size={14} style={{ marginRight: '6px' }} />
-        <span>Mobile 375px</span>
+        <span>{chrome.preview.mobileBtn}</span>
       </button>
     </div>
   );
@@ -355,26 +360,22 @@ export function LiveHtmlPreviewFrame({
       <div className="viewport-stage__head">
         <div>
           <span className="type-eyebrow">
-            {embeddableDemoUrl
-              ? 'Xem thử giao diện trực tiếp'
-              : 'Xem trước cấu trúc gói'}
+            {chrome.preview.fallbackEyebrow}
           </span>
           <div className="type-body-sm">
-            {embeddableDemoUrl
-              ? 'Chuyển đổi nhanh giữa màn hình máy tính 1280px và điện thoại 375px'
-              : 'Xem ảnh đại diện và danh sách thành phần bàn giao chi tiết'}
+            {chrome.preview.sourceSafeNote}
           </div>
         </div>
 
         <div className="viewport-stage__controls">
-          {renderViewportControls('Khung xem thử')}
+          {renderViewportControls(chrome.preview.fallbackEyebrow)}
           <button
             type="button"
             className="btn btn--secondary btn--sm"
             onClick={openModal}
           >
             <Expand size={14} />
-            <span>Phóng to</span>
+            <span>{chrome.preview.zoomBtn}</span>
           </button>
           {embeddableDemoUrl && (
             <a
@@ -383,7 +384,7 @@ export function LiveHtmlPreviewFrame({
               rel="noopener noreferrer"
               className="btn btn--ghost btn--sm"
             >
-              <span>Mở tab mới</span>
+              <span>{chrome.preview.openTabBtn}</span>
               <ArrowUpRight size={14} />
             </a>
           )}
@@ -402,7 +403,7 @@ export function LiveHtmlPreviewFrame({
           <div className="preview-dialog__head">
             <div>
               <span className="type-eyebrow">
-                {PRODUCT_TYPE_LABELS[productType]} • {industry}
+                {getProductTypeLabel(productType)} • {getIndustryLabel(industry)}
               </span>
               <h2
                 id="live-preview-modal-title"
@@ -414,7 +415,7 @@ export function LiveHtmlPreviewFrame({
             </div>
 
             <div className="viewport-stage__controls">
-              {renderViewportControls('Xem thử phóng to')}
+              {renderViewportControls(chrome.preview.zoomBtn)}
               {embeddableDemoUrl && (
                 <a
                   href={embeddableDemoUrl}
@@ -422,7 +423,7 @@ export function LiveHtmlPreviewFrame({
                   rel="noopener noreferrer"
                   className="btn btn--secondary btn--sm"
                 >
-                  <span>Mở tab mới</span>
+                  <span>{chrome.preview.openTabBtn}</span>
                   <ArrowUpRight size={14} />
                 </a>
               )}
@@ -430,7 +431,7 @@ export function LiveHtmlPreviewFrame({
                 type="button"
                 className="icon-btn"
                 onClick={closeModal}
-                aria-label="Đóng khung xem thử phóng to"
+                aria-label={chrome.preview.closeZoomAria}
                 autoFocus
               >
                 <X size={18} />

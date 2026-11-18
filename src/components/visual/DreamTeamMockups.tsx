@@ -25,6 +25,7 @@ import {
   User,
   Zap,
 } from '@/components/icons/DreamIcons';
+import { useLocale } from '@/components/providers/LocaleProvider';
 import { DreamTeamBrandMark } from '@/components/visual/DreamTeamBrandMark';
 import { useHeroTilt } from '@/motion/useHeroTilt';
 import type { ProductType } from '@/types/api';
@@ -266,6 +267,9 @@ export function HeroVisualStack({
     }
   };
 
+  const { locale, home, chrome, formatPrice } = useLocale();
+  const mt = home.heroMockupTabs;
+  const activeTabMeta = mt[currentMode];
   const activeTab =
     HERO_PREVIEW_TABS.find((item) => item.id === currentMode) ??
     HERO_PREVIEW_TABS[0];
@@ -277,6 +281,50 @@ export function HeroVisualStack({
   ]
     .filter(Boolean)
     .join(' ');
+
+  const backPill1 =
+    locale === 'en'
+      ? '375px Live Preview'
+      : locale === 'ru'
+        ? 'Предпросмотр 375px • Live'
+        : locale === 'zh'
+          ? '375px 实时预览'
+          : 'Xem thử 375px • Live';
+  const backPill2 =
+    locale === 'en'
+      ? 'Budget & Channel Match'
+      : locale === 'ru'
+        ? 'Подбор под бюджет и канал'
+        : locale === 'zh'
+          ? '按预算与渠道智能筛选'
+          : 'Phù hợp ngân sách & kênh bán';
+  const shopContextTitle =
+    locale === 'en'
+      ? 'Solutions for 1–3 person shops'
+      : locale === 'ru'
+        ? 'Решения для команд 1–3 чел.'
+        : locale === 'zh'
+          ? '1–3 人小店专属数字方案'
+          : 'Giải pháp cho shop 1–3 người';
+  const workspaceMiniLabel =
+    locale === 'en'
+      ? 'Small shop setup'
+      : locale === 'ru'
+        ? 'Малый магазин'
+        : locale === 'zh'
+          ? '微型电商'
+          : 'Bối cảnh shop nhỏ';
+  const teamMiniLabel =
+    locale === 'en'
+      ? '1–3 staff'
+      : locale === 'ru'
+        ? '1–3 чел.'
+        : locale === 'zh'
+          ? '1–3人团队'
+          : '1–3 người';
+  const previewPrice = formatPrice(490000);
+
+  void previewPrice;
 
   return (
     <div
@@ -303,10 +351,10 @@ export function HeroVisualStack({
               <span className="yellow" />
               <span className="green" />
             </div>
-            <div className="dg-browser-url">dreamteam.vn/products/xem-thu</div>
+            <div className="dg-browser-url">dreamteam.vn/products/preview</div>
           </div>
           <div className="dg-mini-back-body">
-            <div className="dg-mini-back-pill">Xem thử 375px • Live</div>
+            <div className="dg-mini-back-pill">{backPill1}</div>
             <div className="dg-mini-back-bars">
               <span style={{ width: '82%' }} />
               <span style={{ width: '64%' }} />
@@ -327,12 +375,10 @@ export function HeroVisualStack({
               <span className="yellow" />
               <span className="green" />
             </div>
-            <div className="dg-browser-url">dreamteam.vn/tro-ly-tu-van</div>
+            <div className="dg-browser-url">dreamteam.vn/advisor</div>
           </div>
           <div className="dg-mini-back-body">
-            <div className="dg-mini-back-pill">
-              Phù hợp ngân sách &amp; kênh bán
-            </div>
+            <div className="dg-mini-back-pill">{backPill2}</div>
             <div className="dg-mini-back-kpis">
               <div />
               <div />
@@ -358,15 +404,11 @@ export function HeroVisualStack({
                 type="button"
                 className="dg-hero-pause-btn"
                 onClick={handleToggleDemo}
-                aria-label={
-                  isDemoStopped
-                    ? 'Chạy demo xem nhanh giải pháp'
-                    : 'Tạm dừng demo xem nhanh giải pháp'
-                }
+                aria-label={isDemoStopped ? mt.playTour : mt.pauseTour}
               >
                 {isDemoStopped ? <Play size={11} /> : <Pause size={11} />}
                 <span className="dg-hero-pause-label">
-                  {isDemoStopped ? 'Chạy demo' : 'Tạm dừng'}
+                  {isDemoStopped ? mt.resumeLabel : mt.pauseLabel}
                 </span>
               </button>
               <span className="dg-hero-live-pill">
@@ -377,7 +419,7 @@ export function HeroVisualStack({
           </div>
 
           <div className="dg-dt-app-shell">
-            <aside className="dg-dt-sidebar" aria-label="Xem nhanh danh mục">
+            <aside className="dg-dt-sidebar" aria-label={chrome.common.solutions}>
               <div className="dg-dt-sidebar-brand">
                 <DreamTeamBrandMark size={20} inverted />
                 <span>DreamTeam</span>
@@ -386,10 +428,11 @@ export function HeroVisualStack({
               <div
                 className="dg-dt-sidebar-nav"
                 role="tablist"
-                aria-label="Chuyển xem nhanh giải pháp"
+                aria-label={chrome.common.solutions}
               >
                 {HERO_PREVIEW_TABS.map((item) => {
                   const selected = item.id === currentMode;
+                  const tabCopy = mt[item.id];
                   return (
                     <button
                       key={item.id}
@@ -402,7 +445,7 @@ export function HeroVisualStack({
                       {item.id === 'template' && <LayoutDashboard size={13} />}
                       {item.id === 'prompt_pack' && <Sparkles size={13} />}
                       {item.id === 'workflow' && <Zap size={13} />}
-                      <span>{item.label}</span>
+                      <span>{tabCopy.label}</span>
                     </button>
                   );
                 })}
@@ -411,11 +454,11 @@ export function HeroVisualStack({
               <div className="dg-dt-sidebar-foot">
                 <div className="dg-dt-sidebar-chip">
                   <MessageSquare size={12} />
-                  <span>Trợ lý tư vấn</span>
+                  <span>{mt.sidebarFooter1}</span>
                 </div>
                 <div className="dg-dt-sidebar-chip">
                   <Smartphone size={12} />
-                  <span>Xem thử 375px</span>
+                  <span>{mt.sidebarFooter2}</span>
                 </div>
               </div>
             </aside>
@@ -425,18 +468,18 @@ export function HeroVisualStack({
                 <div className="dg-dt-ws-head">
                   <div>
                     <span className="dg-dt-ws-eyebrow">
-                      Giải pháp cho shop 1–3 người
+                      {shopContextTitle}
                     </span>
-                    <strong>{activeTab.highlightTitle}</strong>
+                    <strong>{activeTabMeta.highlightTitle}</strong>
                   </div>
                   <span className="dg-dt-ws-badge">
                     <ShieldCheck size={12} />
-                    <span>Bản quyền rõ</span>
+                    <span>{mt.brandBadge}</span>
                   </span>
                 </div>
 
                 <div className="dg-dt-kpi-strip">
-                  {activeTab.kpis.map((kpi) => (
+                  {activeTabMeta.kpis.map((kpi) => (
                     <div key={kpi.label} className="dg-dt-kpi-box">
                       <span>{kpi.label}</span>
                       <strong>{kpi.value}</strong>
@@ -447,16 +490,16 @@ export function HeroVisualStack({
                 <div className="dg-dt-ws-grid">
                   <div className="dg-dt-chart-card">
                     <div className="dg-dt-chart-head">
-                      <span>{activeTab.chartTitle}</span>
+                      <span>{activeTabMeta.chartTitle}</span>
                       <span className="dg-dt-chart-tag">
-                        {activeTab.highlightMeta}
+                        {activeTabMeta.highlightMeta}
                       </span>
                     </div>
                     <svg
                       viewBox="0 0 220 72"
                       className="dg-dt-chart-svg"
                       role="img"
-                      aria-label={`Biểu đồ ${activeTab.chartTitle} cho nhóm ${activeTab.label}`}
+                      aria-label={`${activeTabMeta.chartTitle} — ${activeTabMeta.label}`}
                     >
                       <defs>
                         <linearGradient id={areaGradId} x1="0" x2="0" y1="0" y2="1">
@@ -508,23 +551,23 @@ export function HeroVisualStack({
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
                         src="/images/hero-workspace.webp"
-                        alt="Góc bàn làm việc gọn gàng của chủ shop kinh doanh trực tuyến theo tông màu xanh ngọc và xám slate"
+                        alt={workspaceMiniLabel}
                         width={1280}
                         height={720}
                         fetchPriority="high"
                         className="dg-hero-workspace-img"
                       />
                       <div className="dg-hero-workspace-caption">
-                        <span>Bối cảnh shop nhỏ</span>
-                        <span>1–3 người</span>
+                        <span>{workspaceMiniLabel}</span>
+                        <span>{teamMiniLabel}</span>
                       </div>
                     </div>
                     <div className="dg-dt-rag-head">
                       <Sparkles size={13} />
-                      <span>Phù hợp ngân sách &amp; kênh bán</span>
+                      <span>{backPill2}</span>
                     </div>
-                    <p className="dg-dt-rag-copy">{activeTab.advisorCopy}</p>
-                    <div className="dg-dt-rag-pill">{activeTab.advisorTip}</div>
+                    <p className="dg-dt-rag-copy">{activeTabMeta.advisorCopy}</p>
+                    <div className="dg-dt-rag-pill">{activeTabMeta.advisorTip}</div>
                   </div>
                 </div>
               </div>
@@ -545,6 +588,74 @@ export type InnerScreenKey =
   | 'auth';
 
 export function InnerPageVisual({ screen }: { screen: InnerScreenKey }) {
+  const { locale, formatPrice } = useLocale();
+
+  const pills =
+    locale === 'en'
+      ? ['All', 'Web UI', 'AI Prompts', 'Workflows']
+      : locale === 'ru'
+        ? ['Все', 'Веб-макеты', 'Промпты AI', 'Автопотоки']
+        : locale === 'zh'
+          ? ['全部', '网页模板', 'AI 提示词', '自动化流程']
+          : ['Tất cả', 'Giao diện Web', 'Prompt AI', 'Luồng Tự Động'];
+
+  const copy =
+    locale === 'en'
+      ? {
+          origin: 'Original',
+          cartSummary: '2 bundles',
+          steps: ['1. Cart', '2. Confirm', '3. Download'],
+          sandbox: 'Sandbox mode',
+          done: 'Paid',
+          downloads: '5 downloads',
+          expiry: '7-day link',
+          shopOwner: 'Shop Account',
+          orderSync: 'Order Sync',
+          purchased: 'Purchases',
+          security: 'Protected',
+        }
+      : locale === 'ru'
+        ? {
+            origin: 'Оригинал',
+            cartSummary: '2 пакета',
+            steps: ['1. Корзина', '2. Оплата', '3. Файлы'],
+            sandbox: 'Тестовый режим',
+            done: 'Оплачено',
+            downloads: '5 скачиваний',
+            expiry: 'Срок 7 дн.',
+            shopOwner: 'Кабинет магазина',
+            orderSync: 'Синхрон заказов',
+            purchased: 'Покупки',
+            security: 'Защита',
+          }
+        : locale === 'zh'
+          ? {
+              origin: '原创设计',
+              cartSummary: '已选 2 套',
+              steps: ['1. 购物车', '2. 确认支付', '3. 获取文件'],
+              sandbox: '沙盒测试',
+              done: '已完成',
+              downloads: '限下载 5 次',
+              expiry: '7 天有效',
+              shopOwner: '店主账户',
+              orderSync: '订单同步',
+              purchased: '已购套件',
+              security: '安全访问',
+            }
+          : {
+              origin: 'Thiết kế gốc',
+              cartSummary: '2 gói đã chọn',
+              steps: ['1. Giỏ hàng', '2. Xác nhận', '3. Nhận file'],
+              sandbox: 'Thử nghiệm',
+              done: 'Hoàn tất',
+              downloads: '5 lượt tải',
+              expiry: 'Hạn 7 ngày',
+              shopOwner: 'Tài khoản chủ shop',
+              orderSync: 'Đồng bộ đơn',
+              purchased: 'Đơn đã mua',
+              security: 'Bảo mật',
+            };
+
   return (
     <div className="dg-inner-mock" aria-hidden="true">
       <div className="dg-inner-mock-bar">
@@ -567,10 +678,10 @@ export function InnerPageVisual({ screen }: { screen: InnerScreenKey }) {
         {screen === 'catalog' && (
           <div className="dg-mock-layout">
             <div className="dg-mock-pills">
-              <span className="is-active">Tất cả</span>
-              <span>Giao diện Web</span>
-              <span>Prompt AI</span>
-              <span>Luồng Tự Động</span>
+              <span className="is-active">{pills[0]}</span>
+              <span>{pills[1]}</span>
+              <span>{pills[2]}</span>
+              <span>{pills[3]}</span>
             </div>
             <div className="dg-mock-cards-3">
               <div className="dg-mock-card">
@@ -606,8 +717,8 @@ export function InnerPageVisual({ screen }: { screen: InnerScreenKey }) {
               </div>
             </div>
             <div className="dg-mock-dock">
-              <span className="dg-mock-badge-sm">Thiết kế gốc</span>
-              <span className="dg-mock-price-line">490.000đ</span>
+              <span className="dg-mock-badge-sm">{copy.origin}</span>
+              <span className="dg-mock-price-line">{formatPrice(490000)}</span>
               <span className="dg-mock-cta-bar" />
             </div>
           </div>
@@ -616,18 +727,18 @@ export function InnerPageVisual({ screen }: { screen: InnerScreenKey }) {
         {screen === 'cart' && (
           <div className="dg-mock-layout">
             <div className="dg-mock-ab-banner">
-              <span>2 gói đã chọn</span>
-              <span>780.000đ</span>
+              <span>{copy.cartSummary}</span>
+              <span>{formatPrice(780000)}</span>
             </div>
             <div className="dg-mock-grant-row">
               <ShoppingBag size={14} />
               <span className="dg-mock-line w-70" />
-              <span className="dg-mock-badge-sm">490.000đ</span>
+              <span className="dg-mock-badge-sm">{formatPrice(490000)}</span>
             </div>
             <div className="dg-mock-grant-row">
               <Sparkles size={14} />
               <span className="dg-mock-line w-60" />
-              <span className="dg-mock-badge-sm">290.000đ</span>
+              <span className="dg-mock-badge-sm">{formatPrice(290000)}</span>
             </div>
           </div>
         )}
@@ -635,9 +746,9 @@ export function InnerPageVisual({ screen }: { screen: InnerScreenKey }) {
         {screen === 'checkout' && (
           <div className="dg-mock-layout">
             <div className="dg-mock-steps">
-              <span className="is-done">1. Giỏ hàng</span>
-              <span className="is-active">2. Xác nhận</span>
-              <span>3. Nhận file</span>
+              <span className="is-done">{copy.steps[0]}</span>
+              <span className="is-active">{copy.steps[1]}</span>
+              <span>{copy.steps[2]}</span>
             </div>
             <div className="dg-mock-split">
               <div className="dg-mock-card" style={{ padding: '10px' }}>
@@ -645,7 +756,7 @@ export function InnerPageVisual({ screen }: { screen: InnerScreenKey }) {
                 <span className="dg-mock-line w-55" />
               </div>
               <div className="dg-mock-dock">
-                <span className="dg-mock-badge-sm">Thử nghiệm</span>
+                <span className="dg-mock-badge-sm">{copy.sandbox}</span>
                 <span className="dg-mock-cta-bar" />
               </div>
             </div>
@@ -656,17 +767,17 @@ export function InnerPageVisual({ screen }: { screen: InnerScreenKey }) {
           <div className="dg-mock-layout">
             <div className="dg-mock-ab-banner">
               <span>DT-202611-001</span>
-              <span className="is-paid">Hoàn tất</span>
+              <span className="is-paid">{copy.done}</span>
             </div>
             <div className="dg-mock-grant-row">
               <Download size={14} />
               <span className="dg-mock-line w-70" />
-              <span className="dg-mock-badge-sm">5 lượt tải</span>
+              <span className="dg-mock-badge-sm">{copy.downloads}</span>
             </div>
             <div className="dg-mock-grant-row">
               <ShieldCheck size={14} />
               <span className="dg-mock-line w-60" />
-              <span className="dg-mock-badge-sm">Hạn 7 ngày</span>
+              <span className="dg-mock-badge-sm">{copy.expiry}</span>
             </div>
           </div>
         )}
@@ -674,18 +785,18 @@ export function InnerPageVisual({ screen }: { screen: InnerScreenKey }) {
         {screen === 'auth' && (
           <div className="dg-mock-layout">
             <div className="dg-mock-ab-banner">
-              <span>Tài khoản chủ shop</span>
-              <span>Đồng bộ đơn</span>
+              <span>{copy.shopOwner}</span>
+              <span>{copy.orderSync}</span>
             </div>
             <div className="dg-mock-grant-row">
               <User size={14} />
               <span className="dg-mock-line w-75" />
-              <span className="dg-mock-badge-sm">Đơn đã mua</span>
+              <span className="dg-mock-badge-sm">{copy.purchased}</span>
             </div>
             <div className="dg-mock-grant-row">
               <Lock size={14} />
               <span className="dg-mock-line w-60" />
-              <span className="dg-mock-badge-sm">Bảo mật</span>
+              <span className="dg-mock-badge-sm">{copy.security}</span>
             </div>
           </div>
         )}
@@ -695,6 +806,57 @@ export function InnerPageVisual({ screen }: { screen: InnerScreenKey }) {
 }
 
 export function CtaPreviewMockup() {
+  const { locale, home } = useLocale();
+  const c =
+    locale === 'en'
+      ? {
+          tag: 'Beauty • TikTok Shop',
+          timer: '~30 min setup',
+          title: 'Preview live on Desktop 1280px & Mobile 375px before download',
+          chip1: 'Desktop 1280px',
+          chip2: 'Mobile 375px',
+          chip3: home.heroMockupTabs.brandBadge,
+          foot1: home.heroMockupTabs.sidebarFooter2,
+          foot2: 'Instant files',
+          floatChip: `${home.heroMockupTabs.sidebarFooter2} • Instant files`,
+        }
+      : locale === 'ru'
+        ? {
+            tag: 'Косметика • TikTok Shop',
+            timer: '~30 мин запуск',
+            title: 'Предпросмотр на Desktop 1280px и Mobile 375px до покупки',
+            chip1: 'Desktop 1280px',
+            chip2: 'Mobile 375px',
+            chip3: home.heroMockupTabs.brandBadge,
+            foot1: home.heroMockupTabs.sidebarFooter2,
+            foot2: 'Сразу после оплаты',
+            floatChip: `${home.heroMockupTabs.sidebarFooter2} • Мгновенная выдача`,
+          }
+        : locale === 'zh'
+          ? {
+              tag: '美妆护肤 • TikTok Shop',
+              timer: '约 30 分钟上线',
+              title: '购买前直接预览 1280px 桌面端与 375px 手机端实时效果',
+              chip1: '桌面 1280px',
+              chip2: '手机 375px',
+              chip3: home.heroMockupTabs.brandBadge,
+              foot1: home.heroMockupTabs.sidebarFooter2,
+              foot2: '下单即得文件',
+              floatChip: `${home.heroMockupTabs.sidebarFooter2} • 立即下载`,
+            }
+          : {
+              tag: 'Mỹ phẩm • TikTok Shop',
+              timer: '~30 phút',
+              title:
+                'Xem thử trực tiếp trên Desktop 1280px & Mobile 375px trước khi tải',
+              chip1: 'Desktop 1280px',
+              chip2: 'Mobile 375px',
+              chip3: 'Bản quyền rõ',
+              foot1: 'Xem thử 375px',
+              foot2: 'Nhận file tức thì',
+              floatChip: 'Xem thử 375px • Nhận file tức thì',
+            };
+
   return (
     <div className="dg-cta-dark-visual-wrap">
       <div className="dg-cta-dark-visual" data-surface="light">
@@ -704,7 +866,7 @@ export function CtaPreviewMockup() {
             <span className="yellow" />
             <span className="green" />
           </div>
-          <div className="dg-browser-url">dreamteam.vn/products/my-pham</div>
+          <div className="dg-browser-url">dreamteam.vn/products/beauty-kit</div>
           <span className="dg-hero-live-pill">
             <span className="dg-dot" />
             375px
@@ -713,23 +875,21 @@ export function CtaPreviewMockup() {
 
         <div className="dg-cta-mock-body">
           <div className="dg-cta-mock-row">
-            <span className="dg-cta-mock-tag">Mỹ phẩm • TikTok Shop</span>
-            <span className="dg-cta-mock-timer">~30 phút</span>
+            <span className="dg-cta-mock-tag">{c.tag}</span>
+            <span className="dg-cta-mock-timer">{c.timer}</span>
           </div>
-          <p className="dg-cta-mock-title">
-            Xem thử trực tiếp trên Desktop 1280px &amp; Mobile 375px trước khi tải
-          </p>
+          <p className="dg-cta-mock-title">{c.title}</p>
           <div className="dg-mock-toggle-row">
-            <span className="is-active">Desktop 1280px</span>
-            <span>Mobile 375px</span>
-            <span>Bản quyền rõ</span>
+            <span className="is-active">{c.chip1}</span>
+            <span>{c.chip2}</span>
+            <span>{c.chip3}</span>
           </div>
           <div className="dg-cta-mock-footer">
             <span>
-              <CheckCircle2 size={13} /> Xem thử 375px
+              <CheckCircle2 size={13} /> {c.foot1}
             </span>
             <span>
-              <ShoppingBag size={13} /> Nhận file tức thì
+              <ShoppingBag size={13} /> {c.foot2}
             </span>
           </div>
         </div>
@@ -737,7 +897,7 @@ export function CtaPreviewMockup() {
 
       <div className="dg-cta-dark-chip chip-a">
         <Layers size={14} />
-        <span>Xem thử 375px • Nhận file tức thì</span>
+        <span>{c.floatChip}</span>
       </div>
     </div>
   );

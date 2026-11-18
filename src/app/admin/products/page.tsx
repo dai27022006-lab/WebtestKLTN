@@ -12,11 +12,7 @@ import {
   Smartphone,
   X,
 } from '@/components/icons/DreamIcons';
-import {
-  formatVnd,
-  PRODUCT_TYPE_LABELS,
-  SOURCE_TYPE_META,
-} from '@/components/shared/formatters';
+import { useLocale } from '@/components/providers/LocaleProvider';
 import { LiveHtmlPreviewFrame } from '@/components/visual/LiveHtmlPreviewFrame';
 import { ProductPlaceholderFrame } from '@/components/visual/ProductPlaceholderFrame';
 import {
@@ -191,6 +187,16 @@ function TableThumbnail({ product }: { product: ProductDetailDto }) {
 }
 
 export default function AdminProductsPage() {
+  const {
+    admin,
+    chrome,
+    formatPrice,
+    getProductCopy,
+    getProductTypeLabel,
+    getSourceMeta,
+    getIndustryLabel,
+  } = useLocale();
+  const ap = admin.products;
   const [products, setProducts] = useState<ProductDetailDto[]>([]);
   const [searchInput, setSearchInput] = useState('');
   const [typeFilter, setTypeFilter] = useState<'' | ProductType>('');
@@ -453,16 +459,12 @@ export default function AdminProductsPage() {
         }}
       >
         <div style={{ display: 'grid', gap: '4px' }}>
-          <span className="type-eyebrow">
-            CRUD Sản phẩm &amp; Gắn Live HTML Demo
-          </span>
+          <span className="type-eyebrow">CRUD &amp; Live HTML Demo</span>
           <h1 id="admin-products-table-title" className="type-h2" style={{ margin: 0 }}>
-            Quản lý Kho Sản Phẩm Số ({products.length})
+            {ap.title} ({products.length})
           </h1>
           <p className="type-body-sm" style={{ margin: 0 }}>
-            Quy cách tệp tĩnh: đặt bản dựng HTML tại{' '}
-            <code className="type-mono">public/demos/&lt;slug&gt;/index.html</code>{' '}
-            và ảnh WebP tại <code className="type-mono">public/images/</code>.
+            {ap.subtitle}
           </p>
         </div>
 
@@ -474,7 +476,7 @@ export default function AdminProductsPage() {
             onClick={() => void loadProducts()}
           >
             <RefreshCw size={14} />
-            <span>Làm mới</span>
+            <span>{chrome.common.refresh}</span>
           </button>
           <button
             type="button"
@@ -482,7 +484,7 @@ export default function AdminProductsPage() {
             onClick={openCreateModal}
           >
             <Plus size={15} />
-            <span>+ Thêm sản phẩm mới</span>
+            <span>{ap.addBtn}</span>
           </button>
         </div>
       </div>
@@ -504,8 +506,8 @@ export default function AdminProductsPage() {
             <input
               type="search"
               className="input dg-input-has-left"
-              aria-label="Tìm sản phẩm theo tên, slug hoặc ngành"
-              placeholder="Tìm tên sản phẩm, slug hoặc ngành..."
+              aria-label={ap.searchPlaceholder}
+              placeholder={ap.searchPlaceholder}
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
             />
@@ -513,25 +515,25 @@ export default function AdminProductsPage() {
 
           <select
             className="select"
-            aria-label="Lọc theo loại sản phẩm"
+            aria-label={ap.colTypeIndustry}
             value={typeFilter}
             onChange={(e) => setTypeFilter(e.target.value as '' | ProductType)}
           >
-            <option value="">Tất cả loại gói</option>
-            <option value="template">Template Website</option>
-            <option value="prompt_pack">Prompt Pack</option>
-            <option value="workflow">Workflow Tự Động</option>
+            <option value="">{chrome.common.all}</option>
+            <option value="template">{getProductTypeLabel('template')}</option>
+            <option value="prompt_pack">{getProductTypeLabel('prompt_pack')}</option>
+            <option value="workflow">{getProductTypeLabel('workflow')}</option>
           </select>
 
           <div
             className="chip-row"
             role="group"
-            aria-label="Lọc theo trạng thái bán"
+            aria-label={ap.colStatus}
           >
             {[
-              { value: 'all', label: 'Tất cả' },
-              { value: 'active', label: 'Đang bán' },
-              { value: 'inactive', label: 'Đang ẩn' },
+              { value: 'all', label: ap.statusAll },
+              { value: 'active', label: ap.statusActive },
+              { value: 'inactive', label: ap.statusHidden },
             ].map((item) => (
               <button
                 key={item.value}
@@ -576,28 +578,28 @@ export default function AdminProductsPage() {
             <thead>
               <tr>
                 <th scope="col" style={{ padding: '10px 6px 10px 10px' }}>
-                  Ảnh
+                  Preview
                 </th>
                 <th scope="col" style={{ padding: '10px 6px' }}>
-                  Tên &amp; Slug
+                  {ap.colProduct}
                 </th>
                 <th scope="col" style={{ padding: '10px 6px' }}>
-                  Loại &amp; Ngành
+                  {ap.colTypeIndustry}
                 </th>
                 <th scope="col" style={{ padding: '10px 6px' }}>
-                  Giá VND
+                  {ap.colPrice}
                 </th>
                 <th scope="col" style={{ padding: '10px 6px' }}>
-                  Bản quyền
+                  {ap.modalEditTitle}
                 </th>
                 <th scope="col" style={{ padding: '10px 6px' }}>
-                  Demo HTML
+                  {ap.colDemo}
                 </th>
                 <th scope="col" style={{ padding: '10px 6px' }}>
-                  Trạng thái
+                  {ap.colStatus}
                 </th>
                 <th scope="col" style={{ padding: '10px 10px 10px 6px' }}>
-                  Thao tác
+                  {ap.colActions}
                 </th>
               </tr>
             </thead>
@@ -605,12 +607,13 @@ export default function AdminProductsPage() {
               {filteredProducts.length === 0 ? (
                 <tr>
                   <td colSpan={8} style={{ textAlign: 'center', padding: '32px' }}>
-                    Không tìm thấy sản phẩm nào khớp bộ lọc.
+                    {chrome.common.noData}
                   </td>
                 </tr>
               ) : (
                 filteredProducts.map((item) => {
-                  const sourceMeta = SOURCE_TYPE_META[item.source_type];
+                  const pCopy = getProductCopy(item);
+                  const sourceMeta = getSourceMeta(item.source_type);
                   const compactBadgeStyle: React.CSSProperties = {
                     fontSize: '0.7rem',
                     padding: '3px 7px',
@@ -642,7 +645,7 @@ export default function AdminProductsPage() {
                             lineHeight: 1.35,
                           }}
                         >
-                          {item.name}
+                          {pCopy.name}
                         </strong>
                         <code
                           className="type-caption type-mono"
@@ -664,9 +667,11 @@ export default function AdminProductsPage() {
                             whiteSpace: 'nowrap',
                           }}
                         >
-                          {PRODUCT_TYPE_LABELS[item.product_type]}
+                          {getProductTypeLabel(item.product_type)}
                         </span>
-                        <span className="type-caption">{item.industry}</span>
+                        <span className="type-caption">
+                          {getIndustryLabel(item.industry)}
+                        </span>
                       </td>
                       <td
                         className="type-price"
@@ -676,7 +681,7 @@ export default function AdminProductsPage() {
                           whiteSpace: 'nowrap',
                         }}
                       >
-                        {formatVnd(item.price_vnd)}
+                        {formatPrice(item.price_vnd)}
                       </td>
                       <td style={{ padding: '10px 6px' }}>
                         <span
@@ -692,11 +697,11 @@ export default function AdminProductsPage() {
                             className="badge badge--success"
                             style={compactBadgeStyle}
                           >
-                            Có Demo HTML
+                            HTML Demo
                           </span>
                         ) : (
                           <span className="badge" style={compactBadgeStyle}>
-                            Chưa gắn
+                            —
                           </span>
                         )}
                       </td>
@@ -707,7 +712,7 @@ export default function AdminProductsPage() {
                           }`}
                           style={compactBadgeStyle}
                         >
-                          {item.is_active ? 'Đang bán' : 'Đang ẩn'}
+                          {item.is_active ? ap.statusOn : ap.statusOff}
                         </span>
                       </td>
                       <td style={{ padding: '10px 10px 10px 6px' }}>
@@ -725,18 +730,18 @@ export default function AdminProductsPage() {
                             style={compactBtnStyle}
                             onClick={() => openEditModal(item)}
                           >
-                            Sửa
+                            {ap.editBtn}
                           </button>
                           <button
                             type="button"
                             className="btn btn--secondary btn--sm"
                             style={compactBtnStyle}
-                            aria-label={`Xem thử Live ${item.name}`}
-                            title="Xem thử Live HTML"
+                            aria-label={`${ap.previewBtn} ${pCopy.name}`}
+                            title={ap.previewBtn}
                             onClick={() => openLivePreviewModal(item)}
                           >
                             <Eye size={12} />
-                            <span>Xem thử</span>
+                            <span>{ap.previewBtn}</span>
                           </button>
                           <button
                             type="button"
@@ -748,8 +753,8 @@ export default function AdminProductsPage() {
                             {togglingId === item.id
                               ? '...'
                               : item.is_active
-                                ? 'Ẩn'
-                                : 'Bật'}
+                                ? ap.toggleHideBtn
+                                : ap.toggleActiveBtn}
                           </button>
                         </div>
                       </td>
@@ -790,7 +795,7 @@ export default function AdminProductsPage() {
           >
             <div>
               <span className="type-eyebrow">
-                {editingProduct ? 'Cập nhật sản phẩm' : 'Tạo sản phẩm mới'}
+                {editingProduct ? ap.modalEditTitle : ap.modalCreateTitle}
               </span>
               <h2
                 id="admin-product-modal-title"
@@ -798,8 +803,8 @@ export default function AdminProductsPage() {
                 style={{ margin: '4px 0 0' }}
               >
                 {editingProduct
-                  ? editingProduct.name
-                  : 'Thêm gói sản phẩm số mới'}
+                  ? getProductCopy(editingProduct).name
+                  : ap.modalCreateTitle}
               </h2>
             </div>
 
@@ -807,7 +812,7 @@ export default function AdminProductsPage() {
               type="button"
               className="icon-btn"
               onClick={closeFormModal}
-              aria-label="Đóng biểu mẫu sản phẩm"
+              aria-label={chrome.common.close}
             >
               <X size={18} />
             </button>
@@ -1405,20 +1410,14 @@ export default function AdminProductsPage() {
               className="btn btn--secondary"
               onClick={closeFormModal}
             >
-              Hủy
+              {ap.cancelBtn}
             </button>
             <button
               type="submit"
               className="dg-btn-purchase"
               disabled={isSaving}
             >
-              <span>
-                {isSaving
-                  ? 'Đang lưu...'
-                  : editingProduct
-                    ? 'Lưu thay đổi'
-                    : 'Tạo sản phẩm mới'}
-              </span>
+              <span>{isSaving ? ap.savingBtn : ap.saveBtn}</span>
             </button>
           </div>
         </form>
@@ -1434,13 +1433,15 @@ export default function AdminProductsPage() {
         <div className="preview-dialog__body">
           <div className="preview-dialog__head">
             <div>
-              <span className="type-eyebrow">Kiểm tra giao diện Live HTML</span>
+              <span className="type-eyebrow">{ap.previewBtn}</span>
               <h2
                 id="admin-live-preview-title"
                 className="type-h3"
                 style={{ margin: '4px 0 0' }}
               >
-                {livePreviewProduct?.name ?? 'Xem thử sản phẩm'}
+                {livePreviewProduct
+                  ? getProductCopy(livePreviewProduct).name
+                  : ap.previewBtn}
               </h2>
             </div>
 
@@ -1448,7 +1449,7 @@ export default function AdminProductsPage() {
               type="button"
               className="icon-btn"
               onClick={closeLivePreviewModal}
-              aria-label="Đóng khung xem thử"
+              aria-label={chrome.common.close}
               autoFocus
             >
               <X size={18} />
@@ -1463,8 +1464,10 @@ export default function AdminProductsPage() {
               industry={livePreviewProduct.industry}
               sourceType={livePreviewProduct.source_type}
               slug={livePreviewProduct.slug}
-              productName={livePreviewProduct.name}
-              shortDescription={livePreviewProduct.short_description}
+              productName={getProductCopy(livePreviewProduct).name}
+              shortDescription={
+                getProductCopy(livePreviewProduct).short_description
+              }
               deliverables={livePreviewProduct.specs.deliverables}
             />
           )}

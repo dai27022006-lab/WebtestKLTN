@@ -2,6 +2,7 @@ import { randomUUID } from 'node:crypto';
 import type { z } from 'zod';
 
 import { runChatbotStub } from '@/lib/ai/chatbot-stub';
+import { type AppLocale, localizeProduct } from '@/lib/i18n';
 import type { EventVariant } from '@/lib/tracking/events';
 import type {
   chatSessionsQuerySchema,
@@ -36,24 +37,27 @@ type ChatSessionsQueryParsed = z.infer<typeof chatSessionsQuerySchema>;
 
 function toSuggestedProductCard(
   product: ProductRecord,
-  reason = ''
+  reason = '',
+  locale: AppLocale = 'vi'
 ): SuggestedProductCardDto {
+  const localized = localizeProduct(product, locale);
   return {
     id: product.id,
     slug: product.slug,
-    name: product.name,
+    name: localized.name,
     product_type: product.product_type,
     industry: product.industry,
     price_vnd: product.price_vnd,
     thumbnail_url: product.thumbnail_url,
-    reason: reason || product.short_description,
+    reason: reason || localized.short_description,
   };
 }
 
 function toChatMessageDto(
   record: ChatMessageRecord,
   productMap: Map<string, ProductRecord>,
-  reasonMap?: Map<string, string>
+  reasonMap?: Map<string, string>,
+  locale: AppLocale = 'vi'
 ): ChatMessageDto {
   const suggestedProducts: SuggestedProductCardDto[] = [];
   for (const productId of record.suggested_product_ids) {
@@ -62,7 +66,7 @@ function toChatMessageDto(
       continue;
     }
     suggestedProducts.push(
-      toSuggestedProductCard(product, reasonMap?.get(productId))
+      toSuggestedProductCard(product, reasonMap?.get(productId), locale)
     );
   }
 
@@ -116,7 +120,8 @@ async function resolveCurrentVariant(params: {
 
 function groundStubOutput(
   stubResult: ReturnType<typeof runChatbotStub>,
-  catalogMap: Map<string, ProductRecord>
+  catalogMap: Map<string, ProductRecord>,
+  locale: AppLocale = 'vi'
 ): {
   groundedRetrievedIds: string[];
   groundedSuggestedIds: string[];
@@ -137,7 +142,7 @@ function groundStubOutput(
       groundedReasonMap.set(product.id, suggestion.reason);
       groundedSuggestedIds.push(product.id);
       suggestedProducts.push(
-        toSuggestedProductCard(product, suggestion.reason)
+        toSuggestedProductCard(product, suggestion.reason, locale)
       );
     }
   }
@@ -171,13 +176,14 @@ export async function sendChatMessage(
     const stubResult = runChatbotStub({
       message: input.message,
       catalogProducts: activeCatalog,
+      locale: input.locale,
     });
 
     const {
       groundedRetrievedIds,
       groundedSuggestedIds,
       suggestedProducts,
-    } = groundStubOutput(stubResult, catalogMap);
+    } = groundStubOutput(stubResult, catalogMap, input.locale);
 
     return {
       session_id: sessionId,
@@ -303,13 +309,14 @@ export async function sendChatMessage(
     message: input.message,
     catalogProducts: activeCatalog,
     shopProfile: assignment.shop_profile,
+    locale: input.locale,
   });
 
   const {
     groundedRetrievedIds,
     groundedSuggestedIds,
     groundedReasonMap,
-  } = groundStubOutput(stubResult, catalogMap);
+  } = groundStubOutput(stubResult, catalogMap, input.locale);
 
   const assistantMsgRecord = await store.createChatMessage({
     session_id: session.id,
@@ -327,11 +334,12 @@ export async function sendChatMessage(
 
   return {
     session_id: session.id,
-    user_message: toChatMessageDto(userMsgRecord, catalogMap),
+    user_message: toChatMessageDto(userMsgRecord, catalogMap, undefined, input.locale),
     assistant_message: toChatMessageDto(
       assistantMsgRecord,
       catalogMap,
-      groundedReasonMap
+      groundedReasonMap,
+      input.locale
     ),
   };
 }

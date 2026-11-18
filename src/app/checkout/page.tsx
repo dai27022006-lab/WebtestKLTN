@@ -11,17 +11,18 @@ import {
   Lock,
   ShoppingBag,
 } from '@/components/icons/DreamIcons';
+import { useLocale } from '@/components/providers/LocaleProvider';
 import { useAuth } from '@/components/providers/AuthProvider';
-import {
-  formatVnd,
-  ORDER_STATUS_META,
-} from '@/components/shared/formatters';
 import { EditorialEmptyIllustration } from '@/components/visual/EditorialEmptyIllustration';
 import { createOrder, sandboxPayOrder } from '@/services';
 import { useCart, useExperiment } from '@/state';
 import type { CreateOrderResponse } from '@/types/api';
 
 export default function CheckoutPage() {
+  const { commerce, chrome, formatPrice, getOrderStatusMeta, getProductCopy } =
+    useLocale();
+  const co = commerce.checkout;
+  const ct = commerce.cart;
   const router = useRouter();
   const { user } = useAuth();
   const { cart, refreshCart } = useCart();
@@ -117,50 +118,42 @@ export default function CheckoutPage() {
           }
         : null
     );
-    setFailedNotice(
-      'Giao dịch thử nghiệm vừa mô phỏng trạng thái chưa thành công. Bạn có thể bấm xác nhận thanh toán lại bất kỳ lúc nào.'
-    );
+    setFailedNotice(co.failedNotice);
   };
 
   return (
     <section className="section section--compact">
       <div className="container">
-        <div className="stepper" aria-label="Tiến trình đặt hàng thử nghiệm">
+        <div className="stepper" aria-label={co.eyebrow}>
           <div className="stepper__item stepper__item--done">
             <span className="badge badge--success">
               <ShoppingBag size={12} /> 1
             </span>
-            <span>Giỏ hàng</span>
+            <span>{ct.step1}</span>
           </div>
           <div className="stepper__item stepper__item--active">
             <span className="badge badge--accent">
               <Lock size={12} /> 2
             </span>
-            <span>Xác nhận đơn thử nghiệm</span>
+            <span>{ct.step2}</span>
           </div>
           <div className="stepper__item">
             <span className="badge">
               <Download size={12} /> 3
             </span>
-            <span>Nhận file ngay</span>
+            <span>{ct.step3}</span>
           </div>
         </div>
 
         <div className="section-header" style={{ marginBottom: '24px' }}>
           <div className="section-header__copy">
-            <span className="type-eyebrow">Thanh toán thử nghiệm</span>
-            <h1 className="type-h1">
-              Xác nhận đơn hàng &amp; Mở kho link tải
-            </h1>
-            <p className="type-body-sm">
-              Hệ thống đang chạy chế độ đặt hàng thử nghiệm (Sandbox) — bạn có
-              thể kiểm tra quy trình tạo đơn và nhận file ngay mà không bị trừ
-              tiền thật.
-            </p>
+            <span className="type-eyebrow">{co.eyebrow}</span>
+            <h1 className="type-h1">{co.title}</h1>
+            <p className="type-body-sm">{co.subtitle}</p>
           </div>
           {!user && (
             <Link href="/auth" className="btn btn--secondary btn--sm">
-              Đăng nhập để lưu đơn vào tài khoản
+              {commerce.auth.tabLogin}
             </Link>
           )}
         </div>
@@ -171,12 +164,11 @@ export default function CheckoutPage() {
             role="alert"
             style={{ marginBottom: '20px' }}
           >
-            <strong>Không thể xử lý yêu cầu</strong>
-            <span>{errorMessage}</span>
+            <strong>{errorMessage}</strong>
             {needAuthNotice && (
               <div>
                 <Link href="/auth" className="btn btn--secondary btn--sm">
-                  Đi tới trang Đăng nhập
+                  {commerce.auth.tabLogin}
                 </Link>
               </div>
             )}
@@ -194,17 +186,20 @@ export default function CheckoutPage() {
               justifyItems: 'center',
             }}
           >
-            <EditorialEmptyIllustration title="Chưa có sản phẩm để xác nhận" />
+            <EditorialEmptyIllustration title={co.emptyTitle} />
             <h2 className="type-h3" style={{ margin: 0 }}>
-              Chưa có sản phẩm trong giỏ để tạo đơn thử nghiệm
+              {co.emptyTitle}
             </h2>
+            <p className="type-body-sm" style={{ margin: 0 }}>
+              {co.emptyDesc}
+            </p>
             <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
               <Link href="/products" className="dg-btn-purchase">
-                <span>Quay lại chọn gói giải pháp</span>
+                <span>{ct.browseBtn}</span>
                 <ArrowRight size={15} />
               </Link>
               <Link href="/orders" className="btn btn--secondary">
-                Thư viện đơn hàng đã mua
+                {commerce.orders.title}
               </Link>
             </div>
           </div>
@@ -225,15 +220,15 @@ export default function CheckoutPage() {
                 }}
               >
                 <h2 className="type-h3" style={{ margin: 0 }}>
-                  Chi tiết đơn hàng
+                  {co.summaryTitle}
                 </h2>
                 {orderCreated && (
                   <span
                     className={`badge badge--${
-                      ORDER_STATUS_META[orderCreated.order.status].tone
+                      getOrderStatusMeta(orderCreated.order.status).tone
                     }`}
                   >
-                    {ORDER_STATUS_META[orderCreated.order.status].label}
+                    {getOrderStatusMeta(orderCreated.order.status).label}
                   </span>
                 )}
               </div>
@@ -248,7 +243,11 @@ export default function CheckoutPage() {
                     }))
                   : cart.items.map((i) => ({
                       id: i.product_id,
-                      name: i.name,
+                      name: getProductCopy({
+                        slug: i.slug,
+                        name: i.name,
+                        short_description: '',
+                      }).name,
                       qty: i.quantity,
                       total: i.line_total_vnd,
                     }))
@@ -268,7 +267,7 @@ export default function CheckoutPage() {
                       <strong className="type-mono">{row.qty}</strong>
                     </span>
                     <strong className="type-price">
-                      {formatVnd(row.total)}
+                      {formatPrice(row.total)}
                     </strong>
                   </div>
                 ))}
@@ -281,12 +280,12 @@ export default function CheckoutPage() {
                   alignItems: 'center',
                 }}
               >
-                <strong>Tổng thanh toán (Thử nghiệm)</strong>
+                <strong>{ct.subtotalLabel}</strong>
                 <strong
                   className="type-price"
                   style={{ fontSize: '1.5rem', color: 'var(--accent)' }}
                 >
-                  {formatVnd(
+                  {formatPrice(
                     orderCreated
                       ? orderCreated.order.total_vnd
                       : cart.subtotal_vnd
@@ -302,11 +301,7 @@ export default function CheckoutPage() {
                   disabled={isCreating}
                   onClick={() => void handleCreateOrder()}
                 >
-                  <span>
-                    {isCreating
-                      ? 'Đang tạo đơn hàng...'
-                      : 'Tạo đơn hàng thử nghiệm'}
-                  </span>
+                  <span>{isCreating ? co.creatingBtn : co.createOrderBtn}</span>
                   <ArrowRight size={15} />
                 </button>
               )}
@@ -317,18 +312,16 @@ export default function CheckoutPage() {
               className="surface-card dg-panel"
               style={{ display: 'grid', gap: '16px' }}
             >
-              <span className="type-eyebrow">Xác nhận đơn thử nghiệm</span>
+              <span className="type-eyebrow">{co.eyebrow}</span>
               <h2 className="type-h3" style={{ margin: 0 }}>
-                Hoàn tất thanh toán thử nghiệm
+                {orderCreated
+                  ? co.orderCreatedTitle(orderCreated.payment_intent.order_code)
+                  : co.confirmPaidBtn}
               </h2>
 
               {!orderCreated ? (
                 <div className="callout callout--info">
-                  <span>
-                    Bấm <strong>Tạo đơn hàng thử nghiệm</strong> ở cột bên trái
-                    để khởi tạo mã đơn và trải nghiệm bước xác nhận nhận file
-                    ngay.
-                  </span>
+                  <span>{co.sandboxHint}</span>
                 </div>
               ) : (
                 <>
@@ -349,7 +342,7 @@ export default function CheckoutPage() {
                         gap: '8px',
                       }}
                     >
-                      <span className="type-caption">Mã đơn hàng</span>
+                      <span className="type-caption">#</span>
                       <strong className="type-mono">
                         {orderCreated.payment_intent.order_code}
                       </strong>
@@ -361,12 +354,14 @@ export default function CheckoutPage() {
                         gap: '8px',
                       }}
                     >
-                      <span className="type-caption">Giá trị đơn thử nghiệm</span>
+                      <span className="type-caption">
+                        {commerce.orders.totalOrderValue}
+                      </span>
                       <strong
                         className="type-price"
                         style={{ color: 'var(--accent)' }}
                       >
-                        {formatVnd(orderCreated.payment_intent.amount_vnd)}
+                        {formatPrice(orderCreated.payment_intent.amount_vnd)}
                       </strong>
                     </div>
                     <div
@@ -376,10 +371,10 @@ export default function CheckoutPage() {
                         gap: '8px',
                       }}
                     >
-                      <span className="type-caption">Hình thức</span>
-                      <span className="badge badge--info">
-                        Sandbox không trừ tiền
+                      <span className="type-caption">
+                        {commerce.orders.paymentMethodLabel}
                       </span>
+                      <span className="badge badge--info">Sandbox</span>
                     </div>
                   </div>
 
@@ -399,9 +394,7 @@ export default function CheckoutPage() {
                     >
                       <CheckCircle2 size={16} />
                       <span>
-                        {isPaying
-                          ? 'Đang xác nhận đơn...'
-                          : 'Xác nhận Thành công & Nhận file ngay'}
+                        {isPaying ? co.payingBtn : co.confirmPaidBtn}
                       </span>
                     </button>
 
@@ -411,16 +404,14 @@ export default function CheckoutPage() {
                       disabled={isPaying}
                       onClick={() => void handleSandboxConfirm('failed')}
                     >
-                      Thử trạng thái Thanh toán chưa thành công
+                      {co.confirmFailedBtn}
                     </button>
                   </div>
                 </>
               )}
 
               <p className="type-caption" style={{ margin: 0 }}>
-                Sau khi xác nhận thành công, hệ thống tự động mở{' '}
-                <strong>Kho link tải an toàn (hạn 7 ngày)</strong> với tối đa
-                5 lượt tải cho từng gói và làm mới giỏ hàng của bạn.
+                {commerce.orders.sandboxNote} {chrome.common.orders}
               </p>
             </aside>
           </div>

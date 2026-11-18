@@ -11,11 +11,7 @@ import {
   Lock,
   ShoppingBag,
 } from '@/components/icons/DreamIcons';
-import {
-  formatDateTimeVi,
-  formatVnd,
-  ORDER_STATUS_META,
-} from '@/components/shared/formatters';
+import { useLocale } from '@/components/providers/LocaleProvider';
 import { getOrderById, requestDownloadAccess } from '@/services';
 import { useExperiment } from '@/state';
 import type { DownloadAccessResponse, OrderDto } from '@/types/api';
@@ -28,6 +24,15 @@ interface GrantUiState {
 }
 
 export default function OrderDetailPage() {
+  const {
+    commerce,
+    chrome,
+    formatPrice,
+    formatDate,
+    getOrderStatusMeta,
+  } = useLocale();
+  const od = commerce.orders;
+  const ct = commerce.cart;
   const params = useParams<{ id: string }>();
   const orderId = params?.id ?? '';
   const { visitorId, track } = useExperiment();
@@ -155,15 +160,14 @@ export default function OrderDetailPage() {
       <section className="section section--compact">
         <div className="container container--narrow">
           <div className="callout callout--danger" role="alert">
-            <strong>Không thể tải đơn hàng</strong>
-            <span>{errorMessage ?? 'Đơn hàng không tồn tại.'}</span>
+            <strong>{errorMessage ?? od.emptyAllTitle}</strong>
             <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', marginTop: '8px' }}>
               <Link href="/orders" className="btn btn--secondary btn--sm">
                 <ChevronLeft size={14} />
-                <span>Thư viện đơn hàng đã mua</span>
+                <span>{od.backToOrders}</span>
               </Link>
               <Link href="/cart" className="btn btn--ghost btn--sm">
-                Quay lại Giỏ hàng
+                {chrome.common.cart}
               </Link>
             </div>
           </div>
@@ -172,7 +176,7 @@ export default function OrderDetailPage() {
     );
   }
 
-  const statusMeta = ORDER_STATUS_META[order.status];
+  const statusMeta = getOrderStatusMeta(order.status);
   const itemNameMap = new Map(
     order.items.map((item) => [item.product_id, item.product_name_snapshot])
   );
@@ -183,24 +187,24 @@ export default function OrderDetailPage() {
         className="container container--narrow"
         style={{ display: 'grid', gap: '24px' }}
       >
-        <div className="stepper" aria-label="Tiến trình đặt hàng thử nghiệm">
+        <div className="stepper" aria-label={od.eyebrow}>
           <div className="stepper__item stepper__item--done">
             <span className="badge badge--success">
               <ShoppingBag size={12} /> 1
             </span>
-            <span>Giỏ hàng</span>
+            <span>{ct.step1}</span>
           </div>
           <div className="stepper__item stepper__item--done">
             <span className="badge badge--success">
               <Lock size={12} /> 2
             </span>
-            <span>Xác nhận đơn thử nghiệm</span>
+            <span>{ct.step2}</span>
           </div>
           <div className="stepper__item stepper__item--active">
             <span className="badge badge--accent">
               <Download size={12} /> 3
             </span>
-            <span>Nhận file ngay</span>
+            <span>{ct.step3}</span>
           </div>
         </div>
 
@@ -220,7 +224,7 @@ export default function OrderDetailPage() {
           >
             <div>
               <span className="type-eyebrow">
-                Chi tiết đơn hàng &amp; Bàn giao sản phẩm
+                {od.detailTitle(order.order_code)}
               </span>
               <h1 className="type-h2 type-mono" style={{ margin: '4px 0 0' }}>
                 {order.order_code}
@@ -242,44 +246,39 @@ export default function OrderDetailPage() {
             }}
           >
             <div>
-              <div className="type-caption">Tổng giá trị đơn</div>
+              <div className="type-caption">{od.totalOrderValue}</div>
               <strong
                 className="type-price"
                 style={{ fontSize: '1.25rem', color: 'var(--accent)' }}
               >
-                {formatVnd(order.total_vnd)}
+                {formatPrice(order.total_vnd)}
               </strong>
             </div>
             <div>
-              <div className="type-caption">Ngày tạo đơn</div>
+              <div className="type-caption">{od.createdAtLabel}</div>
               <span className="type-body-sm">
-                {formatDateTimeVi(order.created_at)}
+                {formatDate(order.created_at)}
               </span>
             </div>
             <div>
-              <div className="type-caption">Thời điểm xác nhận</div>
+              <div className="type-caption">{od.paidAtLabel}</div>
               <span className="type-body-sm">
-                {formatDateTimeVi(order.paid_at)}
+                {formatDate(order.paid_at)}
               </span>
             </div>
           </div>
 
           <p className="type-caption" style={{ margin: 0 }}>
-            Hệ thống đang chạy chế độ đặt hàng thử nghiệm (Sandbox) — bạn có
-            thể kiểm tra quy trình tạo đơn và nhận file ngay mà không bị trừ
-            tiền thật.
+            {od.sandboxNote}
           </p>
 
           {order.status !== 'paid' && (
             <div className="callout callout--warning">
-              <strong>Đơn hàng chưa hoàn tất xác nhận thanh toán</strong>
-              <span>
-                Kho link tải file an toàn sẽ được mở khóa ngay khi đơn hàng hoàn
-                tất bước xác nhận đơn thử nghiệm.
-              </span>
+              <strong>{statusMeta.label}</strong>
+              <span>{commerce.checkout.sandboxHint}</span>
               <div>
                 <Link href="/checkout" className="dg-btn-purchase dg-btn-sm">
-                  Quay lại Xác nhận đơn thử nghiệm
+                  {od.completePayTitle}
                 </Link>
               </div>
             </div>
@@ -293,12 +292,12 @@ export default function OrderDetailPage() {
             style={{ display: 'grid', gap: '16px' }}
           >
             <h2 className="type-h3" style={{ margin: 0 }}>
-              Kho link tải an toàn (hạn 7 ngày)
+              {od.downloadsTitle}
             </h2>
 
             {!order.download_grants || order.download_grants.length === 0 ? (
               <p className="type-body-sm" style={{ margin: 0 }}>
-                Chưa có liên kết tải xuống nào được phát hành cho đơn hàng này.
+                {chrome.common.noData}
               </p>
             ) : (
               <div style={{ display: 'grid', gap: '14px' }}>
@@ -336,11 +335,11 @@ export default function OrderDetailPage() {
                         <div style={{ display: 'grid', gap: '4px' }}>
                           <strong>
                             {itemNameMap.get(grant.product_id) ??
-                              'Gói sản phẩm số'}
+                              od.itemsTitle}
                           </strong>
                           <span className="type-caption type-mono">
-                            Đã tải: {grant.download_count} / {grant.max_downloads}{' '}
-                            lượt • Hết hạn: {formatDateTimeVi(grant.expires_at)}
+                            {od.downloadsUsed(grant.download_count, grant.max_downloads)}{' '}
+                            • {od.expiresAt}: {formatDate(grant.expires_at)}
                           </span>
                         </div>
 
@@ -355,12 +354,8 @@ export default function OrderDetailPage() {
                           <Download size={14} />
                           <span>
                             {state?.isLoading
-                              ? 'Đang chuẩn bị file...'
-                              : isExpired
-                                ? 'Link đã hết hạn'
-                                : isExhausted
-                                  ? 'Hết lượt tải'
-                                  : 'Tải gói sản phẩm'}
+                              ? od.downloadingBtn
+                              : od.downloadBtn}
                           </span>
                         </button>
                       </div>
@@ -373,14 +368,12 @@ export default function OrderDetailPage() {
 
                       {state?.lastAccess && (
                         <div className="callout callout--success">
-                          <strong>
-                            Đã cấp quyền tải file: {state.lastAccess.file_name}
-                          </strong>
+                          <strong>{state.lastAccess.file_name}</strong>
                           <span className="type-caption">
-                            Số lượt tải còn lại:{' '}
                             <strong className="type-mono">
                               {state.lastAccess.remaining_downloads}
-                            </strong>
+                            </strong>{' '}
+                            / {grant.max_downloads}
                           </span>
                         </div>
                       )}
@@ -391,8 +384,7 @@ export default function OrderDetailPage() {
                             className="type-body-sm"
                             style={{ cursor: 'pointer', fontWeight: 600 }}
                           >
-                            Xem nhanh nội dung gói tài nguyên (
-                            {state.lastAccess?.file_name})
+                            {od.previewTitle} ({state.lastAccess?.file_name})
                           </summary>
                           <pre
                             className="type-mono"
@@ -422,10 +414,10 @@ export default function OrderDetailPage() {
         <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
           <Link href="/orders" className="btn btn--secondary">
             <ChevronLeft size={15} />
-            <span>Thư viện đơn hàng đã mua</span>
+            <span>{od.backToOrders}</span>
           </Link>
           <Link href="/products" className="dg-btn-purchase">
-            <span>Tiếp tục xem sản phẩm</span>
+            <span>{ct.browseBtn}</span>
           </Link>
         </div>
       </div>
